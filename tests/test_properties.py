@@ -19,6 +19,7 @@ def test_properties(listener):
 
     assert a.test_prop == 'default'
     a.test_prop = 'a'
+    a.test_prop = 'a'
     a.test_prop = 'b'
     assert listener.property_events == ['a', 'b']
 
@@ -61,3 +62,62 @@ def test_container_properties(listener):
 
     assert len(listener.property_events) == 2
     assert a.test_list[-1] == {'nested_dict':{'foo':'baz'}}
+
+def test_unbind(listener):
+    from pydispatch import Dispatcher, Property
+    class A(Dispatcher):
+        test_prop = Property()
+    a = A()
+    a.bind(test_prop=listener.on_prop)
+
+    a.test_prop = 1
+    assert len(listener.property_events) == 1
+
+    listener.property_events = []
+
+    # unbind by method
+    a.unbind(listener.on_prop)
+    a.test_prop = 2
+    assert len(listener.property_events) == 0
+
+    # rebind and make sure events still work
+    a.bind(test_prop=listener.on_prop)
+    a.test_prop = 3
+    assert len(listener.property_events) == 1
+
+    listener.property_events = []
+
+    # unbind by instance
+    a.unbind(listener)
+    a.test_prop = 4
+    assert len(listener.property_events) == 0
+
+def test_removal():
+    from pydispatch import Dispatcher, Property
+
+    class Listener(object):
+        def __init__(self):
+            self.property_events = []
+        def on_prop(self, obj, value, **kwargs):
+            self.property_events.append(value)
+
+    class A(Dispatcher):
+        test_prop = Property()
+
+    listener = Listener()
+    a = A()
+
+    a.bind(test_prop=listener.on_prop)
+    a.test_prop = 1
+    assert len(listener.property_events) == 1
+
+    del listener
+
+    e = a._Dispatcher__property_events['test_prop']
+    l = [m for m in e.listeners]
+    assert len(l) == 0
+
+    prop = A._PROPERTIES_['test_prop']
+    del a
+    assert len(prop._Property__weakrefs) == 0
+    assert len(prop._Property__storage) == 0
