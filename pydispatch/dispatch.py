@@ -50,9 +50,8 @@ class WeakMethodContainer(weakref.WeakValueDictionary):
             yield getattr(obj, f.__name__)
 
 class Event(object):
-    __slots__ = ('obj', 'name', 'listeners')
-    def __init__(self, obj, name):
-        self.obj = obj
+    __slots__ = ('name', 'listeners')
+    def __init__(self, name):
         self.name = name
         self.listeners = WeakMethodContainer()
     def add_listener(self, callback):
@@ -101,16 +100,16 @@ class Dispatcher(object):
             return
         self.__events = {}
         for name in self._EVENTS_:
-            self.__events[name] = Event(self, name)
+            self.__events[name] = Event(name)
         self.__property_events = {}
         for name, prop in self._PROPERTIES_.items():
-            self.__property_events[name] = Event(self, name)
+            self.__property_events[name] = Event(name)
             prop._add_instance(self)
     def register_event(self, *names):
         for name in names:
             if name in self.__events:
                 continue
-            self.__events[name] = Event(self, name)
+            self.__events[name] = Event(name)
     def bind(self, **kwargs):
         props = self.__property_events
         events = self.__events
