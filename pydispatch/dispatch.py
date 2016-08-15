@@ -93,7 +93,7 @@ class Dispatcher(object):
                 events |= set(_events)
         cls._PROPERTIES_ = props
         cls._EVENTS_ = events
-        obj = super(Dispatcher, cls).__new__(cls, *args, **kwargs)
+        obj = super(Dispatcher, cls).__new__(cls)
         obj._Dispatcher__init_events()
         return obj
     def __del__(self):
