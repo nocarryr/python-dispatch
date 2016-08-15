@@ -97,9 +97,9 @@ class Dispatcher(object):
         obj._Dispatcher__init_events()
         return obj
     def __del__(self):
-        if not hasattr(self, '_Dispatcher__property_events'):
+        if not hasattr(self, '_PROPERTIES_'):
             return
-        for prop in self.__property_events.values():
+        for prop in self._PROPERTIES_.values():
             prop._del_instance(self)
     def __init_events(self):
         if hasattr(self, '_Dispatcher__events'):
