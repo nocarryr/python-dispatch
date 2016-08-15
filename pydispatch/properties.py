@@ -1,9 +1,25 @@
+import weakref
+
+class InformativeDict(dict):
+    def __delitem__(self, key):
+        super(InformativeDict, self).__delitem__(key)
+        self.del_callback(key)
+
+class InformativeWVDict(weakref.WeakValueDictionary):
+    def __init__(self, **kwargs):
+        self.del_callback = kwargs.get('del_callback')
+        weakref.WeakValueDictionary.__init__(self)
+        self.data = InformativeDict()
+        self.data.del_callback = self._data_del_callback
+    def _data_del_callback(self, key):
+        self.del_callback(key)
 
 class Property(object):
     def __init__(self, default=None):
         self._name = ''
         self.default = default
         self.__storage = {}
+        self.__weakrefs = InformativeWVDict(del_callback=self._on_weakref_fin)
     @property
     def name(self):
         return self._name
@@ -16,8 +32,11 @@ class Property(object):
         if default is None:
             default = self.default
         self.__storage[id(obj)] = self.default
+        self.__weakrefs[id(obj)] = obj
     def _del_instance(self, obj):
         del self.__storage[id(obj)]
+    def _on_weakref_fin(self, obj_id):
+        del self.__storage[obj_id]
     def __get__(self, obj, objcls=None):
         if obj is None:
             return self

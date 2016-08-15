@@ -96,11 +96,6 @@ class Dispatcher(object):
         obj = super(Dispatcher, cls).__new__(cls)
         obj._Dispatcher__init_events()
         return obj
-    def __del__(self):
-        if not hasattr(self, '_PROPERTIES_'):
-            return
-        for prop in self._PROPERTIES_.values():
-            prop._del_instance(self)
     def __init_events(self):
         if hasattr(self, '_Dispatcher__events'):
             return
