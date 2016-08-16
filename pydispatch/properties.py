@@ -1,18 +1,6 @@
 import weakref
 
-class InformativeDict(dict):
-    def __delitem__(self, key):
-        super(InformativeDict, self).__delitem__(key)
-        self.del_callback(key)
-
-class InformativeWVDict(weakref.WeakValueDictionary):
-    def __init__(self, **kwargs):
-        self.del_callback = kwargs.get('del_callback')
-        weakref.WeakValueDictionary.__init__(self)
-        self.data = InformativeDict()
-        self.data.del_callback = self._data_del_callback
-    def _data_del_callback(self, key):
-        self.del_callback(key)
+from pydispatch.utils import InformativeWVDict
 
 class Property(object):
     def __init__(self, default=None):
