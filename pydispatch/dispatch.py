@@ -5,6 +5,10 @@ from pydispatch.properties import Property
 
 
 class Event(object):
+    """Holds references to event names and subscribed listeners
+
+    This is used internally by :class:`Dispatcher`.
+    """
     __slots__ = ('name', 'listeners')
     def __init__(self, name):
         self.name = name
@@ -17,6 +21,10 @@ class Event(object):
         else:
             self.listeners.del_instance(obj)
     def __call__(self, *args, **kwargs):
+        """Dispatches the event to listeners
+
+        Called by :meth:`~.Dispatcher.emit`
+        """
         for m in self.listeners.iter_methods():
             r = m(*args, **kwargs)
             if r is False:
@@ -27,6 +35,18 @@ class Event(object):
         return self.name
 
 class Dispatcher(object):
+    """Core class used to enable all functionality in the library
+
+    Interfaces with :class:`Event` and :class:`Property` objects upon instance
+    creation.
+
+    Events can be created by calling :meth:`register_event` or by the subclass
+    definition::
+        class Foo(Dispatcher):
+            _events_ = ['awesome_event', 'on_less_awesome_event']
+
+    Once defined, an event can be dispatched to listeners by calling :meth:`emit`.
+    """
     def __new__(cls, *args, **kwargs):
         def iter_bases(_cls):
             if _cls is object:
@@ -61,11 +81,23 @@ class Dispatcher(object):
             self.__property_events[name] = Event(name)
             prop._add_instance(self)
     def register_event(self, *names):
+        """Registers new event(s) after instance creation
+
+        Args:
+            *names (str): Name or names of the event(s) to register
+        """
         for name in names:
             if name in self.__events:
                 continue
             self.__events[name] = Event(name)
     def bind(self, **kwargs):
+        """Subscribes to events or to :class:`Property` updates
+
+        Keyword arguments are used with the Event or Property name(s) as keys
+        and the callback(s) as values::
+            foo.bind(name=my_listener.on_foo_name_changed)
+            foo.bind(name=other_listener.on_name, value=other_listener.on_value)
+        """
         props = self.__property_events
         events = self.__events
         for name, cb in kwargs.items():
@@ -75,6 +107,15 @@ class Dispatcher(object):
                 e = events[name]
             e.add_listener(cb)
     def unbind(self, *args):
+        """Unsubscribes from events or :class:`Property` updates
+
+        Multiple arguments can be given. Each of which can be either the method
+        that was used for the original call to :meth:`bind` or an instance
+        object.
+
+        If an instance of an object is supplied, any previously bound Events and
+        Properties will be 'unbound'.
+        """
         props = self.__property_events.values()
         events = self.__events.values()
         for arg in args:
@@ -83,6 +124,17 @@ class Dispatcher(object):
             for e in events:
                 e.remove_listener(arg)
     def emit(self, name, *args, **kwargs):
+        """Dispatches an event to any subscribed listeners
+
+        Note:
+            If a listener returns `False`, the event will stop dispatching to
+            other listeners. Any other return value is ignored.
+
+        Args:
+            name (str): The name of the :class:`Event` to dispatch
+            *args (Optional): Positional arguments to be sent to listeners
+            **kwargs (Optional): Keyword arguments to be sent to listeners
+        """
         e = self.__property_events.get(name)
         if e is None:
             e = self.__events[name]

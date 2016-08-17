@@ -1,8 +1,50 @@
+"""Properties
+
+:class:`Property` objects can be defined on subclasses of
+:class:`~dispatch.Dispatcher` to create instance attributes that act as events
+when their values change::
+    from pydispatch import Dispatcher, Property
+
+    class Foo(Dispatcher):
+        name = Property()
+        value = Property()
+    def __str__(self):
+        return self.__class__.__name__
+
+    class Listener(object):
+        def on_foo_name(self, instance, value, **kwargs):
+            print("{}'s name is {}".format(instance, value))
+        def on_foo_value(self, instance, value, **kwargs):
+            print('{} = {}'.format(instance, value))
+
+    foo_obj = Foo()
+    listener_obj = Listener()
+
+    foo_obj.bind(name=listener_obj.on_foo_name, value=listener_obj.on_foo_value)
+
+    foo_obj.name = 'bar'
+    # Foo's name is bar
+
+    foo_obj.value = 42
+    # Foo = 42
+
+Type checking is not enforced, so values can be any valid python type.
+Values are however checked for equality to avoid dispatching events for no
+reason. If custom objects are used as values, they must be able to support
+equality checking. In most cases, this will be handled automatically.
+"""
+
 import weakref
 
 from pydispatch.utils import InformativeWVDict
 
 class Property(object):
+    """Defined on the class level to create an observable attribute
+
+    Args:
+        default (Optional): If supplied, this will be the default value of the
+            Property for all instances of the class. Otherwise `None`
+    """
     def __init__(self, default=None):
         self._name = ''
         self.default = default
@@ -49,6 +91,11 @@ class Property(object):
         return self.name
 
 class ListProperty(Property):
+    """Property with a `list` type value
+
+    Changes to the contents of the list are able to be observed through
+    :class:`ObservableList`.
+    """
     def __init__(self, default=None):
         if default is None:
             default = []
@@ -62,6 +109,11 @@ class ListProperty(Property):
         super(ListProperty, self).__set__(obj, value)
 
 class DictProperty(Property):
+    """Property with a `dict` type value
+
+    Changes to the contents of the dict are able to be observed through
+    :class:`ObservableDict`.
+    """
     def __init__(self, default=None):
         if default is None:
             default = {}
@@ -75,6 +127,15 @@ class DictProperty(Property):
         super(DictProperty, self).__set__(obj, value)
 
 class Observable(object):
+    """Used by container subclasses to emit changes and build other observables
+
+    When an item is added to an observable container (a subclass of Observable)
+    it is type-checked and, if possible replaced by an observable version of it.
+
+    In other words, if a `dict` is added to a :class:`ObservableDict`, it is
+    copied and replaced by another :class:`ObservableDict`. This allows nested
+    containers to be observed and their changes to be tracked.
+    """
     def _build_observable(self, item):
         if isinstance(item, list):
             item = ObservableList(item, parent=self)
@@ -93,6 +154,8 @@ class Observable(object):
         self.property._on_change(self.obj, None, kwargs['value'])
 
 class ObservableList(list, Observable):
+    """A `list` object that tracks changes to its contents
+    """
     def __init__(self, initlist=None, **kwargs):
         self._init_complete = False
         super(ObservableList, self).__init__()
@@ -131,6 +194,8 @@ class ObservableList(list, Observable):
         self._emit_change()
 
 class ObservableDict(dict, Observable):
+    """A `dict` object that tracks changes to its contents
+    """
     def __init__(self, initdict=None, **kwargs):
         self._init_complete = False
         super(ObservableDict, self).__init__()
