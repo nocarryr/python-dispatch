@@ -70,6 +70,10 @@ class Dispatcher(object):
         obj = super(Dispatcher, cls).__new__(cls)
         obj._Dispatcher__init_events()
         return obj
+    def __init__(self, *args, **kwargs):
+        # Everything is handled by __new__
+        # This is only here to prevent exceptions being raised
+        pass
     def __init_events(self):
         if hasattr(self, '_Dispatcher__events'):
             return
