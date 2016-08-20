@@ -8,7 +8,7 @@ if 'bdist_wheel' in sys.argv:
 
 setup(
     name = "python-dispatch",
-    version = "0.0.1",
+    version = "v0.0.1",
     author = "Matthew Reid",
     author_email = "matt@nomadic-recording.com",
     description = "Lightweight Event Handling",
