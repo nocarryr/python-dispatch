@@ -1,10 +1,4 @@
-import sys
 from setuptools import setup, find_packages
-
-setup_requires = []
-if 'bdist_wheel' in sys.argv:
-    setup_requires.append('setuptools-markdown')
-
 
 setup(
     name = "python-dispatch",
@@ -16,7 +10,7 @@ setup(
     license='MIT',
     packages=find_packages(exclude=['tests*']),
     include_package_data=True,
-    setup_requires=setup_requires,
+    setup_requires=['setuptools-markdown'],
     long_description_markdown_filename='README.md',
     keywords='event properties dispatch',
     platforms=['any'],
