@@ -1,7 +1,7 @@
 """Properties
 
 :class:`Property` objects can be defined on subclasses of
-:class:`~dispatch.Dispatcher` to create instance attributes that act as events
+:class:`~pydispatch.Dispatcher` to create instance attributes that act as events
 when their values change::
     from pydispatch import Dispatcher, Property
 
@@ -43,7 +43,7 @@ class Property(object):
 
     Args:
         default (Optional): If supplied, this will be the default value of the
-            Property for all instances of the class. Otherwise `None`
+            Property for all instances of the class. Otherwise ``None``
     """
     def __init__(self, default=None):
         self._name = ''
@@ -91,7 +91,7 @@ class Property(object):
         return self.name
 
 class ListProperty(Property):
-    """Property with a `list` type value
+    """Property with a ``list`` type value
 
     Changes to the contents of the list are able to be observed through
     :class:`ObservableList`.
@@ -109,7 +109,7 @@ class ListProperty(Property):
         super(ListProperty, self).__set__(obj, value)
 
 class DictProperty(Property):
-    """Property with a `dict` type value
+    """Property with a ``dict`` type value
 
     Changes to the contents of the dict are able to be observed through
     :class:`ObservableDict`.
@@ -132,7 +132,7 @@ class Observable(object):
     When an item is added to an observable container (a subclass of Observable)
     it is type-checked and, if possible replaced by an observable version of it.
 
-    In other words, if a `dict` is added to a :class:`ObservableDict`, it is
+    In other words, if a ``dict`` is added to a :class:`ObservableDict`, it is
     copied and replaced by another :class:`ObservableDict`. This allows nested
     containers to be observed and their changes to be tracked.
     """
@@ -154,7 +154,7 @@ class Observable(object):
         self.property._on_change(self.obj, None, kwargs['value'])
 
 class ObservableList(list, Observable):
-    """A `list` object that tracks changes to its contents
+    """A ``list`` object that tracks changes to its contents
     """
     def __init__(self, initlist=None, **kwargs):
         self._init_complete = False
@@ -194,7 +194,7 @@ class ObservableList(list, Observable):
         self._emit_change()
 
 class ObservableDict(dict, Observable):
-    """A `dict` object that tracks changes to its contents
+    """A ``dict`` object that tracks changes to its contents
     """
     def __init__(self, initdict=None, **kwargs):
         self._init_complete = False

@@ -23,7 +23,7 @@ class Event(object):
     def __call__(self, *args, **kwargs):
         """Dispatches the event to listeners
 
-        Called by :meth:`~.Dispatcher.emit`
+        Called by :meth:`~Dispatcher.emit`
         """
         for m in self.listeners.iter_methods():
             r = m(*args, **kwargs)
@@ -37,11 +37,12 @@ class Event(object):
 class Dispatcher(object):
     """Core class used to enable all functionality in the library
 
-    Interfaces with :class:`Event` and :class:`Property` objects upon instance
-    creation.
+    Interfaces with :class:`Event` and :class:`~pydispatch.properties.Property`
+    objects upon instance creation.
 
     Events can be created by calling :meth:`register_event` or by the subclass
     definition::
+
         class Foo(Dispatcher):
             _events_ = ['awesome_event', 'on_less_awesome_event']
 
@@ -85,22 +86,32 @@ class Dispatcher(object):
             self.__property_events[name] = Event(name)
             prop._add_instance(self)
     def register_event(self, *names):
-        """Registers new event(s) after instance creation
+        """Registers new events after instance creation
 
         Args:
-            *names (str): Name or names of the event(s) to register
+            *names (str): Name or names of the events to register
         """
         for name in names:
             if name in self.__events:
                 continue
             self.__events[name] = Event(name)
     def bind(self, **kwargs):
-        """Subscribes to events or to :class:`Property` updates
+        """Subscribes to events or to :class:`~pydispatch.property.Property` updates
 
-        Keyword arguments are used with the Event or Property name(s) as keys
-        and the callback(s) as values::
+        Keyword arguments are used with the Event or Property names as keys
+        and the callbacks as values::
+
+            class Foo(Dispatcher):
+                name = Property()
+
+            foo = Foo()
+
             foo.bind(name=my_listener.on_foo_name_changed)
-            foo.bind(name=other_listener.on_name, value=other_listener.on_value)
+            foo.bind(name=other_listener.on_name,
+                     value=other_listener.on_value)
+
+        The callbacks are stored as weak references and their order is not
+        maintained relative to the order of binding.
         """
         props = self.__property_events
         events = self.__events
@@ -131,7 +142,7 @@ class Dispatcher(object):
         """Dispatches an event to any subscribed listeners
 
         Note:
-            If a listener returns `False`, the event will stop dispatching to
+            If a listener returns ``False``, the event will stop dispatching to
             other listeners. Any other return value is ignored.
 
         Args:
