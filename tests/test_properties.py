@@ -63,6 +63,29 @@ def test_container_properties(listener):
     assert len(listener.property_events) == 2
     assert a.test_list[-1] == {'nested_dict':{'foo':'baz'}}
 
+def test_empty_defaults(listener):
+    from pydispatch import Dispatcher
+    from pydispatch.properties import (
+        ListProperty, DictProperty, ObservableList, ObservableDict,
+    )
+    class A(Dispatcher):
+        test_dict = DictProperty()
+        test_list = ListProperty()
+
+    a = A()
+    a.bind(test_dict=listener.on_prop, test_list=listener.on_prop)
+
+    assert isinstance(a.test_dict, ObservableDict)
+    assert isinstance(a.test_list, ObservableList)
+
+    a.test_dict['foo'] = 'bar'
+    a.test_list.append('baz')
+
+    assert isinstance(a.test_dict, ObservableDict)
+    assert isinstance(a.test_list, ObservableList)
+
+    assert len(listener.property_events) == 2
+
 def test_unbind(listener):
     from pydispatch import Dispatcher, Property
     class A(Dispatcher):
@@ -121,3 +144,33 @@ def test_removal():
     del a
     assert len(prop._Property__weakrefs) == 0
     assert len(prop._Property__storage) == 0
+
+def test_self_binding():
+    from pydispatch import Dispatcher
+    from pydispatch.properties import Property, ListProperty, DictProperty
+
+    class A(Dispatcher):
+        test_prop = Property()
+        test_dict = DictProperty()
+        test_list = ListProperty()
+        def __init__(self):
+            self.received = []
+            self.bind(
+                test_prop=self.on_test_prop,
+                test_dict=self.on_test_dict,
+                test_list=self.on_test_list,
+            )
+        def on_test_prop(self, *args, **kwargs):
+            self.received.append('test_prop')
+        def on_test_dict(self, *args, **kwargs):
+            self.received.append('test_dict')
+        def on_test_list(self, *args, **kwargs):
+            self.received.append('test_list')
+
+    a = A()
+
+    a.test_prop = 'foo'
+    a.test_dict['foo'] = 'bar'
+    a.test_list.append('baz')
+
+    assert a.received == ['test_prop', 'test_dict', 'test_list']
