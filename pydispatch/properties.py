@@ -107,6 +107,14 @@ class ListProperty(Property):
     def __set__(self, obj, value):
         value = ObservableList(value, obj=obj, property=self)
         super(ListProperty, self).__set__(obj, value)
+    def __get__(self, obj, objcls=None):
+        if obj is None:
+            return self
+        value = super(ListProperty, self).__get__(obj, objcls)
+        if not isinstance(value, ObservableList):
+            value = ObservableList(value, obj=obj, property=self)
+            self._Property__storage[id(obj)] = value
+        return value
 
 class DictProperty(Property):
     """Property with a ``dict`` type value
@@ -125,6 +133,14 @@ class DictProperty(Property):
     def __set__(self, obj, value):
         value = ObservableDict(value, obj=obj, property=self)
         super(DictProperty, self).__set__(obj, value)
+    def __get__(self, obj, objcls=None):
+        if obj is None:
+            return self
+        value = super(DictProperty, self).__get__(obj, objcls)
+        if not isinstance(value, ObservableDict):
+            value = ObservableDict(value, obj=obj, property=self)
+            self._Property__storage[id(obj)] = value
+        return value
 
 class Observable(object):
     """Used by container subclasses to emit changes and build other observables
