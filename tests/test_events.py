@@ -97,3 +97,28 @@ def test_removal(sender):
     l = [m for m in e.listeners]
     assert len(l) == 0
     sender.trigger_event('on_test')
+
+def test_bind_during_emit():
+    from pydispatch import Dispatcher, Property
+    class Sender(Dispatcher):
+        value = Property()
+        _events_ = ['on_test']
+
+    class Listener(object):
+        def on_event(self, instance, **kwargs):
+            instance.unbind(self)
+            other_listener = Listener()
+            instance.bind(on_test=other_listener.on_event)
+        def on_prop(self, instance, value, **kwargs):
+            instance.unbind(self)
+            other_listener = Listener()
+            instance.bind(value=other_listener.on_prop)
+
+    sender = Sender()
+    listener = Listener()
+
+    sender.bind(on_test=listener.on_event)
+    sender.emit('on_test', sender)
+
+    sender.bind(value=listener.on_prop)
+    sender.value = 42
