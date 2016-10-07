@@ -16,7 +16,7 @@ class Event(object):
     def add_listener(self, callback):
         self.listeners.add_method(callback)
     def remove_listener(self, obj):
-        if isinstance(obj, types.MethodType):
+        if isinstance(obj, (types.MethodType, types.FunctionType)):
             self.listeners.del_method(obj)
         else:
             self.listeners.del_instance(obj)
