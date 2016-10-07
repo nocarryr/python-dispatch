@@ -1,5 +1,6 @@
 import sys
 import weakref
+import types
 
 PY2 = sys.version_info.major == 2
 if not PY2:
@@ -20,12 +21,18 @@ class WeakMethodContainer(weakref.WeakValueDictionary):
             return self.iterkeys()
         return super(WeakMethodContainer, self).keys()
     def add_method(self, m):
-        f, obj = get_method_vars(m)
-        wrkey = (f, id(obj))
-        self[wrkey] = obj
+        if isinstance(m, types.FunctionType):
+            self['function', id(m)] = m
+        else:
+            f, obj = get_method_vars(m)
+            wrkey = (f, id(obj))
+            self[wrkey] = obj
     def del_method(self, m):
-        f, obj = get_method_vars(m)
-        wrkey = (f, id(obj))
+        if isinstance(m, types.FunctionType):
+            wrkey = ('function', id(m))
+        else:
+            f, obj = get_method_vars(m)
+            wrkey = (f, id(obj))
         if wrkey in self:
             del self[wrkey]
     def del_instance(self, obj):
@@ -44,7 +51,10 @@ class WeakMethodContainer(weakref.WeakValueDictionary):
     def iter_methods(self):
         for wrkey, obj in self.iter_instances():
             f, obj_id = wrkey
-            yield getattr(obj, f.__name__)
+            if f == 'function':
+                yield self[wrkey]
+            else:
+                yield getattr(obj, f.__name__)
 
 class InformativeDict(dict):
     def __delitem__(self, key):
