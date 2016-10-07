@@ -122,3 +122,27 @@ def test_bind_during_emit():
 
     sender.bind(value=listener.on_prop)
     sender.value = 42
+
+def test_function_listener():
+    from pydispatch import Dispatcher, Property
+    class Sender(Dispatcher):
+        value = Property()
+        _events_ = ['on_test']
+
+    events = []
+    props = []
+    def on_event(*args, **kwargs):
+        events.append([args, kwargs])
+    def on_prop(*args, **kwargs):
+        props.append([args, kwargs])
+
+    sender = Sender()
+    sender.bind(on_test=on_event, value=on_prop)
+
+    sender.emit('on_test', 'test', foo='bar')
+    sender.value = 42
+
+    assert len(events) == 1
+    assert len(props) == 1
+
+    sender.unbind(on_event, on_prop)
