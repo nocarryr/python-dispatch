@@ -63,6 +63,18 @@ def test_container_properties(listener):
     assert len(listener.property_events) == 2
     assert a.test_list[-1] == {'nested_dict':{'foo':'baz'}}
 
+    listener.property_events = []
+    del a.test_list[:]
+    assert len(listener.property_events) == 1
+    assert len(a.test_list) == 0
+
+    if hasattr(list, 'clear'):
+        listener.property_events = []
+        a.test_list.append(42)
+        a.test_list.clear()
+        a.test_list.append(True)
+        assert len(listener.property_events) == 3
+
 def test_empty_defaults(listener):
     from pydispatch import Dispatcher
     from pydispatch.properties import (

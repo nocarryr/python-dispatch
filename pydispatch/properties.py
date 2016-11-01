@@ -34,9 +34,12 @@ reason. If custom objects are used as values, they must be able to support
 equality checking. In most cases, this will be handled automatically.
 """
 
+import sys
 import weakref
 
 from pydispatch.utils import InformativeWVDict
+
+PY2 = sys.version_info < (3,)
 
 class Property(object):
     """Defined on the class level to create an observable attribute
@@ -188,6 +191,17 @@ class ObservableList(list, Observable):
     def __delitem__(self, key):
         super(ObservableList, self).__delitem__(key)
         self._emit_change()
+    if PY2:
+        def __setslice__(self, *args):
+            super(ObservableList, self).__setslice__(*args)
+            self._emit_change()
+        def __delslice__(self, *args):
+            super(ObservableList, self).__delslice__(*args)
+            self._emit_change()
+    if hasattr(list, 'clear'):
+        def clear(self):
+            super(ObservableList, self).clear()
+            self._emit_change()
     def __iadd__(self, other):
         other = self._build_observable(other)
         self.extend(other)
