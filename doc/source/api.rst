@@ -21,6 +21,7 @@ pydispatch.properties module
 
 .. autoclass:: pydispatch.properties.Property
     :members:
+    :private-members:
     :show-inheritance:
 
 .. autoclass:: pydispatch.properties.ListProperty

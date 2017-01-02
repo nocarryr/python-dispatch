@@ -3,6 +3,7 @@
 :class:`Property` objects can be defined on subclasses of
 :class:`~pydispatch.Dispatcher` to create instance attributes that act as events
 when their values change::
+
     from pydispatch import Dispatcher, Property
 
     class Foo(Dispatcher):
@@ -47,6 +48,11 @@ class Property(object):
     Args:
         default (Optional): If supplied, this will be the default value of the
             Property for all instances of the class. Otherwise ``None``
+
+    Attributes:
+        name (str): The name of the Property as defined in the class definition.
+            This will match the attribute name for the :class:`Dispatcher` instance.
+
     """
     def __init__(self, default=None):
         self._name = ''
@@ -87,6 +93,22 @@ class Property(object):
         self.__storage[obj_id] = value
         self._on_change(obj, current, value)
     def _on_change(self, obj, old, value, **kwargs):
+        """Called internally to emit changes from the instance object
+
+        The keyword arguments here will be passed to callbacks through the
+        instance object's :meth:`~Dispatcher.emit` method.
+
+        Keyword Args:
+            property: The :class:`Property` instance. This is useful if multiple
+                properties are bound to the same callback. The attribute name
+            keys (optional): If the :class:`Property` is a container type
+                (:class:`ListProperty` or :class:`DictProperty`), the changes
+                may be found here.
+                This is not implemented for nested containers and will only be
+                available for operations that do not alter the size of the
+                container.
+
+        """
         kwargs['property'] = self
         obj.emit(self.name, obj, value, old=old, **kwargs)
     def __repr__(self):
