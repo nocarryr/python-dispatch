@@ -205,7 +205,6 @@ class ObservableList(list, Observable):
     def __iadd__(self, other):
         other = self._build_observable(other)
         self.extend(other)
-        self._emit_change()
         return self
     def append(self, item):
         item = self._build_observable(item)
