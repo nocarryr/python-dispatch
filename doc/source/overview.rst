@@ -39,19 +39,19 @@ Usage::
     # >>> emitter state changed
 
 
-The ``bind`` method above could also be combined::
+The :any:`bind <Dispatcher.bind>` method above could also be combined::
 
     emitter.bind(on_state=listener.on_emitter_state,
                  new_data=listener.on_new_data)
 
-Events can also be created after object creation::
+:any:`Events <Event>` can also be created after object creation::
 
     emitter.register_event('need_data')
 
     # Multiple events can also be created:
     emitter.register_event('value_changed', 'something_happened')
 
-Stop listening by calling ``unbind``::
+Stop listening by calling :any:`unbind <Dispatcher.unbind>`::
 
     emitter.unbind(listener.on_emitter_state)
 
@@ -62,8 +62,8 @@ Event propagation will stop if any callback returns ``False``. Any other return
 value is ignored.
 
 There are no restrictions on event names. The idea is to keep things as simple
-and non-restrictive as possible. When calling ``emit``, and positional or keyword
-arguments supplied will be passed along to listeners.
+and non-restrictive as possible. When calling :any:`emit <Dispatcher.emit>`, and
+positional or keyword arguments supplied will be passed along to listeners.
 
 .. note::
 
@@ -121,7 +121,7 @@ If the attribute is set to the same value, an event is not dispatched::
 Container Properties
 --------------------
 
-``dict`` and ``list`` objects are implemented as subclasses of ``Property``:
+``dict`` and ``list`` objects are implemented as subclasses of :any:`Property`:
     * `DictProperty`_
     * `ListProperty`_
 
