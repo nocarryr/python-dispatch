@@ -135,6 +135,11 @@ def test_dict_property_ops(listener):
     assert 'b' not in a.test_dict
 
     listener.property_events = []
+    a.test_dict.update({'c':3, 'e':5, 'f':6, 'g':7})
+    assert len(listener.property_events) == 1
+    assert a.test_dict == {'c':3, 'd':4, 'e':5, 'f':6, 'g':7}
+
+    listener.property_events = []
     a.test_dict.clear()
     assert len(listener.property_events) == 1
     assert len(a.test_dict) == 0
