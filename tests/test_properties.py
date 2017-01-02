@@ -75,6 +75,75 @@ def test_container_properties(listener):
         a.test_list.append(True)
         assert len(listener.property_events) == 3
 
+def test_list_property_ops(listener):
+    from pydispatch import Dispatcher
+    from pydispatch.properties import ListProperty
+    class A(Dispatcher):
+        test_list = ListProperty()
+
+    a = A()
+    a.bind(test_list=listener.on_prop)
+
+    # Test slicing
+    listener.property_events = []
+    a.test_list[1:4] = ['a', 'b', 'c', 'd']
+    assert len(listener.property_events) == 1
+    assert a.test_list == ['a', 'b', 'c', 'd']
+
+    # Test __setitem__
+    listener.property_events = []
+    a.test_list[0] = 'z'
+    assert len(listener.property_events) == 1
+    assert a.test_list == ['z', 'b', 'c', 'd']
+
+    # Test __delitem__
+    listener.property_events = []
+    del a.test_list[0]
+    assert len(listener.property_events) == 1
+    assert a.test_list == ['b', 'c', 'd']
+
+    # Test remove
+    listener.property_events = []
+    a.test_list = ['a', 'b', 'c', 'd']
+    a.test_list.remove('d')
+    assert len(listener.property_events) == 2
+    assert a.test_list == ['a', 'b', 'c']
+
+    # Test __iadd__
+    listener.property_events = []
+    a.test_list = ['a', 'b', 'c', 'd']
+    a.test_list += ['e', 'f', 'g']
+    assert a.test_list == ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+    assert len(listener.property_events) == 2
+
+def test_dict_property_ops(listener):
+    from pydispatch import Dispatcher
+    from pydispatch.properties import DictProperty
+    class A(Dispatcher):
+        test_dict = DictProperty({'a':1, 'b':2, 'c':3, 'd':4})
+
+    a = A()
+    a.bind(test_dict=listener.on_prop)
+
+    v = a.test_dict.pop('a')
+    assert len(listener.property_events) == 1
+    assert 'a' not in a.test_dict
+
+    listener.property_events = []
+    del a.test_dict['b']
+    assert len(listener.property_events) == 1
+    assert 'b' not in a.test_dict
+
+    listener.property_events = []
+    a.test_dict.clear()
+    assert len(listener.property_events) == 1
+    assert len(a.test_dict) == 0
+
+    listener.property_events = []
+    a.test_dict.setdefault('foo', 'bar')
+    assert len(listener.property_events) == 1
+    assert a.test_dict['foo'] == 'bar'
+
 def test_empty_defaults(listener):
     from pydispatch import Dispatcher
     from pydispatch.properties import (
