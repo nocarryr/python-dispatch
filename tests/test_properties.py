@@ -45,7 +45,7 @@ def test_container_properties(listener):
     assert listener.property_events == [{'changed':True}, ['changed']]
 
     listener.property_events = []
-
+    listener.property_event_kwargs = []
     a.test_dict['nested_dict'] = {'foo':'bar'}
     a.test_dict['nested_dict']['foo'] = 'baz'
     a.test_dict['nested_dict']['nested_list'] = [0]
@@ -53,6 +53,7 @@ def test_container_properties(listener):
 
     assert len(listener.property_events) == 4
     assert a.test_dict['nested_dict']['nested_list'] == [0, 1]
+    assert 'nested_dict' in listener.property_event_kwargs[0]['keys']
 
     listener.property_events = []
 
@@ -92,9 +93,11 @@ def test_list_property_ops(listener):
 
     # Test __setitem__
     listener.property_events = []
+    listener.property_event_kwargs = []
     a.test_list[0] = 'z'
     assert len(listener.property_events) == 1
     assert a.test_list == ['z', 'b', 'c', 'd']
+    assert listener.property_event_kwargs[0]['keys'] == [0]
 
     # Test __delitem__
     listener.property_events = []
@@ -135,9 +138,11 @@ def test_dict_property_ops(listener):
     assert 'b' not in a.test_dict
 
     listener.property_events = []
+    listener.property_event_kwargs = []
     a.test_dict.update({'c':3, 'e':5, 'f':6, 'g':7})
     assert len(listener.property_events) == 1
     assert a.test_dict == {'c':3, 'd':4, 'e':5, 'f':6, 'g':7}
+    assert sorted(listener.property_event_kwargs[0]['keys']) == ['e', 'f', 'g']
 
     listener.property_events = []
     a.test_dict.clear()

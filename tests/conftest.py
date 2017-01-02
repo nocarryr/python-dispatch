@@ -8,6 +8,7 @@ def listener():
             self.received_events = []
             self.received_event_data = []
             self.property_events = []
+            self.property_event_kwargs = []
         def on_event(self, *args, **kwargs):
             self.received_event_data.append({'args':args, 'kwargs':kwargs})
             name = kwargs.get('triggered_event')
@@ -15,6 +16,7 @@ def listener():
                 self.received_events.append(name)
         def on_prop(self, obj, value, **kwargs):
             self.property_events.append(value)
+            self.property_event_kwargs.append(kwargs)
 
     return Listener()
 

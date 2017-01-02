@@ -86,8 +86,9 @@ class Property(object):
             return
         self.__storage[obj_id] = value
         self._on_change(obj, current, value)
-    def _on_change(self, obj, old, value):
-        obj.emit(self.name, obj, value, old=old, property=self)
+    def _on_change(self, obj, old, value, **kwargs):
+        kwargs['property'] = self
+        obj.emit(self.name, obj, value, old=old, **kwargs)
     def __repr__(self):
         return '<{}: {}>'.format(self.__class__, self)
     def __str__(self):
@@ -164,13 +165,11 @@ class Observable(object):
     def _emit_change(self, **kwargs):
         if not self._init_complete:
             return
-        if 'value' not in kwargs:
-            kwargs['value'] = self
         p = self.parent_observable
         if p is not None:
-            p._emit_change(**kwargs)
+            p._emit_change()
             return
-        self.property._on_change(self.obj, None, kwargs['value'])
+        self.property._on_change(self.obj, None, self, **kwargs)
 
 class ObservableList(list, Observable):
     """A ``list`` object that tracks changes to its contents
@@ -187,7 +186,7 @@ class ObservableList(list, Observable):
     def __setitem__(self, key, item):
         item = self._build_observable(item)
         super(ObservableList, self).__setitem__(key, item)
-        self._emit_change()
+        self._emit_change(keys=[key])
     def __delitem__(self, key):
         super(ObservableList, self).__delitem__(key)
         self._emit_change()
@@ -237,18 +236,22 @@ class ObservableDict(dict, Observable):
     def __setitem__(self, key, item):
         item = self._build_observable(item)
         super(ObservableDict, self).__setitem__(key, item)
-        self._emit_change()
+        self._emit_change(keys=[key])
     def __delitem__(self, key):
         super(ObservableDict, self).__delitem__(key)
         self._emit_change()
     def update(self, other):
         init = self._init_complete
         self._init_complete = False
+        keys = set(other.keys()) - set(self.keys())
         for key, val in other.items():
+            if key not in keys and self[key] == val:
+                continue
             self[key] = val
+            keys.add(key)
         if init:
             self._init_complete = True
-        self._emit_change()
+        self._emit_change(keys=list(keys))
     def clear(self):
         super(ObservableDict, self).clear()
         self._emit_change()
