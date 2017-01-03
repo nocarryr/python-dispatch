@@ -9,7 +9,7 @@ addons:
       - pandoc
 install:
   - pip install -U pip setuptools wheel
-  - pip install -U pytest pytest-cov coveralls
+  - pip install -U pytest pytest-cov coveralls pypandoc
   - pip install -e .
 script:
   - py.test --cov-config .coveragerc --cov=pydispatch

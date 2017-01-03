@@ -1,4 +1,30 @@
+import sys
 from setuptools import setup, find_packages
+
+def convert_readme():
+    try:
+        import pypandoc
+    except ImportError:
+        return read_rst()
+    rst = pypandoc.convert_file('README.md', 'rst')
+    with open('README.rst', 'w') as f:
+        f.write(rst)
+    return rst
+
+def read_rst():
+    try:
+        with open('README.rst', 'r') as f:
+            rst = f.read()
+    except IOError:
+        rst = None
+    return rst
+
+def get_long_description():
+    if {'sdist', 'bdist_wheel'} & set(sys.argv):
+        long_description = convert_readme()
+    else:
+        long_description = read_rst()
+    return long_description
 
 setup(
     name = "python-dispatch",
@@ -10,8 +36,8 @@ setup(
     license='MIT',
     packages=find_packages(exclude=['tests*']),
     include_package_data=True,
-    setup_requires=['setuptools-markdown'],
-    long_description_markdown_filename='README.md',
+    setup_requires=['pypandoc'],
+    long_description=get_long_description(),
     keywords='event properties dispatch',
     platforms=['any'],
     classifiers = [
