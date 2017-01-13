@@ -9,16 +9,21 @@ addons:
       - pandoc
 install:
   - pip install -U pip setuptools wheel
+  - pip install -r doc/requirements.txt
+  - pip install travis-sphinx
   - pip install -U pytest pytest-cov coveralls pypandoc
   - pip install -e .
 script:
+  - travis-sphinx --source=doc/source --nowarn
   - py.test --cov-config .coveragerc --cov=pydispatch
 after_success:
   - coveralls
+  - travis-sphinx deploy
 deploy:
   provider: pypi
   distributions: sdist bdist_wheel
   on:
+    python: "3.5"
     tags: true
   user: nocarryr
   password:
