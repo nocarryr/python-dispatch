@@ -273,9 +273,14 @@ def test_copy_on_change(listener):
     class A(Dispatcher):
         test_dict = DictProperty(copy_on_change=True)
         test_list = ListProperty(copy_on_change=True)
+        no_cp_dict = DictProperty()
+        no_cp_list = ListProperty()
 
     a = A()
-    a.bind(test_dict=listener.on_prop, test_list=listener.on_prop)
+    a.bind(
+        test_dict=listener.on_prop, test_list=listener.on_prop,
+        no_cp_dict=listener.on_prop, no_cp_list=listener.on_prop,
+    )
 
     a.test_dict['foo'] = 'bar'
     assert listener.property_event_kwargs[0]['old'] == {}
@@ -318,3 +323,40 @@ def test_copy_on_change(listener):
 
     a.test_list[1].append(1)
     assert listener.property_event_kwargs[5]['old'] == [{'foo':'bar'}, [0], 'c']
+
+    listener.property_event_kwargs = []
+
+    a.no_cp_dict['foo'] = 'bar'
+    assert listener.property_event_kwargs[0]['old'] == None
+
+    a.no_cp_dict['nested_dict'] = {}
+    assert listener.property_event_kwargs[1]['old'] == None
+
+    a.no_cp_dict['nested_dict']['a'] = 1
+    assert listener.property_event_kwargs[2]['old'] == None
+
+    a.no_cp_dict['nested_list'] = []
+    assert listener.property_event_kwargs[3]['old'] == None
+
+    a.no_cp_dict['nested_list'].append(1)
+    assert listener.property_event_kwargs[4]['old'] == None
+
+    listener.property_event_kwargs = []
+
+    a.no_cp_list.append('a')
+    assert listener.property_event_kwargs[0]['old'] == None
+
+    a.no_cp_list.extend(['b', 'c'])
+    assert listener.property_event_kwargs[1]['old'] == None
+
+    a.no_cp_list[0] = {}
+    assert listener.property_event_kwargs[2]['old'] == None
+
+    a.no_cp_list[0]['foo'] = 'bar'
+    assert listener.property_event_kwargs[3]['old'] == None
+
+    a.no_cp_list[1] = []
+    assert listener.property_event_kwargs[4]['old'] == None
+
+    a.no_cp_list[1].append(1)
+    assert listener.property_event_kwargs[5]['old'] == None
