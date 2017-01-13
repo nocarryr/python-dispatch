@@ -119,12 +119,22 @@ class Property(object):
 class ListProperty(Property):
     """Property with a ``list`` type value
 
+    Args:
+        default (Optional): If supplied, this will be the default value of the
+            Property for all instances of the class. Otherwise ``None``
+        copy_on_change (bool, optional): If ``True``, the ``list`` will be copied
+            when contents are modified. This can be useful for observing the
+            original state of the ``list`` from within callbacks. The copied
+            (original) state will be available from the keyword argument 'old'.
+            The default if ``False`` (for performance and memory reasons).
+
     Changes to the contents of the list are able to be observed through
     :class:`ObservableList`.
     """
-    def __init__(self, default=None):
+    def __init__(self, default=None, copy_on_change=False):
         if default is None:
             default = []
+        self.copy_on_change = copy_on_change
         super(ListProperty, self).__init__(default)
     def _add_instance(self, obj):
         default = self.default[:]
@@ -145,12 +155,22 @@ class ListProperty(Property):
 class DictProperty(Property):
     """Property with a ``dict`` type value
 
+    Args:
+        default (Optional): If supplied, this will be the default value of the
+            Property for all instances of the class. Otherwise ``None``
+        copy_on_change (bool, optional): If ``True``, the ``dict`` will be copied
+            when contents are modified. This can be useful for observing the
+            original state of the ``dict`` from within callbacks. The copied
+            (original) state will be available from the keyword argument 'old'.
+            The default if ``False`` (for performance and memory reasons).
+
     Changes to the contents of the dict are able to be observed through
     :class:`ObservableDict`.
     """
-    def __init__(self, default=None):
+    def __init__(self, default=None, copy_on_change=False):
         if default is None:
             default = {}
+        self.copy_on_change = copy_on_change
         super(DictProperty, self).__init__(default)
     def _add_instance(self, obj):
         default = self.default.copy()
@@ -184,14 +204,32 @@ class Observable(object):
         elif isinstance(item, dict):
             item = ObservableDict(item, parent=self)
         return item
+    def _get_copy_or_none(self):
+        p = self.parent_observable
+        if p is not None:
+            return p._get_copy_or_none()
+        if not self.copy_on_change:
+            return None
+        return self._deepcopy()
+    def _deepcopy(self):
+        o = self.copy()
+        if isinstance(self, list):
+            item_iter = enumerate(self)
+        elif isinstance(self, dict):
+            item_iter = self.items()
+        for key, item in item_iter:
+            if isinstance(item, Observable):
+                o[key] = item._deepcopy()
+        return o
     def _emit_change(self, **kwargs):
         if not self._init_complete:
             return
+        old = kwargs.pop('old')
         p = self.parent_observable
         if p is not None:
-            p._emit_change()
+            p._emit_change(old=old)
             return
-        self.property._on_change(self.obj, None, self, **kwargs)
+        self.property._on_change(self.obj, old, self, **kwargs)
 
 class ObservableList(list, Observable):
     """A ``list`` object that tracks changes to its contents
@@ -202,46 +240,61 @@ class ObservableList(list, Observable):
         self.property = kwargs.get('property')
         self.obj = kwargs.get('obj')
         self.parent_observable = kwargs.get('parent')
+        if self.property is not None:
+            self.copy_on_change = self.property.copy_on_change
+        else:
+            self.copy_on_change = False
         if initlist is not None:
             self.extend(initlist)
         self._init_complete = True
     def __setitem__(self, key, item):
+        old = self._get_copy_or_none()
         item = self._build_observable(item)
         super(ObservableList, self).__setitem__(key, item)
-        self._emit_change(keys=[key])
+        self._emit_change(keys=[key], old=old)
     def __delitem__(self, key):
+        old = self._get_copy_or_none()
         super(ObservableList, self).__delitem__(key)
-        self._emit_change()
+        self._emit_change(old=old)
     if PY2:
         def __setslice__(self, *args):
+            old = self._get_copy_or_none()
             super(ObservableList, self).__setslice__(*args)
-            self._emit_change()
+            self._emit_change(old=old)
         def __delslice__(self, *args):
+            old = self._get_copy_or_none()
             super(ObservableList, self).__delslice__(*args)
-            self._emit_change()
+            self._emit_change(old=old)
     if hasattr(list, 'clear'):
         def clear(self):
+            old = self._get_copy_or_none()
             super(ObservableList, self).clear()
-            self._emit_change()
+            self._emit_change(old=old)
+    if not hasattr(list, 'copy'):
+        def copy(self):
+            return self[:]
     def __iadd__(self, other):
         other = self._build_observable(other)
         self.extend(other)
         return self
     def append(self, item):
+        old = self._get_copy_or_none()
         item = self._build_observable(item)
         super(ObservableList, self).append(item)
-        self._emit_change()
+        self._emit_change(old=old)
     def extend(self, other):
+        old = self._get_copy_or_none()
         init = self._init_complete
         self._init_complete = False
         for item in other:
             self.append(item)
         if init:
             self._init_complete = True
-        self._emit_change()
+        self._emit_change(old=old)
     def remove(self, *args):
+        old = self._get_copy_or_none()
         super(ObservableList, self).remove(*args)
-        self._emit_change()
+        self._emit_change(old=old)
 
 class ObservableDict(dict, Observable):
     """A ``dict`` object that tracks changes to its contents
@@ -252,17 +305,24 @@ class ObservableDict(dict, Observable):
         self.property = kwargs.get('property')
         self.obj = kwargs.get('obj')
         self.parent_observable = kwargs.get('parent')
+        if self.property is not None:
+            self.copy_on_change = self.property.copy_on_change
+        else:
+            self.copy_on_change = False
         if initdict is not None:
             self.update(initdict)
         self._init_complete = True
     def __setitem__(self, key, item):
+        old = self._get_copy_or_none()
         item = self._build_observable(item)
         super(ObservableDict, self).__setitem__(key, item)
-        self._emit_change(keys=[key])
+        self._emit_change(keys=[key], old=old)
     def __delitem__(self, key):
+        old = self._get_copy_or_none()
         super(ObservableDict, self).__delitem__(key)
-        self._emit_change()
+        self._emit_change(old=old)
     def update(self, other):
+        old = self._get_copy_or_none()
         init = self._init_complete
         self._init_complete = False
         keys = set(other.keys()) - set(self.keys())
@@ -273,13 +333,16 @@ class ObservableDict(dict, Observable):
             keys.add(key)
         if init:
             self._init_complete = True
-        self._emit_change(keys=list(keys))
+        self._emit_change(keys=list(keys), old=old)
     def clear(self):
+        old = self._get_copy_or_none()
         super(ObservableDict, self).clear()
-        self._emit_change()
+        self._emit_change(old=old)
     def pop(self, *args):
+        old = self._get_copy_or_none()
         super(ObservableDict, self).pop(*args)
-        self._emit_change()
+        self._emit_change(old=old)
     def setdefault(self, *args):
+        old = self._get_copy_or_none()
         super(ObservableDict, self).setdefault(*args)
-        self._emit_change()
+        self._emit_change(old=old)
