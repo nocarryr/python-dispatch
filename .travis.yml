@@ -2,11 +2,11 @@ language: python
 matrix:
     include:
     - python: "2.7"
-        env: ALLOW_DEPLOY=false
+      env: ALLOW_DEPLOY=false
     - python: "3.4"
-        env: ALLOW_DEPLOY=false
+      env: ALLOW_DEPLOY=false
     - python: "3.5"
-        env: ALLOW_DEPLOY=true
+      env: ALLOW_DEPLOY=true
 addons:
   apt:
     packages:
