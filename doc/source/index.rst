@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to python-dispatch's documentation!
+Python Dispatch
 ===========================================
 
 Contents:
@@ -14,6 +14,14 @@ Contents:
    overview
    api
 
+Links
+=====
+
+Source Code
+    https://github.com/nocarryr/python-dispatch
+
+Download
+    https://pypi.python.org/pypi/python-dispatch
 
 
 Indices and tables
