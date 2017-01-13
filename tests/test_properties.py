@@ -265,3 +265,56 @@ def test_self_binding():
     a.test_list.append('baz')
 
     assert a.received == ['test_prop', 'test_dict', 'test_list']
+
+def test_copy_on_change(listener):
+    from pydispatch import Dispatcher
+    from pydispatch.properties import ListProperty, DictProperty
+
+    class A(Dispatcher):
+        test_dict = DictProperty(copy_on_change=True)
+        test_list = ListProperty(copy_on_change=True)
+
+    a = A()
+    a.bind(test_dict=listener.on_prop, test_list=listener.on_prop)
+
+    a.test_dict['foo'] = 'bar'
+    assert listener.property_event_kwargs[0]['old'] == {}
+
+    a.test_dict['foo'] = None
+    assert listener.property_event_kwargs[1]['old'] == {'foo':'bar'}
+
+    a.test_dict['nested_dict'] = {'a':1}
+    assert listener.property_event_kwargs[2]['old'] == {'foo':None}
+
+    a.test_dict['nested_dict']['b'] = 2
+    assert listener.property_event_kwargs[3]['old'] == {'foo':None, 'nested_dict':{'a':1}}
+
+    a.test_dict['nested_list'] = ['a', 'b']
+    assert listener.property_event_kwargs[4]['old'] == {
+        'foo':None, 'nested_dict':{'a':1, 'b':2}
+    }
+
+    a.test_dict['nested_list'].append('c')
+    assert listener.property_event_kwargs[5]['old'] == {
+        'foo':None, 'nested_dict':{'a':1, 'b':2}, 'nested_list':['a', 'b']
+    }
+
+    listener.property_event_kwargs = []
+
+    a.test_list.append('a')
+    assert listener.property_event_kwargs[0]['old'] == []
+
+    a.test_list.extend(['b', 'c'])
+    assert listener.property_event_kwargs[1]['old'] == ['a']
+
+    a.test_list[0] = {}
+    assert listener.property_event_kwargs[2]['old'] == ['a', 'b', 'c']
+
+    a.test_list[0]['foo'] = 'bar'
+    assert listener.property_event_kwargs[3]['old'] == [{}, 'b', 'c']
+
+    a.test_list[1] = [0]
+    assert listener.property_event_kwargs[4]['old'] == [{'foo':'bar'}, 'b', 'c']
+
+    a.test_list[1].append(1)
+    assert listener.property_event_kwargs[5]['old'] == [{'foo':'bar'}, [0], 'c']
