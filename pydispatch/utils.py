@@ -69,3 +69,27 @@ class InformativeWVDict(weakref.WeakValueDictionary):
         self.data.del_callback = self._data_del_callback
     def _data_del_callback(self, key):
         self.del_callback(key)
+
+class EmissionHoldLock(object):
+    def __init__(self, event_instance):
+        self.event_instance = event_instance
+        self.last_event = None
+        self.held = False
+    def acquire(self):
+        if self.held:
+            return
+        self.held = True
+        self.last_event = None
+    def release(self):
+        if not self.held:
+            return
+        if self.last_event is not None:
+            args, kwargs = self.last_event
+            self.last_event = None
+            self.held = False
+            self.event_instance(*args, **kwargs)
+    def __enter__(self):
+        self.acquire()
+        return self
+    def __exit__(self, *args):
+        self.release()

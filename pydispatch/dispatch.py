@@ -1,6 +1,6 @@
 import types
 
-from pydispatch.utils import WeakMethodContainer
+from pydispatch.utils import WeakMethodContainer, EmissionHoldLock
 from pydispatch.properties import Property
 
 
@@ -9,10 +9,11 @@ class Event(object):
 
     This is used internally by :class:`Dispatcher`.
     """
-    __slots__ = ('name', 'listeners')
+    __slots__ = ('name', 'listeners', 'emission_lock')
     def __init__(self, name):
         self.name = name
         self.listeners = WeakMethodContainer()
+        self.emission_lock = EmissionHoldLock(self)
     def add_listener(self, callback):
         self.listeners.add_method(callback)
     def remove_listener(self, obj):
@@ -25,6 +26,9 @@ class Event(object):
 
         Called by :meth:`~Dispatcher.emit`
         """
+        if self.emission_lock.held:
+            self.emission_lock.last_event = (args, kwargs)
+            return
         for m in self.listeners.iter_methods():
             r = m(*args, **kwargs)
             if r is False:
@@ -154,3 +158,40 @@ class Dispatcher(object):
         if e is None:
             e = self.__events[name]
         return e(*args, **kwargs)
+    def emission_lock(self, name):
+        """Holds emission of events and dispatches the last event on release
+
+        The context manager returned will store the last event data called by
+        :meth:`emit` and prevent callbacks until it exits. On exit, it will
+        dispatch the last event captured (if any)::
+
+            class Foo(Dispatcher):
+                _events_ = ['my_event']
+
+            def on_my_event(value):
+                print(value)
+
+            foo = Foo()
+            foo.bind(my_event=on_my_event)
+
+            with foo.emission_lock('my_event'):
+                foo.emit('my_event', 1)
+                foo.emit('my_event', 2)
+
+            >>> 2
+
+        Args:
+            name (str): The name of the :class:`Event` or :class:`Property`
+
+        Returns:
+            A context manager to be used by the ``with`` statement
+
+        Note:
+            The context manager is re-entrant, meaning that multiple calls to
+            this method within nested context scopes are possible.
+
+        """
+        e = self.__property_events.get(name)
+        if e is None:
+            e = self.__events[name]
+        return e.emission_lock

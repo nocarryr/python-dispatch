@@ -146,3 +146,31 @@ def test_function_listener():
     assert len(props) == 1
 
     sender.unbind(on_event, on_prop)
+
+def test_emission_lock(listener, sender):
+    sender.register_event('on_test')
+    sender.bind(on_test=listener.on_event)
+
+    letters = 'abcdefghijkl'
+
+    sender.emit('on_test', letters[0], emit_count=0)
+    assert len(listener.received_event_data) == 1
+    listener.received_event_data = []
+
+    with sender.emission_lock('on_test'):
+        for i in range(len(letters)):
+            sender.emit('on_test', letters[i], emit_count=i)
+
+    assert len(listener.received_event_data) == 1
+    e = listener.received_event_data[0]
+    assert e['args'] == (letters[i], )
+    assert e['kwargs']['emit_count'] == i
+
+    listener.received_event_data = []
+
+    with sender.emission_lock('on_test'):
+        sender.emit('on_test', 'outer')
+        with sender.emission_lock('on_test'):
+            sender.emit('on_test', 'inner')
+    assert len(listener.received_event_data) == 1
+    assert listener.received_event_data[0]['args'] == ('inner', )

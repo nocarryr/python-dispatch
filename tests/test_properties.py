@@ -266,6 +266,84 @@ def test_self_binding():
 
     assert a.received == ['test_prop', 'test_dict', 'test_list']
 
+def test_emission_lock(listener):
+    from pydispatch import Dispatcher, Property
+    from pydispatch.properties import ListProperty, DictProperty
+
+    class A(Dispatcher):
+        test_prop = Property()
+        test_dict = DictProperty()
+        test_list = ListProperty()
+
+    a = A()
+    a.bind(test_prop=listener.on_prop, test_list=listener.on_prop, test_dict=listener.on_prop)
+
+    letters = 'abcdefghijkl'
+
+    a.test_prop = 'foo'
+    a.test_list = [-1] * 4
+    a.test_dict = {'a':0, 'b':1, 'c':2, 'd':3}
+
+    assert len(listener.property_events) == 3
+    listener.property_events = []
+    listener.property_event_kwargs = []
+
+    with a.emission_lock('test_prop'):
+        for i in range(4):
+            a.test_prop = i
+    assert len(listener.property_events) == 1
+    assert listener.property_event_kwargs[0]['property'].name == 'test_prop'
+    assert listener.property_events[0] == i
+
+    listener.property_events = []
+    listener.property_event_kwargs = []
+
+    with a.emission_lock('test_list'):
+        a.test_prop = 'foo'
+        for i in range(4):
+            a.test_list = [i] * 4
+    assert len(listener.property_events) == 2
+    assert listener.property_event_kwargs[0]['property'].name == 'test_prop'
+    assert listener.property_events[0] == 'foo'
+    assert listener.property_event_kwargs[1]['property'].name == 'test_list'
+    assert listener.property_events[1] == [i] * 4
+
+    listener.property_events = []
+    listener.property_event_kwargs = []
+
+    with a.emission_lock('test_dict'):
+        a.test_prop = 'bar'
+        a.test_list[0] = 'a'
+        for i in range(4):
+            for key in a.test_dict.keys():
+                a.test_dict[key] = i
+    assert len(listener.property_events) == 3
+    assert listener.property_event_kwargs[0]['property'].name == 'test_prop'
+    assert listener.property_events[0] == 'bar'
+    assert listener.property_event_kwargs[1]['property'].name == 'test_list'
+    assert listener.property_events[1][0] == 'a'
+    assert listener.property_event_kwargs[2]['property'].name == 'test_dict'
+    assert listener.property_events[2] == {k:i for k in a.test_dict.keys()}
+
+    listener.property_events = []
+    listener.property_event_kwargs = []
+
+    with a.emission_lock('test_prop'):
+        with a.emission_lock('test_list'):
+            with a.emission_lock('test_dict'):
+                for i in range(4):
+                    a.test_prop = i
+                    a.test_list[0] = i
+                    a.test_dict[i] = 'foo'
+    assert len(listener.property_events) == 3
+    assert listener.property_event_kwargs[0]['property'].name == 'test_dict'
+    for k in range(4):
+        assert listener.property_events[0][k] == 'foo'
+    assert listener.property_event_kwargs[1]['property'].name == 'test_list'
+    assert listener.property_events[1][0] == i
+    assert listener.property_event_kwargs[2]['property'].name == 'test_prop'
+    assert listener.property_events[2] == i
+
 def test_copy_on_change(listener):
     from pydispatch import Dispatcher
     from pydispatch.properties import ListProperty, DictProperty
