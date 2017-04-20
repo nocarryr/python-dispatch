@@ -11,7 +11,7 @@ PY2 = sys.version_info.major == 2
 if not PY2:
     basestring = str
 
-AIO_AVAILABLE = sys.version_info >= (3, 4)
+AIO_AVAILABLE = sys.version_info >= (3, 5)
 
 def get_method_vars(m):
     if PY2:

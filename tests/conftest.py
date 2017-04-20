@@ -1,7 +1,7 @@
 import sys
 import pytest
 
-AIO_AVAILABLE = sys.version_info >= (3, 4)
+AIO_AVAILABLE = sys.version_info >= (3, 5)
 
 collect_ignore = []
 if not AIO_AVAILABLE:
