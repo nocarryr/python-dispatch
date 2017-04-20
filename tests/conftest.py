@@ -1,5 +1,11 @@
+import sys
 import pytest
 
+AIO_AVAILABLE = sys.version_info >= (3, 4)
+
+collect_ignore = []
+if not AIO_AVAILABLE:
+    collect_ignore.append('test_aio_lock.py')
 
 @pytest.fixture
 def listener():
@@ -9,6 +15,7 @@ def listener():
             self.received_event_data = []
             self.property_events = []
             self.property_event_kwargs = []
+            self.property_event_map = {}
         def on_event(self, *args, **kwargs):
             self.received_event_data.append({'args':args, 'kwargs':kwargs})
             name = kwargs.get('triggered_event')
@@ -17,6 +24,10 @@ def listener():
         def on_prop(self, obj, value, **kwargs):
             self.property_events.append(value)
             self.property_event_kwargs.append(kwargs)
+            prop = kwargs['property']
+            if prop.name not in self.property_event_map:
+                self.property_event_map[prop.name] = []
+            self.property_event_map[prop.name].append({'value':value, 'kwargs':kwargs})
 
     return Listener()
 
