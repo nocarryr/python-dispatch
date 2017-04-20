@@ -1,11 +1,6 @@
 import sys
 import weakref
 import types
-import textwrap
-try:
-    import asyncio
-except ImportError:
-    asyncio = None
 
 PY2 = sys.version_info.major == 2
 if not PY2:
@@ -77,17 +72,11 @@ class InformativeWVDict(weakref.WeakValueDictionary):
     def _data_del_callback(self, key):
         self.del_callback(key)
 
-class EmissionHoldLock(object):
+class EmissionHoldLock_(object):
     def __init__(self, event_instance):
         self.event_instance = event_instance
         self.last_event = None
         self.held = False
-    @property
-    def aio_lock(self):
-        l = getattr(self, '_aio_lock', None)
-        if l is None:
-            l = self._aio_lock = asyncio.Lock()
-        return l
     def acquire(self):
         if self.held:
             return
@@ -101,18 +90,15 @@ class EmissionHoldLock(object):
             self.last_event = None
             self.held = False
             self.event_instance(*args, **kwargs)
-    if AIO_AVAILABLE:
-        exec(textwrap.dedent('''
-            async def __aenter__(self):
-                await self.aio_lock.acquire()
-                self.acquire()
-                return self
-            async def __aexit__(self, *args):
-                self.aio_lock.release()
-                self.release()
-        '''))
     def __enter__(self):
         self.acquire()
         return self
     def __exit__(self, *args):
         self.release()
+
+if AIO_AVAILABLE:
+    from pydispatch.aioutils import AioEmissionHoldLock
+    class EmissionHoldLock(EmissionHoldLock_, AioEmissionHoldLock):
+        pass
+else:
+    EmissionHoldLock = EmissionHoldLock_
