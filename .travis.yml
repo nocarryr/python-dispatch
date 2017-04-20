@@ -14,7 +14,7 @@ addons:
 install:
   - pip install -U pip setuptools wheel
   - sh -c "if [ '$ALLOW_DEPLOY' = 'true' ]; then pip install -r doc/requirements.txt & pip install travis-sphinx; fi"
-  - pip install -U pytest pytest-cov coveralls pypandoc
+  - pip install -U pytest pytest-asyncio pytest-cov coveralls pypandoc
   - pip install -e .
 script:
   - sh -c "if [ '$ALLOW_DEPLOY' = 'true' ]; then travis-sphinx --source=doc/source --nowarn build; fi"
