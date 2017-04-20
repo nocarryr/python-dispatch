@@ -103,13 +103,11 @@ class EmissionHoldLock(object):
             self.event_instance(*args, **kwargs)
     if AIO_AVAILABLE:
         exec(textwrap.dedent('''
-            @asyncio.coroutine
-            def __aenter__(self):
-                yield from self.aio_lock.acquire()
+            async def __aenter__(self):
+                await self.aio_lock.acquire()
                 self.acquire()
                 return self
-            @asyncio.coroutine
-            def __aexit__(self, *args):
+            async def __aexit__(self, *args):
                 self.aio_lock.release()
                 self.release()
         '''))
