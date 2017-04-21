@@ -6,6 +6,8 @@ PY2 = sys.version_info.major == 2
 if not PY2:
     basestring = str
 
+AIO_AVAILABLE = sys.version_info >= (3, 5)
+
 def get_method_vars(m):
     if PY2:
         f = m.im_func
@@ -70,7 +72,7 @@ class InformativeWVDict(weakref.WeakValueDictionary):
     def _data_del_callback(self, key):
         self.del_callback(key)
 
-class EmissionHoldLock(object):
+class EmissionHoldLock_(object):
     def __init__(self, event_instance):
         self.event_instance = event_instance
         self.last_event = None
@@ -93,3 +95,10 @@ class EmissionHoldLock(object):
         return self
     def __exit__(self, *args):
         self.release()
+
+if AIO_AVAILABLE:
+    from pydispatch.aioutils import AioEmissionHoldLock
+    class EmissionHoldLock(EmissionHoldLock_, AioEmissionHoldLock):
+        pass
+else:
+    EmissionHoldLock = EmissionHoldLock_
