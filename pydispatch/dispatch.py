@@ -184,12 +184,16 @@ class Dispatcher(object):
             name (str): The name of the :class:`Event` or :class:`Property`
 
         Returns:
-            A context manager to be used by the ``with`` statement
+            A context manager to be used by the ``with`` statement.
+
+            If available, this will also be an async context manager to be used
+            with the ``async with`` statement (see `PEP 492`_).
 
         Note:
             The context manager is re-entrant, meaning that multiple calls to
             this method within nested context scopes are possible.
 
+        .. _PEP 492: https://www.python.org/dev/peps/pep-0492/#asynchronous-context-managers-and-async-with
         """
         e = self.__property_events.get(name)
         if e is None:
