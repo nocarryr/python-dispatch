@@ -52,6 +52,8 @@ class Dispatcher(object):
 
     Once defined, an event can be dispatched to listeners by calling :meth:`emit`.
     """
+    __initialized_subclasses = set()
+    __skip_initialized = True
     def __new__(cls, *args, **kwargs):
         def iter_bases(_cls):
             if _cls is object:
@@ -60,18 +62,22 @@ class Dispatcher(object):
             for b in _cls.__bases__:
                 for _cls_ in iter_bases(b):
                     yield _cls_
-        props = {}
-        events = set()
-        for _cls in iter_bases(cls):
-            for attr in dir(_cls):
-                prop = getattr(_cls, attr)
-                if attr not in props and isinstance(prop, Property):
-                    props[attr] = prop
-                    prop.name = attr
-                _events = getattr(_cls, '_events_', [])
-                events |= set(_events)
-        cls._PROPERTIES_ = props
-        cls._EVENTS_ = events
+        skip_initialized = Dispatcher._Dispatcher__skip_initialized
+        if not skip_initialized or cls not in Dispatcher._Dispatcher__initialized_subclasses:
+            props = {}
+            events = set()
+            for _cls in iter_bases(cls):
+                for attr in dir(_cls):
+                    prop = getattr(_cls, attr)
+                    if attr not in props and isinstance(prop, Property):
+                        props[attr] = prop
+                        prop.name = attr
+                    _events = getattr(_cls, '_events_', [])
+                    events |= set(_events)
+            cls._PROPERTIES_ = props
+            cls._EVENTS_ = events
+            if skip_initialized:
+                Dispatcher._Dispatcher__initialized_subclasses.add(cls)
         obj = super(Dispatcher, cls).__new__(cls)
         obj._Dispatcher__init_events()
         return obj
