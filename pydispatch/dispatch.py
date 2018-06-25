@@ -1,7 +1,13 @@
 import types
 
-from pydispatch.utils import WeakMethodContainer, EmissionHoldLock
+from pydispatch.utils import (
+    WeakMethodContainer,
+    EmissionHoldLock,
+    AIO_AVAILABLE,
+)
 from pydispatch.properties import Property
+if AIO_AVAILABLE:
+    from pydispatch.aioutils import AioWeakMethodContainer
 
 
 class Event(object):
@@ -9,13 +15,17 @@ class Event(object):
 
     This is used internally by :class:`Dispatcher`.
     """
-    __slots__ = ('name', 'listeners', 'emission_lock')
+    __slots__ = ('name', 'listeners', 'aio_listeners', 'emission_lock')
     def __init__(self, name):
         self.name = name
         self.listeners = WeakMethodContainer()
+        if AIO_AVAILABLE:
+            self.aio_listeners = AioWeakMethodContainer()
         self.emission_lock = EmissionHoldLock(self)
     def add_listener(self, callback):
         self.listeners.add_method(callback)
+    def add_async_listener(self, loop, callback):
+        self.aio_listeners.add_method(loop, callback)
     def remove_listener(self, obj):
         if isinstance(obj, (types.MethodType, types.FunctionType)):
             self.listeners.del_method(obj)
@@ -29,6 +39,8 @@ class Event(object):
         if self.emission_lock.held:
             self.emission_lock.last_event = (args, kwargs)
             return
+        if AIO_AVAILABLE:
+            self.aio_listeners(*args, **kwargs)
         for m in self.listeners.iter_methods():
             r = m(*args, **kwargs)
             if r is False:
@@ -148,6 +160,31 @@ class Dispatcher(object):
                 prop.remove_listener(arg)
             for e in events:
                 e.remove_listener(arg)
+    def bind_async(self, loop, **kwargs):
+        """Subscribes to events with async callbacks
+
+        Functionality is matches the :meth:`bind` method, except the provided
+        callbacks should be coroutine functions. When the event is dispatched,
+        callbacks will be placed on the given event loop.
+
+        For keyword arguments, see :meth:`bind`.
+
+        Args:
+            loop: The :class:`EventLoop <asyncio.BaseEventLoop>` to use when
+                events are dispatched
+
+        Availability:
+            Python>=3.5
+
+        """
+        props = self.__property_events
+        events = self.__events
+        for name, cb in kwargs.items():
+            if name in props:
+                e = props[name]
+            else:
+                e = events[name]
+            e.add_async_listener(loop, cb)
     def emit(self, name, *args, **kwargs):
         """Dispatches an event to any subscribed listeners
 

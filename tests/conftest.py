@@ -6,6 +6,7 @@ AIO_AVAILABLE = sys.version_info >= (3, 5)
 collect_ignore = []
 if not AIO_AVAILABLE:
     collect_ignore.append('test_aio_lock.py')
+    collect_ignore.append('test_aio_listeners.py')
 
 @pytest.fixture
 def listener():
