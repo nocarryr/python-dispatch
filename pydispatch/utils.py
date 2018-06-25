@@ -1,5 +1,11 @@
 import sys
 import weakref
+from _weakref import ref
+try:
+    from _weakref import _remove_dead_weakref
+except ImportError:
+    def _remove_dead_weakref(o, key):
+        del o[key]
 import types
 
 PY2 = sys.version_info.major == 2
@@ -67,6 +73,17 @@ class InformativeWVDict(weakref.WeakValueDictionary):
     def __init__(self, **kwargs):
         self.del_callback = kwargs.get('del_callback')
         weakref.WeakValueDictionary.__init__(self)
+        def remove(wr, selfref=ref(self)):
+            self = selfref()
+            if self is not None:
+                if self._iterating:
+                    self._pending_removals.append(wr.key)
+                else:
+                    # Atomic removal is necessary since this function
+                    # can be called asynchronously by the GC
+                    _remove_dead_weakref(self.data, wr.key)
+                    self._data_del_callback(wr.key)
+        self._remove = remove
         self.data = InformativeDict()
         self.data.del_callback = self._data_del_callback
     def _data_del_callback(self, key):
