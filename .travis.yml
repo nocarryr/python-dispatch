@@ -24,7 +24,7 @@ install:
   - sh -c "if [ '$AIO_AVAILABLE' = 'true' ]; then pip install -U pytest-asyncio; fi"
   - pip install -e .
 script:
-  - sh -c "if [ '$ALLOW_DEPLOY' = 'true' ]; then travis-sphinx --source=doc/source --nowarn build; fi"
+  - sh -c "if [ '$ALLOW_DEPLOY' = 'true' ]; then travis-sphinx build --source=doc/source --nowarn; fi"
   - py.test --cov-config .coveragerc --cov=pydispatch
 after_success:
   - coveralls
