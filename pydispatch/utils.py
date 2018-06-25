@@ -1,6 +1,11 @@
 import sys
 import weakref
-from _weakref import ref, _remove_dead_weakref
+from _weakref import ref
+try:
+    from _weakref import _remove_dead_weakref
+except ImportError:
+    def _remove_dead_weakref(o, key):
+        del o[key]
 import types
 
 PY2 = sys.version_info.major == 2
