@@ -75,7 +75,8 @@ class Property(object):
     def _del_instance(self, obj):
         del self.__storage[id(obj)]
     def _on_weakref_fin(self, obj_id):
-        del self.__storage[obj_id]
+        if obj_id in self.__storage:
+            del self.__storage[obj_id]
     def __get__(self, obj, objcls=None):
         if obj is None:
             return self
