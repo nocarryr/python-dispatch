@@ -1,6 +1,11 @@
 import asyncio
+from _weakref import ref
 
-from pydispatch.utils import WeakMethodContainer, get_method_vars
+from pydispatch.utils import (
+    WeakMethodContainer,
+    get_method_vars,
+    _remove_dead_weakref,
+)
 
 class AioEmissionHoldLock(object):
     @property
@@ -20,6 +25,17 @@ class AioEmissionHoldLock(object):
 class AioWeakMethodContainer(WeakMethodContainer):
     def __init__(self):
         super().__init__()
+        def remove(wr, selfref=ref(self)):
+            self = selfref()
+            if self is not None:
+                if self._iterating:
+                    self._pending_removals.append(wr.key)
+                else:
+                    # Atomic removal is necessary since this function
+                    # can be called asynchronously by the GC
+                    _remove_dead_weakref(self.data, wr.key)
+                    self._on_weakref_fin(wr.key)
+        self._remove = remove
         self.event_loop_map = {}
     def add_method(self, loop, callback):
         f, obj = get_method_vars(callback)
@@ -32,6 +48,9 @@ class AioWeakMethodContainer(WeakMethodContainer):
             loop = self.event_loop_map[wrkey]
             m = getattr(obj, f.__name__)
             yield loop, m
+    def _on_weakref_fin(self, key):
+        if key in self.event_loop_map:
+            del self.event_loop_map[key]
     def __call__(self, *args, **kwargs):
         for loop, m in self.iter_methods():
             asyncio.run_coroutine_threadsafe(m(*args, **kwargs), loop=loop)
