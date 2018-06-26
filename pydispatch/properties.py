@@ -1,8 +1,7 @@
-"""Properties
-
+"""
 :class:`Property` objects can be defined on subclasses of
-:class:`~pydispatch.Dispatcher` to create instance attributes that act as events
-when their values change::
+:class:`~pydispatch.dispatch.Dispatcher` to create instance attributes that act
+as events when their values change::
 
     from pydispatch import Dispatcher, Property
 
@@ -47,11 +46,12 @@ class Property(object):
 
     Args:
         default (Optional): If supplied, this will be the default value of the
-            Property for all instances of the class. Otherwise ``None``
+            Property for all instances of the class. Otherwise :obj:`None`
 
     Attributes:
         name (str): The name of the Property as defined in the class definition.
-            This will match the attribute name for the :class:`Dispatcher` instance.
+            This will match the attribute name for the
+            :class:`~pydispatch.dispatch.Dispatcher` instance.
 
     """
     def __init__(self, default=None):
@@ -97,7 +97,7 @@ class Property(object):
         """Called internally to emit changes from the instance object
 
         The keyword arguments here will be passed to callbacks through the
-        instance object's :meth:`~Dispatcher.emit` method.
+        instance object's :meth:`~pydispatch.dispatch.Dispatcher.emit` method.
 
         Keyword Args:
             property: The :class:`Property` instance. This is useful if multiple
@@ -118,16 +118,16 @@ class Property(object):
         return self.name
 
 class ListProperty(Property):
-    """Property with a ``list`` type value
+    """Property with a :class:`list` type value
 
     Args:
         default (Optional): If supplied, this will be the default value of the
-            Property for all instances of the class. Otherwise ``None``
-        copy_on_change (bool, optional): If ``True``, the ``list`` will be copied
+            Property for all instances of the class. Otherwise :obj:`None`
+        copy_on_change (bool, optional): If :obj:`True`, the list will be copied
             when contents are modified. This can be useful for observing the
-            original state of the ``list`` from within callbacks. The copied
+            original state of the list from within callbacks. The copied
             (original) state will be available from the keyword argument 'old'.
-            The default if ``False`` (for performance and memory reasons).
+            The default is :obj:`False` (for performance and memory reasons).
 
     Changes to the contents of the list are able to be observed through
     :class:`ObservableList`.
@@ -154,16 +154,16 @@ class ListProperty(Property):
         return value
 
 class DictProperty(Property):
-    """Property with a ``dict`` type value
+    """Property with a :class:`dict` type value
 
     Args:
         default (Optional): If supplied, this will be the default value of the
-            Property for all instances of the class. Otherwise ``None``
-        copy_on_change (bool, optional): If ``True``, the ``dict`` will be copied
+            Property for all instances of the class. Otherwise :obj:`None`
+        copy_on_change (bool, optional): If :obj:`True`, the dict will be copied
             when contents are modified. This can be useful for observing the
-            original state of the ``dict`` from within callbacks. The copied
+            original state of the dict from within callbacks. The copied
             (original) state will be available from the keyword argument 'old'.
-            The default if ``False`` (for performance and memory reasons).
+            The default is :obj:`False` (for performance and memory reasons).
 
     Changes to the contents of the dict are able to be observed through
     :class:`ObservableDict`.
@@ -190,12 +190,13 @@ class DictProperty(Property):
         return value
 
 class Observable(object):
-    """Used by container subclasses to emit changes and build other observables
+    """Mixin used by :class:`ObservableList` and :class:`ObservableDict`
+    to emit changes and build other observables
 
     When an item is added to an observable container (a subclass of Observable)
     it is type-checked and, if possible replaced by an observable version of it.
 
-    In other words, if a ``dict`` is added to a :class:`ObservableDict`, it is
+    In other words, if a dict is added to a :class:`ObservableDict`, it is
     copied and replaced by another :class:`ObservableDict`. This allows nested
     containers to be observed and their changes to be tracked.
     """
@@ -233,7 +234,10 @@ class Observable(object):
         self.property._on_change(self.obj, old, self, **kwargs)
 
 class ObservableList(list, Observable):
-    """A ``list`` object that tracks changes to its contents
+    """A :class:`list` subclass that tracks changes to its contents
+
+    Note:
+        This class is for internal use and not intended to be used directly
     """
     def __init__(self, initlist=None, **kwargs):
         self._init_complete = False
@@ -298,7 +302,10 @@ class ObservableList(list, Observable):
         self._emit_change(old=old)
 
 class ObservableDict(dict, Observable):
-    """A ``dict`` object that tracks changes to its contents
+    """A :class:`dict` subclass that tracks changes to its contents
+
+    Note:
+        This class is for internal use and not intended to be used directly
     """
     def __init__(self, initdict=None, **kwargs):
         self._init_complete = False

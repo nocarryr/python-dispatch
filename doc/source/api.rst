@@ -8,11 +8,9 @@ pydispatch.dispatch module
 
 .. autoclass:: pydispatch.dispatch.Dispatcher
     :members:
-    :show-inheritance:
 
 .. autoclass:: pydispatch.dispatch.Event
     :members:
-    :show-inheritance:
 
 pydispatch.properties module
 ----------------------------
@@ -22,7 +20,6 @@ pydispatch.properties module
 .. autoclass:: pydispatch.properties.Property
     :members:
     :private-members:
-    :show-inheritance:
 
 .. autoclass:: pydispatch.properties.ListProperty
     :members:
@@ -30,4 +27,13 @@ pydispatch.properties module
 
 .. autoclass:: pydispatch.properties.DictProperty
     :members:
+    :show-inheritance:
+
+.. autoclass:: pydispatch.properties.Observable
+    :members:
+
+.. autoclass:: pydispatch.properties.ObservableList
+    :show-inheritance:
+
+.. autoclass:: pydispatch.properties.ObservableDict
     :show-inheritance:
