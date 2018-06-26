@@ -84,9 +84,40 @@ class LoopThread(threading.Thread):
         self.running.clear()
         self.stopped.wait()
 
+@pytest.mark.asyncio
+async def test_simple(sender_cls):
+
+    class Sender(sender_cls):
+        prop_a = Property()
+        prop_b = Property()
+        _events_ = ['on_test_a', 'on_test_b', 'on_test_c']
+
+    loop = asyncio.get_event_loop()
+
+    sender = Sender()
+    listener = AsyncListener(loop, loop)
+
+    ev_names = sender._Dispatcher__events.keys()
+    sender.bind_async(loop, **{name:listener.on_event for name in ev_names})
+    prop_names = sender._Dispatcher__property_events.keys()
+    sender.bind_async(loop, **{name:listener.on_prop for name in prop_names})
+
+    for name in ev_names:
+        sender.trigger_event(name)
+        data = await listener.event_queue_get()
+        assert data['name'] == name
+        assert data['loop'] is loop
+
+    for name in prop_names:
+        for i in range(10):
+            setattr(sender, name, i)
+            data = await listener.prop_queue_get()
+            assert data['name'] == name
+            assert data['value'] == i
+            assert data['loop'] is loop
 
 @pytest.mark.asyncio
-async def test_aio_listeners(sender_cls):
+async def test_multiple_loops(sender_cls):
 
     class Sender(sender_cls):
         prop_a = Property()
