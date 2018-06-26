@@ -31,6 +31,10 @@ class AsyncListener:
         }), loop=self.mainloop)
     async def event_queue_put(self, item):
         await self.received_event_queue.put(item)
+    async def event_queue_get(self):
+        item = await self.received_event_queue.get()
+        self.received_event_queue.task_done()
+        return item
     async def on_prop(self, obj, value, **kwargs):
         self.property_events.append(value)
         self.property_event_kwargs.append(kwargs)
@@ -48,6 +52,10 @@ class AsyncListener:
         }), loop=self.mainloop)
     async def prop_queue_put(self, item):
         await self.property_queue.put(item)
+    async def prop_queue_get(self):
+        item = await self.property_queue.get()
+        self.property_queue.task_done()
+        return item
 
 class LoopThread(threading.Thread):
     def __init__(self, mainloop, sender):
@@ -72,14 +80,6 @@ class LoopThread(threading.Thread):
     async def run_loop(self):
         while self.running.is_set():
             await asyncio.sleep(.1)
-    async def get_event_queue(self):
-        item = await self.listener.received_event_queue.get()
-        self.listener.received_event_queue.task_done()
-        return item
-    async def get_prop_queue(self):
-        item = await self.listener.property_queue.get()
-        self.listener.property_queue.task_done()
-        return item
     def stop(self):
         self.running.clear()
         self.stopped.wait()
@@ -99,7 +99,7 @@ async def test_aio_listeners(sender_cls):
     async def send_event(name, *listener_threads):
         sender.trigger_event(name)
         for t in listener_threads:
-            data = await t.get_event_queue()
+            data = await t.listener.event_queue_get()
             assert data['name'] == name
             assert data['loop'] is t.loop
             assert data['loop'] is t.listener.loop
@@ -107,7 +107,7 @@ async def test_aio_listeners(sender_cls):
     async def trigger_prop(name, value, *listener_threads):
         setattr(sender, name, value)
         for t in listener_threads:
-            data = await t.get_prop_queue()
+            data = await t.listener.prop_queue_get()
             assert data['name'] == name
             assert data['value'] == value
             assert data['loop'] is t.loop
