@@ -29,8 +29,12 @@ class Event(object):
     def remove_listener(self, obj):
         if isinstance(obj, (types.MethodType, types.FunctionType)):
             self.listeners.del_method(obj)
+            if AIO_AVAILABLE:
+                self.aio_listeners.del_method(obj)
         else:
             self.listeners.del_instance(obj)
+            if AIO_AVAILABLE:
+                self.aio_listeners.del_instance(obj)
     def __call__(self, *args, **kwargs):
         """Dispatches the event to listeners
 

@@ -26,6 +26,17 @@ class AioWeakMethodContainer(WeakMethodContainer):
         wrkey = (f, id(obj))
         self[wrkey] = obj
         self.event_loop_map[wrkey] = loop
+    def del_method(self, m):
+        wrkey = super().del_method(m)
+        if wrkey in self.event_loop_map:
+            del self.event_loop_map[wrkey]
+        return wrkey
+    def del_instance(self, obj):
+        to_remove = super().del_instance(obj)
+        for wrkey in to_remove:
+            if wrkey in self.event_loop_map:
+                del self.event_loop_map[wrkey]
+        return to_remove
     def iter_methods(self):
         for wrkey, obj in self.iter_instances():
             f, obj_id = wrkey

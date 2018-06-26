@@ -43,6 +43,7 @@ class WeakMethodContainer(weakref.WeakValueDictionary):
             wrkey = (f, id(obj))
         if wrkey in self:
             del self[wrkey]
+        return wrkey
     def del_instance(self, obj):
         to_remove = set()
         for wrkey, _obj in self.iter_instances():
@@ -50,6 +51,7 @@ class WeakMethodContainer(weakref.WeakValueDictionary):
                 to_remove.add(wrkey)
         for wrkey in to_remove:
             del self[wrkey]
+        return to_remove
     def iter_instances(self):
         for wrkey in set(self.keys()):
             obj = self.get(wrkey)

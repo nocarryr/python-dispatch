@@ -35,6 +35,11 @@ class AsyncListener:
         item = await self.received_event_queue.get()
         self.received_event_queue.task_done()
         return item
+    def clear_event_data(self):
+        assert self.received_event_queue.empty()
+        self.received_events.clear()
+        self.received_event_data.clear()
+        self.received_event_loops.clear()
     async def on_prop(self, obj, value, **kwargs):
         self.property_events.append(value)
         self.property_event_kwargs.append(kwargs)
@@ -56,6 +61,12 @@ class AsyncListener:
         item = await self.property_queue.get()
         self.property_queue.task_done()
         return item
+    def clear_prop_data(self):
+        assert self.property_queue.empty()
+        self.property_events.clear()
+        self.property_event_kwargs.clear()
+        self.property_event_map.clear()
+        self.property_event_loops.clear()
 
 class LoopThread(threading.Thread):
     def __init__(self, mainloop, sender):
@@ -115,6 +126,92 @@ async def test_simple(sender_cls):
             assert data['name'] == name
             assert data['value'] == i
             assert data['loop'] is loop
+
+@pytest.mark.asyncio
+async def test_unbind(sender_cls):
+
+    class Sender(sender_cls):
+        prop_a = Property()
+        prop_b = Property()
+        _events_ = ['on_test_a', 'on_test_b', 'on_test_c']
+
+    loop = asyncio.get_event_loop()
+
+    sender = Sender()
+    listener = AsyncListener(loop, loop)
+
+    ev_names = sender._Dispatcher__events.keys()
+    sender.bind_async(loop, **{name:listener.on_event for name in ev_names})
+    prop_names = sender._Dispatcher__property_events.keys()
+    sender.bind_async(loop, **{name:listener.on_prop for name in prop_names})
+
+    for name in ev_names:
+        sender.trigger_event(name)
+        await listener.event_queue_get()
+
+    for name in prop_names:
+        for i in range(10):
+            setattr(sender, name, i)
+            await listener.prop_queue_get()
+
+    # Unbind and retrigger events
+    listener.clear_event_data()
+    listener.clear_prop_data()
+
+    sender.unbind(listener.on_event, listener.on_prop)
+
+    async def check_events_unbound():
+        for name in ev_names:
+            # Ensure event listeners are empty
+            e = sender._Dispatcher__events[name]
+            assert not len(e.aio_listeners)
+            assert not len(e.aio_listeners.event_loop_map)
+
+            # Trigger event
+            sender.trigger_event(name)
+        for name in prop_names:
+            # Ensure event listeners are empty
+            e = sender._Dispatcher__property_events[name]
+            assert not len(e.aio_listeners)
+            assert not len(e.aio_listeners.event_loop_map)
+
+            # Trigger event
+            val = getattr(sender, name)
+            val += 1
+            setattr(sender, name, val)
+
+        # Wait for tasks to complete
+        await asyncio.sleep(.5)
+
+        assert not len(listener.received_events)
+        assert not len(listener.property_events)
+
+    await check_events_unbound()
+
+    # Rebind events and properties to test unbinding by instance
+    listener.clear_event_data()
+    listener.clear_prop_data()
+
+    sender.bind_async(loop, **{name:listener.on_event for name in ev_names})
+    sender.bind_async(loop, **{name:listener.on_prop for name in prop_names})
+
+    # Make sure things are bound correctly
+    for name in ev_names:
+        sender.trigger_event(name)
+        await listener.event_queue_get()
+    for name in prop_names:
+        val = getattr(sender, name)
+        val += 1
+        setattr(sender, name, val)
+        await listener.prop_queue_get()
+
+    # Unbind instance and recheck
+    listener.clear_event_data()
+    listener.clear_prop_data()
+
+    sender.unbind(listener)
+
+    await check_events_unbound()
 
 @pytest.mark.asyncio
 async def test_multiple_loops(sender_cls):
