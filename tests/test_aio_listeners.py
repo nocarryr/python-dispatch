@@ -113,6 +113,9 @@ async def test_simple(sender_cls):
     prop_names = sender._Dispatcher__property_events.keys()
     sender.bind_async(loop, **{name:listener.on_prop for name in prop_names})
 
+    with pytest.raises(RuntimeError, message='Coroutine function given without event loop'):
+        sender.bind(on_test_a=listener.on_event)
+
     for name in ev_names:
         sender.trigger_event(name)
         data = await listener.event_queue_get()

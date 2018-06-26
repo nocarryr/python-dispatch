@@ -1,4 +1,8 @@
 import types
+try:
+    import asyncio
+except ImportError:
+    asyncio = None
 
 from pydispatch.utils import (
     WeakMethodContainer,
@@ -22,10 +26,14 @@ class Event(object):
         if AIO_AVAILABLE:
             self.aio_listeners = AioWeakMethodContainer()
         self.emission_lock = EmissionHoldLock(self)
-    def add_listener(self, callback):
-        self.listeners.add_method(callback)
-    def add_async_listener(self, loop, callback):
-        self.aio_listeners.add_method(loop, callback)
+    def add_listener(self, callback, **kwargs):
+        if AIO_AVAILABLE and asyncio.iscoroutinefunction(callback):
+            loop = kwargs.get('__aio_loop__')
+            if loop is None:
+                raise RuntimeError('Coroutine function given without event loop')
+            self.aio_listeners.add_method(loop, callback)
+        else:
+            self.listeners.add_method(callback)
     def remove_listener(self, obj):
         if isinstance(obj, (types.MethodType, types.FunctionType)):
             self.listeners.del_method(obj)
@@ -136,9 +144,15 @@ class Dispatcher(object):
             foo.bind(name=other_listener.on_name,
                      value=other_listener.on_value)
 
+        For coroutine functions (using ``async def`` or decorated with
+        ``@asyncio.coroutine``) an event loop must be provided as a keyword
+        argument ``"__aio_loop__"``. This can also be done using
+        :meth:`bind_async`.
+
         The callbacks are stored as weak references and their order is not
         maintained relative to the order of binding.
         """
+        aio_loop = kwargs.pop('__aio_loop__', None)
         props = self.__property_events
         events = self.__events
         for name, cb in kwargs.items():
@@ -146,7 +160,7 @@ class Dispatcher(object):
                 e = props[name]
             else:
                 e = events[name]
-            e.add_listener(cb)
+            e.add_listener(cb, __aio_loop__=aio_loop)
     def unbind(self, *args):
         """Unsubscribes from events or :class:`Property` updates
 
@@ -181,14 +195,8 @@ class Dispatcher(object):
             Python>=3.5
 
         """
-        props = self.__property_events
-        events = self.__events
-        for name, cb in kwargs.items():
-            if name in props:
-                e = props[name]
-            else:
-                e = events[name]
-            e.add_async_listener(loop, cb)
+        kwargs['__aio_loop__'] = loop
+        self.bind(**kwargs)
     def emit(self, name, *args, **kwargs):
         """Dispatches an event to any subscribed listeners
 

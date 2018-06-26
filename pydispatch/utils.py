@@ -37,7 +37,7 @@ class WeakMethodContainer(weakref.WeakValueDictionary):
         if PY2:
             return self.iterkeys()
         return super(WeakMethodContainer, self).keys()
-    def add_method(self, m):
+    def add_method(self, m, **kwargs):
         if isinstance(m, types.FunctionType):
             self['function', id(m)] = m
         else:
