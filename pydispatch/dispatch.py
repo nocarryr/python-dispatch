@@ -144,13 +144,45 @@ class Dispatcher(object):
             foo.bind(name=other_listener.on_name,
                      value=other_listener.on_value)
 
-        For coroutine functions (using ``async def`` or decorated with
-        ``@asyncio.coroutine``) an event loop must be provided as a keyword
-        argument ``"__aio_loop__"``. This can also be done using
-        :meth:`bind_async`.
-
         The callbacks are stored as weak references and their order is not
         maintained relative to the order of binding.
+
+        **Async Callbacks**:
+
+            Callbacks may be :term:`coroutine functions <coroutine function>`
+            (defined using :keyword:`async def` or decorated with
+            :func:`@asyncio.coroutine <asyncio.coroutine>`), but an event loop
+            must be explicitly provided with the keyword
+            argument ``"__aio_loop__"`` (an instance of
+            :class:`asyncio.BaseEventLoop`)::
+
+                import asyncio
+                from pydispatch import Dispatcher
+
+                class Foo(Dispatcher):
+                    _events_ = ['test_event']
+
+                class Bar(object):
+                    def __init__(self):
+                        self.got_foo_event = asyncio.Event()
+                    async def wait_for_foo(self):
+                        await self.got_foo_event.wait()
+                        print('got foo!')
+                    async def on_foo_test_event(self, *args, **kwargs):
+                        self.got_foo_event.set()
+
+                foo = Foo()
+                bar = Bar()
+
+                loop = asyncio.get_event_loop()
+                foo.bind(test_event=bar.on_foo_test_event, __aio_loop__=loop)
+
+                loop.run_until_complete(bar.wait_for_foo())
+
+            This can also be done using :meth:`bind_async`.
+
+            .. versionadded:: 0.1.0a1
+
         """
         aio_loop = kwargs.pop('__aio_loop__', None)
         props = self.__property_events
@@ -194,6 +226,7 @@ class Dispatcher(object):
         Availability:
             Python>=3.5
 
+        .. versionadded:: 0.1.0a1
         """
         kwargs['__aio_loop__'] = loop
         self.bind(**kwargs)
