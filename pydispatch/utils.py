@@ -7,6 +7,10 @@ except ImportError:
     def _remove_dead_weakref(o, key):
         del o[key]
 import types
+try:
+    import asyncio
+except ImportError:
+    asyncio = None
 
 PY2 = sys.version_info.major == 2
 if not PY2:
@@ -23,6 +27,11 @@ def get_method_vars(m):
         obj = m.__self__
     return f, obj
 
+def iscoroutinefunction(obj):
+    if not AIO_AVAILABLE:
+        return False
+    return asyncio.iscoroutinefunction(obj)
+
 class WeakMethodContainer(weakref.WeakValueDictionary):
     def keys(self):
         if PY2:
@@ -36,14 +45,13 @@ class WeakMethodContainer(weakref.WeakValueDictionary):
             wrkey = (f, id(obj))
             self[wrkey] = obj
     def del_method(self, m):
-        if isinstance(m, types.FunctionType):
+        if isinstance(m, types.FunctionType) and not iscoroutinefunction(m):
             wrkey = ('function', id(m))
         else:
             f, obj = get_method_vars(m)
             wrkey = (f, id(obj))
         if wrkey in self:
             del self[wrkey]
-        return wrkey
     def del_instance(self, obj):
         to_remove = set()
         for wrkey, _obj in self.iter_instances():
@@ -51,7 +59,6 @@ class WeakMethodContainer(weakref.WeakValueDictionary):
                 to_remove.add(wrkey)
         for wrkey in to_remove:
             del self[wrkey]
-        return to_remove
     def iter_instances(self):
         for wrkey in set(self.keys()):
             obj = self.get(wrkey)
