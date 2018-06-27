@@ -130,7 +130,7 @@ class Dispatcher(object):
                 continue
             self.__events[name] = Event(name)
     def bind(self, **kwargs):
-        """Subscribes to events or to :class:`~pydispatch.property.Property` updates
+        """Subscribes to events or to :class:`~pydispatch.properties.Property` updates
 
         Keyword arguments are used with the Event or Property names as keys
         and the callbacks as values::
@@ -194,7 +194,7 @@ class Dispatcher(object):
                 e = events[name]
             e.add_listener(cb, __aio_loop__=aio_loop)
     def unbind(self, *args):
-        """Unsubscribes from events or :class:`Property` updates
+        """Unsubscribes from events or :class:`~pydispatch.properties.Property` updates
 
         Multiple arguments can be given. Each of which can be either the method
         that was used for the original call to :meth:`bind` or an instance
@@ -234,7 +234,7 @@ class Dispatcher(object):
         """Dispatches an event to any subscribed listeners
 
         Note:
-            If a listener returns ``False``, the event will stop dispatching to
+            If a listener returns :obj:`False`, the event will stop dispatching to
             other listeners. Any other return value is ignored.
 
         Args:
@@ -269,13 +269,14 @@ class Dispatcher(object):
             >>> 2
 
         Args:
-            name (str): The name of the :class:`Event` or :class:`Property`
+            name (str): The name of the :class:`Event` or
+                :class:`~pydispatch.properties.Property`
 
         Returns:
-            A context manager to be used by the ``with`` statement.
+            A context manager to be used by the :keyword:`with` statement.
 
             If available, this will also be an async context manager to be used
-            with the ``async with`` statement (see `PEP 492`_).
+            with the :keyword:`async with` statement (see `PEP 492`_).
 
         Note:
             The context manager is re-entrant, meaning that multiple calls to
