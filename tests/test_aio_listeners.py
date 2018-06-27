@@ -269,3 +269,53 @@ async def test_multiple_loops(sender_cls):
 
     for t in threads:
         t.stop()
+
+@pytest.mark.asyncio
+async def test_event_await(sender_cls):
+
+    class Sender(sender_cls):
+        prop_a = Property()
+        prop_b = Property()
+        _events_ = ['on_test_a', 'on_test_b', 'on_test_c']
+
+    loop = asyncio.get_event_loop()
+    loop.set_debug(True)
+
+    sender = Sender()
+
+    ev_names = sender._Dispatcher__events.keys()
+    prop_names = sender._Dispatcher__property_events.keys()
+
+    received_events = asyncio.Queue()
+    tasks = []
+
+    async def wait_for_event(name):
+        e = sender.get_dispatcher_event(name)
+        print('waiting for event "{}"'.format(name))
+        args, kwargs = await e
+        print('event "{}" received'.format(name))
+        await received_events.put([name, args, kwargs])
+
+    for name in ev_names:
+        print(name)
+        fut = asyncio.ensure_future(wait_for_event(name))
+        await asyncio.sleep(.01)
+
+        sender.trigger_event(name)
+
+        await fut
+        result = await received_events.get()
+        received_events.task_done()
+        assert result[0] == name
+
+    for name in prop_names:
+        for i in range(10):
+            fut = asyncio.ensure_future(wait_for_event(name))
+            await asyncio.sleep(.01)
+            setattr(sender, name, i)
+            result = await received_events.get()
+            received_events.task_done()
+            await fut
+            assert result[0] == name
+            instance, value = result[1]
+            assert value == i

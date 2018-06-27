@@ -1,4 +1,5 @@
 import asyncio
+import threading
 from _weakref import ref
 
 from pydispatch.utils import (
@@ -21,6 +22,71 @@ class AioEmissionHoldLock(object):
     async def __aexit__(self, *args):
         self.aio_lock.release()
         self.release()
+
+class AioSimpleLock(object):
+    __slots__ = ('lock')
+    def __init__(self):
+        self.lock = threading.Lock()
+    def acquire(self, blocking=True, timeout=-1):
+        result = self.lock.acquire(blocking, timeout)
+        return result
+    def release(self):
+        self.lock.release()
+    def __enter__(self):
+        self.acquire()
+        return self
+    def __exit__(self, *args):
+        self.release()
+    async def acquire_async(self):
+        r = self.acquire(blocking=False)
+        while not r:
+            await asyncio.sleep(.01)
+            r = self.acquire(blocking=False)
+    async def __aenter__(self):
+        await self.acquire_async()
+        return self
+    async def __aexit__(self, *args):
+        self.release()
+
+class AioEventWaiter(object):
+    __slots__ = ('loop', 'aio_event', 'args', 'kwargs')
+    def __init__(self, loop):
+        self.loop = loop
+        self.aio_event = asyncio.Event(loop=loop)
+        self.args = []
+        self.kwargs = {}
+    def trigger(self, *args, **kwargs):
+        self.args = args
+        self.kwargs = kwargs
+        self.aio_event.set()
+    async def wait(self):
+        await self.aio_event.wait()
+        return self.args, self.kwargs
+    def __await__(self):
+        return self.wait()
+
+class AioEventWaiters(object):
+    __slots__ = ('waiters', 'lock')
+    def __init__(self):
+        self.waiters = set()
+        self.lock = AioSimpleLock()
+    async def add_waiter(self):
+        loop = asyncio.get_event_loop()
+        async with self.lock:
+            waiter = AioEventWaiter(loop)
+            self.waiters.add(waiter)
+        return waiter
+    async def wait(self):
+        waiter = await self.add_waiter()
+        return await waiter
+    def __await__(self):
+        return self.wait()
+    def __call__(self, *args, **kwargs):
+        with self.lock:
+            for waiter in self.waiters:
+                waiter.trigger(*args, **kwargs)
+            self.waiters.clear()
+
 
 class AioWeakMethodContainer(WeakMethodContainer):
     def __init__(self):

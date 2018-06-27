@@ -11,7 +11,7 @@ from pydispatch.utils import (
 )
 from pydispatch.properties import Property
 if AIO_AVAILABLE:
-    from pydispatch.aioutils import AioWeakMethodContainer
+    from pydispatch.aioutils import AioWeakMethodContainer, AioEventWaiters
 
 
 class Event(object):
@@ -19,12 +19,13 @@ class Event(object):
 
     This is used internally by :class:`Dispatcher`.
     """
-    __slots__ = ('name', 'listeners', 'aio_listeners', 'emission_lock')
+    __slots__ = ('name', 'listeners', 'aio_waiters', 'aio_listeners', 'emission_lock')
     def __init__(self, name):
         self.name = name
         self.listeners = WeakMethodContainer()
         if AIO_AVAILABLE:
             self.aio_listeners = AioWeakMethodContainer()
+            self.aio_waiters = AioEventWaiters()
         self.emission_lock = EmissionHoldLock(self)
     def add_listener(self, callback, **kwargs):
         if AIO_AVAILABLE and asyncio.iscoroutinefunction(callback):
@@ -52,11 +53,15 @@ class Event(object):
             self.emission_lock.last_event = (args, kwargs)
             return
         if AIO_AVAILABLE:
+            self.aio_waiters(*args, **kwargs)
             self.aio_listeners(*args, **kwargs)
         for m in self.listeners.iter_methods():
             r = m(*args, **kwargs)
             if r is False:
                 return r
+    if AIO_AVAILABLE:
+        def __await__(self):
+            return self.aio_waiters.__await__()
     def __repr__(self):
         return '<{}: {}>'.format(self.__class__, self)
     def __str__(self):
@@ -246,6 +251,22 @@ class Dispatcher(object):
         if e is None:
             e = self.__events[name]
         return e(*args, **kwargs)
+    def get_dispatcher_event(self, name):
+        """Retrieves an Event object by name
+
+        Args:
+            name (str): The name of the :class:`Event` or
+                :class:`~pydispatch.properties.Property` object to retrieve
+
+        Returns:
+            The :class:`Event` instance for the event or property definition
+
+        .. versionadded:: 0.1.0a1
+        """
+        e = self.__property_events.get(name)
+        if e is None:
+            e = self.__events[name]
+        return e
     def emission_lock(self, name):
         """Holds emission of events and dispatches the last event on release
 

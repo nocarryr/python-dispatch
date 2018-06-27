@@ -1,4 +1,6 @@
 import asyncio
+from functools import partial
+import time
 import pytest
 
 @pytest.mark.asyncio
@@ -148,3 +150,66 @@ async def test_aio_property_lock(listener):
         event_list = listener.property_event_map[prop_name]
         assert len(event_list) == 1
         assert event_list[0]['value'] == vals[-1] == getattr(a, prop_name)
+
+@pytest.mark.asyncio
+async def test_aio_simple_lock():
+    from pydispatch.aioutils import AioSimpleLock
+
+    loop = asyncio.get_event_loop()
+
+    async def timed_acquire_async(lock, timeout=1):
+        start_ts = loop.time()
+        await asyncio.sleep(timeout)
+        await lock.acquire_async()
+        end_ts = loop.time()
+        return end_ts - start_ts
+
+    def timed_acquire_sync(lock, timeout=1):
+        start_ts = time.time()
+        time.sleep(timeout)
+        lock.acquire()
+        end_ts = time.time()
+        return end_ts - start_ts
+
+    async def timed_release_async(lock, timeout=1):
+        await asyncio.sleep(timeout)
+        lock.release()
+
+    def timed_release_sync(lock, timeout=1):
+        time.sleep(timeout)
+        lock.release()
+
+    lock = AioSimpleLock()
+
+    timeout = .5
+
+    start_ts = loop.time()
+    await lock.acquire_async()
+    fut = asyncio.ensure_future(timed_release_async(lock, timeout))
+    await lock.acquire_async()
+    end_ts = loop.time()
+    assert end_ts - start_ts >= timeout
+    assert fut.done()
+    lock.release()
+
+    fut = asyncio.ensure_future(timed_acquire_async(lock, .1))
+    async with lock:
+        await asyncio.sleep(timeout)
+    elapsed = await fut
+    assert elapsed >= timeout
+    lock.release()
+
+    start_ts = loop.time()
+    await lock.acquire_async()
+    fut = loop.run_in_executor(None, partial(timed_release_sync, lock, timeout))
+    await lock.acquire_async()
+    end_ts = loop.time()
+    assert end_ts - start_ts >= timeout
+    lock.release()
+    await fut
+
+    async with lock:
+        fut = loop.run_in_executor(None, partial(timed_acquire_sync, lock, .1))
+        await asyncio.sleep(timeout)
+    elapsed = await fut
+    assert elapsed >= timeout
