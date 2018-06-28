@@ -5,14 +5,17 @@ matrix:
       env:
           - ALLOW_DEPLOY=false
           - AIO_AVAILABLE=false
+          - COVERAGERC=".coveragerc-py2"
     - python: "3.4"
       env:
           - ALLOW_DEPLOY=false
           - AIO_AVAILABLE=false
+          - COVERAGERC=".coveragerc-py34"
     - python: "3.5.2"
       env:
           - ALLOW_DEPLOY=true
           - AIO_AVAILABLE=true
+          - COVERAGERC=".coveragerc"
 addons:
   apt:
     packages:
@@ -25,7 +28,7 @@ install:
   - pip install -e .
 script:
   - sh -c "if [ '$ALLOW_DEPLOY' = 'true' ]; then travis-sphinx build --source=doc/source --nowarn; fi"
-  - py.test --cov-config .coveragerc --cov=pydispatch
+  - py.test --cov-config $COVERAGERC --cov=pydispatch
 after_success:
   - coveralls
   - sh -c "if [ '$ALLOW_DEPLOY' = 'true' ]; then travis-sphinx deploy; fi"
