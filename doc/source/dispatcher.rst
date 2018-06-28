@@ -1,7 +1,7 @@
 Dispatcher
 ==========
 
-`Dispatcher`_ is the core component of the framework.
+:any:`Dispatcher` is the core component of the framework.
 Subclassing this enables all of the event functionality.
 
 Usage
@@ -74,12 +74,9 @@ positional or keyword arguments supplied will be passed along to listeners.
 Subclasses and ``__init__``
 ---------------------------
 
-The `Dispatcher`_ class does not use ``__init__`` for any
+The :any:`Dispatcher` class does not use ``__init__`` for any
 of its functionality. This is again to keep things simple and get the
 framework out of your way.
 It uses ``__new__`` to handle instance creation. If your subclasses use
 ``__new__`` for something, the call to ``super()`` is required,
 but you should probably check the code to determine how it fits with your own.
-
-
-.. _Dispatcher: api.html#pydispatch.dispatch.Dispatcher

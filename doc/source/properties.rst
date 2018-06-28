@@ -1,7 +1,7 @@
 Properties
 ==========
 
-`Property`_ objects can be defined on subclasses of `Dispatcher`_ to create
+:any:`Property` objects can be defined on subclasses of :any:`Dispatcher` to create
 instance attributes that emit events when their values change.
 Binding and unbinding works exactly the same as with events.
 The callback signature is slightly different however. The first two arguments
@@ -49,8 +49,8 @@ Container Properties
 --------------------
 
 :class:`dict` and :class:`list` objects are implemented as subclasses of :any:`Property`:
-    * `DictProperty`_
-    * `ListProperty`_
+    * :any:`DictProperty`
+    * :any:`ListProperty`
 
 They will emit events when their contents change. Nesting is also supported,
 so even the contents of a :class:`list` or :class:`dict` anywhere inside of the
@@ -84,9 +84,3 @@ structure can trigger an event.
     emitter.data['fruit'] = {'apple':'red'}
     emitter.data['fruit']['banana'] = 'yellow'
     # event would be dispatched to listeners
-
-
-.. _Dispatcher: api.html#pydispatch.dispatch.Dispatcher
-.. _Property: api.html#pydispatch.properties.Property
-.. _ListProperty: api.html#pydispatch.properties.ListProperty
-.. _DictProperty: api.html#pydispatch.properties.DictProperty
