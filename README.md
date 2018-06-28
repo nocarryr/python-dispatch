@@ -14,10 +14,16 @@ library with no dependencies that stays out of the programmer's way.
 pip install python-dispatch
 ```
 
-## Usage
+## Links
 
-For more information, see the documentation here:
-https://nocarryr.github.io/python-dispatch
+|               |                                              |
+| -------------:|:-------------------------------------------- |
+| Project Home  | https://github.com/nocarryr/python-dispatch  |
+| PyPI          | https://pypi.python.org/pypi/python-dispatch |
+| Documentation | https://nocarryr.github.io/python-dispatch   |
+
+
+## Usage
 
 ### Events
 
