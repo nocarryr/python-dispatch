@@ -12,7 +12,7 @@ Contents:
    :maxdepth: 3
 
    overview
-   api
+   reference/index
 
 Links
 =====
