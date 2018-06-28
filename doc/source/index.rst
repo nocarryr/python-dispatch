@@ -4,24 +4,15 @@
    contain the root `toctree` directive.
 
 Python Dispatch
-===========================================
+===============
 
-Contents:
+.. mdinclude:: ../../README.md
 
 .. toctree::
    :maxdepth: 3
 
    overview
    reference/index
-
-Links
-=====
-
-Source Code
-    https://github.com/nocarryr/python-dispatch
-
-Download
-    https://pypi.python.org/pypi/python-dispatch
 
 
 Indices and tables
