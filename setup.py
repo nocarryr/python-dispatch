@@ -2,11 +2,8 @@ import sys
 from setuptools import setup, find_packages
 
 def convert_readme():
-    try:
-        import pypandoc
-    except ImportError:
-        return read_rst()
-    rst = pypandoc.convert_file('README.md', 'rst')
+    from m2r import parse_from_file
+    rst = parse_from_file('README.md')
     with open('README.rst', 'w') as f:
         f.write(rst)
     return rst
@@ -36,7 +33,7 @@ setup(
     license='MIT',
     packages=find_packages(exclude=['tests*']),
     include_package_data=True,
-    setup_requires=['pypandoc'],
+    setup_requires=['m2r'],
     long_description=get_long_description(),
     keywords='event properties dispatch',
     platforms=['any'],
