@@ -25,7 +25,7 @@ def get_long_description():
 
 setup(
     name = "python-dispatch",
-    version = "v0.0.9",
+    version = "v0.0.91",
     author = "Matthew Reid",
     author_email = "matt@nomadic-recording.com",
     description = "Lightweight Event Handling",
