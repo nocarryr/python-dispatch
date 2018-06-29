@@ -37,7 +37,13 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
+    'm2r',
 ]
+
+scv_show_banner = True
+scv_banner_greatest_tag = True
+scv_greatest_tag = True
+scv_banner_main_ref = 'v{}'.format(__version__)
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -58,8 +64,8 @@ napoleon_use_rtype = True
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-#source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = ['.rst', '.md']
+# source_suffix = '.rst'
 
 # The encoding of source files.
 #

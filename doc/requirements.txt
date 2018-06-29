@@ -1,2 +1,4 @@
 Sphinx
+git+https://github.com/nocarryr/sphinxcontrib-versioning@Lingnik-patch-1
 sphinx_rtd_theme
+m2r
