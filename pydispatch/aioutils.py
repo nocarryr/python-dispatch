@@ -24,13 +24,35 @@ class AioEmissionHoldLock(object):
         self.release()
 
 class AioSimpleLock(object):
+    """:class:`asyncio.Lock` alternative backed by a :class:`threading.Lock`
+
+    This is a context manager that supports use in both :keyword:`with` and
+    :keyword:`async with` context blocks.
+
+    Attributes:
+        lock: Instance of :class:`threading.Lock`
+
+    .. versionadded:: 0.1.0
+    """
     __slots__ = ('lock')
     def __init__(self):
         self.lock = threading.Lock()
     def acquire(self, blocking=True, timeout=-1):
+        """Acquire the :attr:`lock`
+
+        Args:
+            blocking (bool): See :meth:`threading.Lock.acquire`
+            timeout (float): See :meth:`threading.Lock.acquire`
+
+        Returns:
+            bool: :obj:`True` if the lock was acquired, otherwise :obj:`False`
+
+        """
         result = self.lock.acquire(blocking, timeout)
         return result
     def release(self):
+        """Release the :attr:`lock`
+        """
         self.lock.release()
     def __enter__(self):
         self.acquire()
@@ -38,6 +60,9 @@ class AioSimpleLock(object):
     def __exit__(self, *args):
         self.release()
     async def acquire_async(self):
+        """Acquire the :attr:`lock` asynchronously
+
+        """
         r = self.acquire(blocking=False)
         while not r:
             await asyncio.sleep(.01)
@@ -49,6 +74,20 @@ class AioSimpleLock(object):
         self.release()
 
 class AioEventWaiter(object):
+    """Stores necessary information for a single "waiter"
+
+    Used by :class:`AioEventWaiters` to handle :keyword:`awaiting <await>`
+    an :class:`~pydispatch.dispatch.Event` on a specific
+    :class:`event loop <asyncio.BaseEventLoop>`
+
+    Attributes:
+        loop: The :class:`EventLoop <asyncio.BaseEventLoop>` instance
+        aio_event: An :class:`asyncio.Event` used to track event emission
+        args (list): The positional arguments attached to the event
+        kwargs (dict): The keyword arguments attached to the event
+
+    .. versionadded:: 0.1.0
+    """
     __slots__ = ('loop', 'aio_event', 'args', 'kwargs')
     def __init__(self, loop):
         self.loop = loop
@@ -56,27 +95,75 @@ class AioEventWaiter(object):
         self.args = []
         self.kwargs = {}
     def trigger(self, *args, **kwargs):
+        """Called on event emission and notifies the :meth:`wait` method
+
+        Called by :class:`AioEventWaiters` when the
+        :class:`~pydispatch.dispatch.Event` instance is dispatched.
+
+        Positional and keyword arguments are stored as instance attributes for
+        use in the :meth:`wait` method and :attr:`aio_event` is set.
+        """
         self.args = args
         self.kwargs = kwargs
         self.aio_event.set()
     async def wait(self):
+        """Waits for event emission and returns the event parameters
+
+        Returns:
+            args (list): Positional arguments attached to the event
+            kwargs (dict): Keyword arguments attached to the event
+
+        """
         await self.aio_event.wait()
         return self.args, self.kwargs
     def __await__(self):
         return self.wait()
 
 class AioEventWaiters(object):
+    """Container used to manage :keyword:`await` use with events
+
+    Used by :class:`pydispatch.dispatch.Event` when it is
+    :keyword:`awaited <await>`
+
+    Attributes:
+        waiters (set): Instances of :class:`AioEventWaiter` currently "awaiting"
+            the event
+        lock (AioSimpleLock): A sync/async lock to guard modification to the
+            :attr:`waiters` container during event emission
+
+    .. versionadded:: 0.1.0
+    """
     __slots__ = ('waiters', 'lock')
     def __init__(self):
         self.waiters = set()
         self.lock = AioSimpleLock()
     async def add_waiter(self):
+        """Add a :class:`AioEventWaiter` to the :attr:`waiters` container
+
+        The event loop to use for :attr:`AioEventWaiter.loop` is found in the
+        current context using :func:`asyncio.get_event_loop`
+
+        Returns:
+            waiter: The created :class:`AioEventWaiter` instance
+
+        """
         loop = asyncio.get_event_loop()
         async with self.lock:
             waiter = AioEventWaiter(loop)
             self.waiters.add(waiter)
         return waiter
     async def wait(self):
+        """Creates a :class:`waiter <AioEventWaiter>` and "awaits" its result
+
+        This method is used by :class:`pydispatch.dispatch.Event` instances when
+        they are "awaited" and is the primary functionality of
+        :class:`AioEventWaiters` and :class:`AioEventWaiter`.
+
+        Returns:
+            args (list): Positional arguments attached to the event
+            kwargs (dict): Keyword arguments attached to the event
+
+        """
         waiter = await self.add_waiter()
         return await waiter
     def __await__(self):
@@ -89,6 +176,10 @@ class AioEventWaiters(object):
 
 
 class AioWeakMethodContainer(WeakMethodContainer):
+    """Storage for coroutine functions as weak references
+
+    .. versionadded:: 0.1.0
+    """
     def __init__(self):
         super().__init__()
         def remove(wr, selfref=ref(self)):
