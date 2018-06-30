@@ -1,6 +1,7 @@
 import asyncio
 import threading
 from _weakref import ref
+from _weakrefset import _IterationGuard
 
 from pydispatch.utils import (
     WeakMethodContainer,
@@ -199,6 +200,9 @@ class AioWeakMethodContainer(WeakMethodContainer):
         wrkey = (f, id(obj))
         self[wrkey] = obj
         self.event_loop_map[wrkey] = loop
+    def iter_instances(self):
+        with _IterationGuard(self):
+            yield from super().iter_instances()
     def iter_methods(self):
         for wrkey, obj in self.iter_instances():
             f, obj_id = wrkey
@@ -208,9 +212,13 @@ class AioWeakMethodContainer(WeakMethodContainer):
     def _on_weakref_fin(self, key):
         if key in self.event_loop_map:
             del self.event_loop_map[key]
+    async def submit_coroutine(self, coro):
+        with _IterationGuard(self):
+            await coro
     def __call__(self, *args, **kwargs):
         for loop, m in self.iter_methods():
-            asyncio.run_coroutine_threadsafe(m(*args, **kwargs), loop=loop)
+            coro = m(*args, **kwargs)
+            asyncio.run_coroutine_threadsafe(self.submit_coroutine(coro), loop=loop)
     def __delitem__(self, key):
         if key in self.event_loop_map:
             del self.event_loop_map[key]
