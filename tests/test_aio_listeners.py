@@ -319,3 +319,99 @@ async def test_event_await(sender_cls):
             assert result[0] == name
             instance, value = result[1]
             assert value == i
+
+@pytest.mark.asyncio
+async def test_changes_during_emit(sender_cls):
+
+    class Sender(sender_cls):
+        _events_ = ['on_test']
+
+    class Listener(object):
+        def __init__(self):
+            self.event_received = False
+            self.queue = asyncio.Queue()
+        async def wait_for_event(self):
+            r = await self.queue.get()
+            self.queue.task_done()
+            self.event_received = False
+            return r
+        async def on_event(self, *args, **kwargs):
+            self.event_received = True
+            await self.queue.put((args, kwargs))
+
+    class UnbindListener(Listener):
+        def __init__(self, loop, sender):
+            super().__init__()
+            self.loop = loop
+            self.sender = sender
+            self.new_listeners = []
+            self.unbound_listeners = []
+        async def on_event(self, *args, **kwargs):
+            if kwargs.get('create_listeners'):
+                self.new_listeners = []
+                for i in range(10):
+                    listener = Listener()
+                    self.sender.bind_async(loop, on_test=listener.on_event)
+                    self.new_listeners.append(listener)
+            elif kwargs.get('unbind_listeners'):
+                self.unbound_listeners = []
+                for listener in self.new_listeners[:]:
+                    self.sender.unbind(listener)
+                    self.unbound_listeners.append(listener)
+                    self.new_listeners.remove(listener)
+            elif kwargs.get('defererence_listeners'):
+                self.new_listeners.clear()
+                self.unbound_listeners.clear()
+                await asyncio.sleep(.1)
+            await super().on_event(*args, **kwargs)
+
+    loop = asyncio.get_event_loop()
+    sender = Sender()
+
+    listener2 = UnbindListener(loop, sender)
+    sender.bind_async(loop, on_test=listener2.on_event)
+
+    # Create listeners inside of event emission
+    sender.emit('on_test', create_listeners=True)
+    await listener2.wait_for_event()
+
+    print('new_listeners: ', len(listener2.new_listeners))
+
+    # The new listeners should not have received the first event
+    for listener in listener2.new_listeners:
+        with pytest.raises(asyncio.QueueEmpty):
+            listener.queue.get_nowait()
+
+
+    # Unbind the created listeners inside of event emission
+    sender.emit('on_test', unbind_listeners=True)
+    await listener2.wait_for_event()
+
+    print('unbound_listeners: ', len(listener2.unbound_listeners))
+    print('not unbound_listeners: ', len(listener2.new_listeners))
+    assert len(listener2.new_listeners) == 0
+
+    # The listeners should have received the "unbind_listeners=True" event
+    for listener in listener2.unbound_listeners:
+        await listener.wait_for_event()
+
+    # Now fire another event and make sure the unbound_listeners don't receive it
+    sender.emit('on_test')
+    await listener2.wait_for_event()
+
+    for listener in listener2.unbound_listeners:
+        with pytest.raises(asyncio.QueueEmpty):
+            listener.queue.get_nowait()
+
+    # Clear previously created listeners and build new ones
+    listener2.unbound_listeners.clear()
+    sender.emit('on_test', create_listeners=True)
+    await listener2.wait_for_event()
+
+    # Dereference them inside of event emission and make sure
+    # the weakrefs are removed
+    sender.emit('on_test', defererence_listeners=True)
+    await listener2.wait_for_event()
+
+    e = sender.get_dispatcher_event('on_test')
+    assert len(e.aio_listeners) == 1
