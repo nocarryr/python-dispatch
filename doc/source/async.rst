@@ -1,7 +1,7 @@
 asyncio support
 ===============
 
-.. versionadded:: 0.1.0a1
+.. versionadded:: 0.1.0
 
 Callbacks
 ---------

@@ -186,7 +186,7 @@ class Dispatcher(object):
 
             This can also be done using :meth:`bind_async`.
 
-            .. versionadded:: 0.1.0a1
+            .. versionadded:: 0.1.0
 
         """
         aio_loop = kwargs.pop('__aio_loop__', None)
@@ -231,7 +231,7 @@ class Dispatcher(object):
         Availability:
             Python>=3.5
 
-        .. versionadded:: 0.1.0a1
+        .. versionadded:: 0.1.0
         """
         kwargs['__aio_loop__'] = loop
         self.bind(**kwargs)
@@ -261,7 +261,7 @@ class Dispatcher(object):
         Returns:
             The :class:`Event` instance for the event or property definition
 
-        .. versionadded:: 0.1.0a1
+        .. versionadded:: 0.1.0
         """
         e = self.__property_events.get(name)
         if e is None:
