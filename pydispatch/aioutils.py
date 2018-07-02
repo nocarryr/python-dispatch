@@ -11,18 +11,34 @@ from pydispatch.utils import (
 
 class AioEmissionHoldLock(object):
     @property
-    def aio_lock(self):
-        l = getattr(self, '_aio_lock', None)
-        if l is None:
-            l = self._aio_lock = asyncio.Lock()
-        return l
-    async def __aenter__(self):
-        await self.aio_lock.acquire()
+    def aio_locks(self):
+        d = getattr(self, '_aio_locks', None)
+        if d is None:
+            d = self._aio_locks = {}
+        return d
+    async def _build_aio_lock(self):
+        loop = asyncio.get_event_loop()
+        key = id(loop)
+        lock = self.aio_locks.get(key)
+        if lock is None:
+            lock = asyncio.Lock(loop=loop)
+            self.aio_locks[key] = lock
+        return lock
+    async def acquire_async(self):
         self.acquire()
+        lock = await self._build_aio_lock()
+        if not lock.locked():
+            await lock.acquire()
+    async def release_async(self):
+        lock = await self._build_aio_lock()
+        if lock.locked:
+            lock.release()
+        self.release()
+    async def __aenter__(self):
+        await self.acquire_async()
         return self
     async def __aexit__(self, *args):
-        self.aio_lock.release()
-        self.release()
+        await self.release_async()
 
 class AioSimpleLock(object):
     """:class:`asyncio.Lock` alternative backed by a :class:`threading.Lock`

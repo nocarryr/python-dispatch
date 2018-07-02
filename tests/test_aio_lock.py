@@ -5,6 +5,8 @@ import pytest
 
 @pytest.mark.asyncio
 async def test_aio_event_lock(listener, sender):
+    loop = asyncio.get_event_loop()
+
     sender.register_event('on_test')
     sender.bind(on_test=listener.on_event)
 
@@ -15,10 +17,10 @@ async def test_aio_event_lock(listener, sender):
     listener.received_event_data = []
 
     async with sender.emission_lock('on_test') as elock:
-        assert elock.aio_lock.locked()
+        assert elock.aio_locks[id(loop)].locked()
         for i in range(len(letters)):
             sender.emit('on_test', letters[i], emit_count=i)
-    assert not elock.aio_lock.locked()
+    assert not elock.aio_locks[id(loop)].locked()
 
     assert len(listener.received_event_data) == 1
     e = listener.received_event_data[0]
@@ -29,10 +31,10 @@ async def test_aio_event_lock(listener, sender):
 
     async def do_emit(i):
         async with sender.emission_lock('on_test') as elock:
-            assert elock.aio_lock.locked()
+            assert elock.aio_locks[id(loop)].locked()
             sender.emit('on_test', i, 'first')
             sender.emit('on_test', i, 'second')
-        assert not elock.aio_lock.locked()
+        assert not elock.aio_locks[id(loop)].locked()
 
     tx_indecies = [i for i in range(8)]
     coros = [asyncio.ensure_future(do_emit(i)) for i in tx_indecies]
@@ -59,16 +61,17 @@ async def test_aio_property_lock(listener):
         test_dict = DictProperty()
         test_list = ListProperty()
 
+    loop = asyncio.get_event_loop()
     a = A()
     a.test_list = [-1] * 4
     a.test_dict = {'a':0, 'b':1, 'c':2, 'd':3}
     a.bind(test_prop=listener.on_prop, test_list=listener.on_prop, test_dict=listener.on_prop)
 
     async with a.emission_lock('test_prop') as elock:
-        assert elock.aio_lock.locked()
+        assert elock.aio_locks[id(loop)].locked()
         for i in range(4):
             a.test_prop = i
-    assert not elock.aio_lock.locked()
+    assert not elock.aio_locks[id(loop)].locked()
     assert len(listener.property_events) == 1
     assert listener.property_event_kwargs[0]['property'].name == 'test_prop'
     assert listener.property_events[0] == i
