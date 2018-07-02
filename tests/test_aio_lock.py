@@ -1,4 +1,5 @@
 import asyncio
+import threading
 from functools import partial
 import time
 import pytest
@@ -153,6 +154,109 @@ async def test_aio_property_lock(listener):
         event_list = listener.property_event_map[prop_name]
         assert len(event_list) == 1
         assert event_list[0]['value'] == vals[-1] == getattr(a, prop_name)
+
+@pytest.mark.asyncio
+async def test_aio_lock_concurrency(listener, sender):
+
+    letters = 'abcdefghijkl'
+
+    class EmitterThread(threading.Thread):
+        def __init__(self):
+            super().__init__()
+            self.running = threading.Event()
+            self.stopped = threading.Event()
+            self.rx_queue = asyncio.Queue()
+        def run(self):
+            loop = self.loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            self.msg_queue = asyncio.Queue()
+            self.running.set()
+            loop.run_until_complete(self.run_loop())
+            self.stopped.set()
+        async def stop(self):
+            self.running.clear()
+            result = await self.send_msg(None)
+            self.stopped.wait()
+        async def send_msg(self, msg):
+            fut = asyncio.run_coroutine_threadsafe(self.msg_queue.put(msg), loop=self.loop)
+            await asyncio.wrap_future(fut)
+            result = await self.rx_queue.get()
+            self.rx_queue.task_done()
+            return result
+        async def run_loop(self):
+            while self.running.is_set():
+                msg = await self.msg_queue.get()
+                self.msg_queue.task_done()
+                if msg is None:
+                    self.running.clear()
+                    break
+                if msg == 'acquire':
+                    await self.acquire()
+                    self.rx_queue.put_nowait(msg)
+                elif msg == 'release':
+                    await self.release()
+                    self.rx_queue.put_nowait(msg)
+                elif isinstance(msg, dict):
+                    args = msg.get('args', [])
+                    kwargs = msg.get('kwargs', {})
+                    if msg.get('action') == 'emit':
+                        await self.do_emit(*args, **kwargs)
+                        self.rx_queue.put_nowait(msg)
+            self.rx_queue.put_nowait('exit')
+        async def acquire(self):
+            lock = sender.emission_lock('on_test')
+            await lock.acquire_async()
+        async def release(self):
+            lock = sender.emission_lock('on_test')
+            await lock.release_async()
+        async def do_emit(self, *args, **kwargs):
+            sender.emit('on_test', *args, **kwargs)
+
+    loop = asyncio.get_event_loop()
+    sender.register_event('on_test')
+    sender.bind(on_test=listener.on_event)
+    emission_lock = sender.emission_lock('on_test')
+
+    t = EmitterThread()
+    t.start()
+    t.running.wait()
+
+    async with emission_lock:
+        assert emission_lock.held
+        assert len(emission_lock.aio_locks) == 1
+        assert id(loop) in emission_lock.aio_locks
+        assert emission_lock.aio_locks[id(loop)].locked()
+
+        await t.send_msg('acquire')
+        assert emission_lock.held
+        assert len(emission_lock.aio_locks) == 2
+        assert id(t.loop) in emission_lock.aio_locks
+        assert emission_lock.aio_locks[id(t.loop)].locked()
+
+        sender.emit('on_test', letters[0], emit_count=0)
+
+        assert len(listener.received_event_data) == 0
+
+    await t.send_msg('release')
+    assert len(listener.received_event_data) == 1
+
+    async with emission_lock:
+        assert emission_lock.held
+        sender.emit('on_test', False)
+        assert len(listener.received_event_data) == 1
+
+        await t.send_msg(dict(action='emit', args=[letters[1]], kwargs={'emit_count':1}))
+        assert emission_lock.held
+        assert len(listener.received_event_data) == 1
+
+    assert len(listener.received_event_data) == 2
+    edata = listener.received_event_data[1]
+    assert edata['args'][0] is not False
+    assert edata['args'][0] == letters[1]
+    assert edata['kwargs']['emit_count'] == 1
+
+    await t.stop()
+    t.join()
 
 @pytest.mark.asyncio
 async def test_aio_simple_lock():
