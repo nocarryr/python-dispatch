@@ -190,6 +190,15 @@ class AioEventWaiters(object):
     def __await__(self):
         return self.wait()
     def __call__(self, *args, **kwargs):
+        """Triggers any stored :class:`waiters <AioEventWaiter>`
+
+        Calls :meth:`AioEventWaiter.trigger` method on all instances stored in
+        :attr:`waiters`. After completion, the :attr:`waiters` are removed.
+
+        Args:
+            *args: Positional arguments to pass to :meth:`AioEventWaiter.trigger`
+            **kwargs: Keyword arguments to pass to :meth:`AioEventWaiter.trigger`
+        """
         with self.lock:
             for waiter in self.waiters:
                 waiter.trigger(*args, **kwargs)
@@ -216,14 +225,32 @@ class AioWeakMethodContainer(WeakMethodContainer):
         self._remove = remove
         self.event_loop_map = {}
     def add_method(self, loop, callback):
+        """Add a coroutine function
+
+        Args:
+            loop: The :class:`event loop <asyncio.BaseEventLoop>` instance
+                on which to schedule callbacks
+            callback: The :term:`coroutine function` to add
+        """
         f, obj = get_method_vars(callback)
         wrkey = (f, id(obj))
         self[wrkey] = obj
         self.event_loop_map[wrkey] = loop
     def iter_instances(self):
+        """Iterate over the stored objects
+
+        .. seealso:: :meth:`pydispatch.utils.WeakMethodContainer.iter_instances`
+        """
         with _IterationGuard(self):
             yield from super().iter_instances()
     def iter_methods(self):
+        """Iterate over stored coroutine functions
+
+        Yields:
+            Stored :term:`coroutine function` objects
+
+        .. seealso:: :meth:`pydispatch.utils.WeakMethodContainer.iter_instances`
+        """
         for wrkey, obj in self.iter_instances():
             f, obj_id = wrkey
             loop = self.event_loop_map[wrkey]
@@ -233,11 +260,32 @@ class AioWeakMethodContainer(WeakMethodContainer):
         if key in self.event_loop_map:
             del self.event_loop_map[key]
     def submit_coroutine(self, coro, loop):
+        """Schedule and await a coroutine on the specified loop
+
+        The coroutine is wrapped and scheduled using
+        :func:`asyncio.run_coroutine_threadsafe`. While the coroutine is
+        "awaited", the result is not available as method returns immediately.
+
+        Args:
+            coro: The :term:`coroutine` to schedule
+            loop: The :class:`event loop <asyncio.BaseEventLoop>` on which to
+                schedule the coroutine
+
+        Note:
+            This method is used internally by :meth:`__call__` and is not meant
+            to be called directly.
+        """
         async def _do_call(_coro):
             with _IterationGuard(self):
                 await _coro
         asyncio.run_coroutine_threadsafe(_do_call(coro), loop=loop)
     def __call__(self, *args, **kwargs):
+        """Triggers all stored callbacks (coroutines)
+
+        Args:
+            *args: Positional arguments to pass to callbacks
+            **kwargs: Keyword arguments to pass to callbacks
+        """
         for loop, m in self.iter_methods():
             coro = m(*args, **kwargs)
             self.submit_coroutine(coro, loop)
