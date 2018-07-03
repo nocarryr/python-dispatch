@@ -24,11 +24,25 @@ def get_method_vars(m):
     return f, obj
 
 class WeakMethodContainer(weakref.WeakValueDictionary):
+    """Container to store weak references to callbacks
+
+    Instance methods are stored using the underlying :term:`function` object
+    and the instance id (using :func:`id(obj) <id>`) as the key (a two-tuple)
+    and the object itself as the value. This ensures proper weak referencing.
+
+    Functions are stored using the string "function" and the id of the function
+    as the key (a two-tuple).
+    """
     def keys(self):
         if PY2:
             return self.iterkeys()
         return super(WeakMethodContainer, self).keys()
     def add_method(self, m):
+        """Add an instance method or function
+
+        Args:
+            m: The instance method or function to store
+        """
         if isinstance(m, types.FunctionType):
             self['function', id(m)] = m
         else:
@@ -36,6 +50,11 @@ class WeakMethodContainer(weakref.WeakValueDictionary):
             wrkey = (f, id(obj))
             self[wrkey] = obj
     def del_method(self, m):
+        """Remove an instance method or function if it exists
+
+        Args:
+            m: The instance method or function to remove
+        """
         if isinstance(m, types.FunctionType):
             wrkey = ('function', id(m))
         else:
@@ -44,6 +63,11 @@ class WeakMethodContainer(weakref.WeakValueDictionary):
         if wrkey in self:
             del self[wrkey]
     def del_instance(self, obj):
+        """Remove any stored instance methods that belong to an object
+
+        Args:
+            obj: The instance object to remove
+        """
         to_remove = set()
         for wrkey, _obj in self.iter_instances():
             if obj is _obj:
@@ -51,12 +75,23 @@ class WeakMethodContainer(weakref.WeakValueDictionary):
         for wrkey in to_remove:
             del self[wrkey]
     def iter_instances(self):
+        """Iterate over the stored objects
+
+        Yields:
+            wrkey: The two-tuple key used to store the object
+            obj: The instance or function object
+        """
         for wrkey in set(self.keys()):
             obj = self.get(wrkey)
             if obj is None:
                 continue
             yield wrkey, obj
     def iter_methods(self):
+        """Iterate over stored functions and instance methods
+
+        Yields:
+            Instance methods or function objects
+        """
         for wrkey, obj in self.iter_instances():
             f, obj_id = wrkey
             if f == 'function':
@@ -70,6 +105,13 @@ class InformativeDict(dict):
         self.del_callback(key)
 
 class InformativeWVDict(weakref.WeakValueDictionary):
+    """A WeakValueDictionary providing a callback for deletion
+
+    Keyword Arguments:
+        del_callback: A callback function that will be called when an item is
+            either deleted or dereferenced. It will be called with the key as
+            the only argument.
+    """
     def __init__(self, **kwargs):
         self.del_callback = kwargs.get('del_callback')
         weakref.WeakValueDictionary.__init__(self)
@@ -90,6 +132,20 @@ class InformativeWVDict(weakref.WeakValueDictionary):
         self.del_callback(key)
 
 class EmissionHoldLock_(object):
+    """Context manager used for :meth:`pydispatch.dispatch.Dispatcher.emission_lock`
+
+    Args:
+        event_instance: The :class:`~pydispatch.dispatch.Event` instance
+            associated with the lock
+
+    Attributes:
+        event_instance: The :class:`~pydispatch.dispatch.Event` instance
+            associated with the lock
+        last_event: The positional and keyword arguments from the event's last
+            emission as a two-tuple. If no events were triggered while the lock
+            was held, :obj:`None`.
+        held (bool): The internal state of the lock
+    """
     def __init__(self, event_instance):
         self.event_instance = event_instance
         self.last_event = None

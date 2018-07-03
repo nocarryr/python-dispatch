@@ -1,6 +1,10 @@
 import asyncio
 
 class AioEmissionHoldLock(object):
+    """Async context manager mixin for :class:`pydispatch.utils.EmissionHoldLock_`
+
+    Supports use in :keyword:`async with` statements
+    """
     @property
     def aio_lock(self):
         l = getattr(self, '_aio_lock', None)
