@@ -2,6 +2,7 @@
 source = pydispatch/*
 
 [report]
+omit = pydispatch/aioutils.py
 exclude_lines =
     pragma: no cover
     if PY2:
