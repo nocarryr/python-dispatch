@@ -232,13 +232,15 @@ class AioWeakMethodContainer(WeakMethodContainer):
     def _on_weakref_fin(self, key):
         if key in self.event_loop_map:
             del self.event_loop_map[key]
-    async def submit_coroutine(self, coro):
-        with _IterationGuard(self):
-            await coro
+    def submit_coroutine(self, coro, loop):
+        async def _do_call(_coro):
+            with _IterationGuard(self):
+                await _coro
+        asyncio.run_coroutine_threadsafe(_do_call(coro), loop=loop)
     def __call__(self, *args, **kwargs):
         for loop, m in self.iter_methods():
             coro = m(*args, **kwargs)
-            asyncio.run_coroutine_threadsafe(self.submit_coroutine(coro), loop=loop)
+            self.submit_coroutine(coro, loop)
     def __delitem__(self, key):
         if key in self.event_loop_map:
             del self.event_loop_map[key]
