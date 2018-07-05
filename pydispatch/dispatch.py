@@ -1,16 +1,14 @@
 import types
-try:
-    import asyncio
-except ImportError:
-    asyncio = None
 
 from pydispatch.utils import (
     WeakMethodContainer,
     EmissionHoldLock,
     AIO_AVAILABLE,
+    iscoroutinefunction,
 )
 from pydispatch.properties import Property
 if AIO_AVAILABLE:
+    import asyncio
     from pydispatch.aioutils import AioWeakMethodContainer, AioEventWaiters
 
 
@@ -28,13 +26,14 @@ class Event(object):
             self.aio_waiters = AioEventWaiters()
         self.emission_lock = EmissionHoldLock(self)
     def add_listener(self, callback, **kwargs):
-        if AIO_AVAILABLE and asyncio.iscoroutinefunction(callback):
-            loop = kwargs.get('__aio_loop__')
-            if loop is None:
-                raise RuntimeError('Coroutine function given without event loop')
-            self.aio_listeners.add_method(loop, callback)
-        else:
-            self.listeners.add_method(callback)
+        if AIO_AVAILABLE:
+            if iscoroutinefunction(callback):
+                loop = kwargs.get('__aio_loop__')
+                if loop is None:
+                    raise RuntimeError('Coroutine function given without event loop')
+                self.aio_listeners.add_method(loop, callback)
+                return
+        self.listeners.add_method(callback)
     def remove_listener(self, obj):
         if isinstance(obj, (types.MethodType, types.FunctionType)):
             self.listeners.del_method(obj)

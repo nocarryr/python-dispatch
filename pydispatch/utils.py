@@ -7,16 +7,16 @@ except ImportError:
     def _remove_dead_weakref(o, key):
         del o[key]
 import types
-try:
+
+AIO_AVAILABLE = sys.version_info >= (3, 5)
+if AIO_AVAILABLE:
     import asyncio
-except ImportError:
+else:
     asyncio = None
 
 PY2 = sys.version_info.major == 2
 if not PY2:
     basestring = str
-
-AIO_AVAILABLE = sys.version_info >= (3, 5)
 
 def get_method_vars(m):
     if PY2:
@@ -28,9 +28,9 @@ def get_method_vars(m):
     return f, obj
 
 def iscoroutinefunction(obj):
-    if not AIO_AVAILABLE:
-        return False
-    return asyncio.iscoroutinefunction(obj)
+    if AIO_AVAILABLE:
+        return asyncio.iscoroutinefunction(obj)
+    return False
 
 class WeakMethodContainer(weakref.WeakValueDictionary):
     """Container to store weak references to callbacks
