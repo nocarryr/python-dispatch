@@ -8,11 +8,15 @@ except ImportError:
         del o[key]
 import types
 
+AIO_AVAILABLE = sys.version_info >= (3, 5)
+if AIO_AVAILABLE:
+    import asyncio
+else:
+    asyncio = None
+
 PY2 = sys.version_info.major == 2
 if not PY2:
     basestring = str
-
-AIO_AVAILABLE = sys.version_info >= (3, 5)
 
 def get_method_vars(m):
     if PY2:
@@ -22,6 +26,11 @@ def get_method_vars(m):
         f = m.__func__
         obj = m.__self__
     return f, obj
+
+def iscoroutinefunction(obj):
+    if AIO_AVAILABLE:
+        return asyncio.iscoroutinefunction(obj)
+    return False
 
 class WeakMethodContainer(weakref.WeakValueDictionary):
     """Container to store weak references to callbacks
@@ -37,7 +46,7 @@ class WeakMethodContainer(weakref.WeakValueDictionary):
         if PY2:
             return self.iterkeys()
         return super(WeakMethodContainer, self).keys()
-    def add_method(self, m):
+    def add_method(self, m, **kwargs):
         """Add an instance method or function
 
         Args:
@@ -55,7 +64,7 @@ class WeakMethodContainer(weakref.WeakValueDictionary):
         Args:
             m: The instance method or function to remove
         """
-        if isinstance(m, types.FunctionType):
+        if isinstance(m, types.FunctionType) and not iscoroutinefunction(m):
             wrkey = ('function', id(m))
         else:
             f, obj = get_method_vars(m)

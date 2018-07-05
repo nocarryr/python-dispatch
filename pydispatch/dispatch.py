@@ -1,7 +1,15 @@
 import types
 
-from pydispatch.utils import WeakMethodContainer, EmissionHoldLock
+from pydispatch.utils import (
+    WeakMethodContainer,
+    EmissionHoldLock,
+    AIO_AVAILABLE,
+    iscoroutinefunction,
+)
 from pydispatch.properties import Property
+if AIO_AVAILABLE:
+    import asyncio
+    from pydispatch.aioutils import AioWeakMethodContainer, AioEventWaiters
 
 
 class Event(object):
@@ -9,18 +17,32 @@ class Event(object):
 
     This is used internally by :class:`Dispatcher`.
     """
-    __slots__ = ('name', 'listeners', 'emission_lock')
+    __slots__ = ('name', 'listeners', 'aio_waiters', 'aio_listeners', 'emission_lock')
     def __init__(self, name):
         self.name = name
         self.listeners = WeakMethodContainer()
+        if AIO_AVAILABLE:
+            self.aio_listeners = AioWeakMethodContainer()
+            self.aio_waiters = AioEventWaiters()
         self.emission_lock = EmissionHoldLock(self)
-    def add_listener(self, callback):
+    def add_listener(self, callback, **kwargs):
+        if AIO_AVAILABLE:
+            if iscoroutinefunction(callback):
+                loop = kwargs.get('__aio_loop__')
+                if loop is None:
+                    raise RuntimeError('Coroutine function given without event loop')
+                self.aio_listeners.add_method(loop, callback)
+                return
         self.listeners.add_method(callback)
     def remove_listener(self, obj):
         if isinstance(obj, (types.MethodType, types.FunctionType)):
             self.listeners.del_method(obj)
+            if AIO_AVAILABLE:
+                self.aio_listeners.del_method(obj)
         else:
             self.listeners.del_instance(obj)
+            if AIO_AVAILABLE:
+                self.aio_listeners.del_instance(obj)
     def __call__(self, *args, **kwargs):
         """Dispatches the event to listeners
 
@@ -29,10 +51,16 @@ class Event(object):
         if self.emission_lock.held:
             self.emission_lock.last_event = (args, kwargs)
             return
+        if AIO_AVAILABLE:
+            self.aio_waiters(*args, **kwargs)
+            self.aio_listeners(*args, **kwargs)
         for m in self.listeners.iter_methods():
             r = m(*args, **kwargs)
             if r is False:
                 return r
+    if AIO_AVAILABLE:
+        def __await__(self):
+            return self.aio_waiters.__await__()
     def __repr__(self):
         return '<{}: {}>'.format(self.__class__, self)
     def __str__(self):
@@ -122,7 +150,45 @@ class Dispatcher(object):
 
         The callbacks are stored as weak references and their order is not
         maintained relative to the order of binding.
+
+        **Async Callbacks**:
+
+            Callbacks may be :term:`coroutine functions <coroutine function>`
+            (defined using :keyword:`async def` or decorated with
+            :func:`@asyncio.coroutine <asyncio.coroutine>`), but an event loop
+            must be explicitly provided with the keyword
+            argument ``"__aio_loop__"`` (an instance of
+            :class:`asyncio.BaseEventLoop`)::
+
+                import asyncio
+                from pydispatch import Dispatcher
+
+                class Foo(Dispatcher):
+                    _events_ = ['test_event']
+
+                class Bar(object):
+                    def __init__(self):
+                        self.got_foo_event = asyncio.Event()
+                    async def wait_for_foo(self):
+                        await self.got_foo_event.wait()
+                        print('got foo!')
+                    async def on_foo_test_event(self, *args, **kwargs):
+                        self.got_foo_event.set()
+
+                foo = Foo()
+                bar = Bar()
+
+                loop = asyncio.get_event_loop()
+                foo.bind(test_event=bar.on_foo_test_event, __aio_loop__=loop)
+
+                loop.run_until_complete(bar.wait_for_foo())
+
+            This can also be done using :meth:`bind_async`.
+
+            .. versionadded:: 0.1.0
+
         """
+        aio_loop = kwargs.pop('__aio_loop__', None)
         props = self.__property_events
         events = self.__events
         for name, cb in kwargs.items():
@@ -130,7 +196,7 @@ class Dispatcher(object):
                 e = props[name]
             else:
                 e = events[name]
-            e.add_listener(cb)
+            e.add_listener(cb, __aio_loop__=aio_loop)
     def unbind(self, *args):
         """Unsubscribes from events or :class:`~pydispatch.properties.Property` updates
 
@@ -148,6 +214,26 @@ class Dispatcher(object):
                 prop.remove_listener(arg)
             for e in events:
                 e.remove_listener(arg)
+    def bind_async(self, loop, **kwargs):
+        """Subscribes to events with async callbacks
+
+        Functionality is matches the :meth:`bind` method, except the provided
+        callbacks should be coroutine functions. When the event is dispatched,
+        callbacks will be placed on the given event loop.
+
+        For keyword arguments, see :meth:`bind`.
+
+        Args:
+            loop: The :class:`EventLoop <asyncio.BaseEventLoop>` to use when
+                events are dispatched
+
+        Availability:
+            Python>=3.5
+
+        .. versionadded:: 0.1.0
+        """
+        kwargs['__aio_loop__'] = loop
+        self.bind(**kwargs)
     def emit(self, name, *args, **kwargs):
         """Dispatches an event to any subscribed listeners
 
@@ -164,6 +250,22 @@ class Dispatcher(object):
         if e is None:
             e = self.__events[name]
         return e(*args, **kwargs)
+    def get_dispatcher_event(self, name):
+        """Retrieves an Event object by name
+
+        Args:
+            name (str): The name of the :class:`Event` or
+                :class:`~pydispatch.properties.Property` object to retrieve
+
+        Returns:
+            The :class:`Event` instance for the event or property definition
+
+        .. versionadded:: 0.1.0
+        """
+        e = self.__property_events.get(name)
+        if e is None:
+            e = self.__events[name]
+        return e
     def emission_lock(self, name):
         """Holds emission of events and dispatches the last event on release
 
