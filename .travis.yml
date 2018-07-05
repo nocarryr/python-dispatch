@@ -26,7 +26,7 @@ script:
   - sh -c "if [ '$ALLOW_DEPLOY' = 'true' ]; then ./doc/build.sh; fi"
   - py.test --cov-config $COVERAGERC --cov=pydispatch
 after_success:
-  - coveralls
+  - coveralls --rcfile="$COVERAGERC"
   - sh -c "if [ '$ALLOW_DEPLOY' = 'true' ]; then travis-sphinx --outdir=doc/build/html/ deploy; fi"
 deploy:
   provider: pypi
