@@ -35,12 +35,17 @@ def test_cls_events(listener, sender_cls):
     a.bind(on_test_a=listener.on_event)
     b.bind(on_test_a=listener.on_event, on_test_b=listener.on_event)
 
+    event = a.get_dispatcher_event('on_test_a')
+    assert event.name == 'on_test_a'
     assert 'on_test_a' in a._Dispatcher__events.keys()
     assert len(a._Dispatcher__events) == 1
-    assert len(a._Dispatcher__events['on_test_a'].listeners) ==1
+    assert len(event.listeners) == 1
 
+    event = b.get_dispatcher_event('on_test_b')
+    assert event.name == 'on_test_b'
     assert 'on_test_b' in b._Dispatcher__events.keys()
     assert len(b._Dispatcher__events) == 2
+    assert len(event.listeners) == 1
 
     a.trigger_own_event()
     assert listener.received_events == ['on_test_a']
@@ -93,7 +98,7 @@ def test_removal(sender):
     assert len(listener.received_events) == 1
 
     del listener
-    e = sender._Dispatcher__events['on_test']
+    e = sender.get_dispatcher_event('on_test')
     l = [m for m in e.listeners]
     assert len(l) == 0
     sender.trigger_event('on_test')

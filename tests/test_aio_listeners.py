@@ -166,7 +166,7 @@ async def test_unbind(sender_cls):
     async def check_events_unbound():
         for name in ev_names:
             # Ensure event listeners are empty
-            e = sender._Dispatcher__events[name]
+            e = sender.get_dispatcher_event(name)
             assert not len(e.aio_listeners)
             assert not len(e.aio_listeners.event_loop_map)
 
