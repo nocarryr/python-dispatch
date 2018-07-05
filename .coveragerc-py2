@@ -7,3 +7,4 @@ exclude_lines =
     pragma: no cover
     if not PY2:
     if AIO_AVAILABLE:
+    def bind_async(self, loop, **kwargs):
