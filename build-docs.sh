@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+cd doc
+
 LOCAL_CONF="source/conf.py"
 REPO_DOC_ROOT="doc/source"
 LOCAL_BUILD_DIR="build/html/"
