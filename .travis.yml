@@ -17,6 +17,7 @@ matrix:
           - AIO_AVAILABLE=true
           - COVERAGERC=".coveragerc"
     - python: "3.6"
+      env:
           - ALLOW_DEPLOY=true
           - AIO_AVAILABLE=true
           - COVERAGERC=".coveragerc"
