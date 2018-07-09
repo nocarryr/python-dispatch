@@ -24,6 +24,7 @@ install:
   - pip install -e .
 script:
   - sh -c "if [ '$ALLOW_DEPLOY' = 'true' ]; then ./build-docs.sh; fi"
+  - pip install -e .
   - py.test --cov-config $COVERAGERC --cov=pydispatch
 after_success:
   - coveralls --rcfile="$COVERAGERC"
