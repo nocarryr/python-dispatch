@@ -13,6 +13,10 @@ matrix:
           - COVERAGERC=".coveragerc-py34"
     - python: "3.5.2"
       env:
+          - ALLOW_DEPLOY=false
+          - AIO_AVAILABLE=true
+          - COVERAGERC=".coveragerc"
+    - python: "3.6"
           - ALLOW_DEPLOY=true
           - AIO_AVAILABLE=true
           - COVERAGERC=".coveragerc"
