@@ -21,6 +21,10 @@ matrix:
           - ALLOW_DEPLOY=true
           - AIO_AVAILABLE=true
           - COVERAGERC=".coveragerc"
+addons:
+    apt:
+        packages:
+            - pandoc
 install:
   - pip install -U pip setuptools wheel
   - sh -c "if [ '$ALLOW_DEPLOY' = 'true' ]; then pip install -r doc/requirements.txt & pip install travis-sphinx; fi"
