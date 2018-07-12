@@ -1,4 +1,4 @@
 Sphinx
-git+https://github.com/nocarryr/sphinxcontrib-versioning@scv-version-override
+git+https://github.com/nocarryr/sphinxcontrib-versioning@scv-version-override#egg=sphinxcontrib-versioning
 sphinx_rtd_theme
 m2r
