@@ -167,10 +167,11 @@
 
     <p class="scv-banner scv-sphinx_rtd_theme"><b>Warning:</b> This document is for an old version of python-dispatch.</p>
 <h1>Source code for pydispatch.properties</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;Properties</span>
+
 <span class="sd">:class:`Property` objects can be defined on subclasses of</span>
-<span class="sd">:class:`~pydispatch.dispatch.Dispatcher` to create instance attributes that act</span>
-<span class="sd">as events when their values change::</span>
+<span class="sd">:class:`~pydispatch.Dispatcher` to create instance attributes that act as events</span>
+<span class="sd">when their values change::</span>
 
 <span class="sd">    from pydispatch import Dispatcher, Property</span>
 
@@ -215,12 +216,11 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        default (Optional): If supplied, this will be the default value of the</span>
-<span class="sd">            Property for all instances of the class. Otherwise :obj:`None`</span>
+<span class="sd">            Property for all instances of the class. Otherwise ``None``</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        name (str): The name of the Property as defined in the class definition.</span>
-<span class="sd">            This will match the attribute name for the</span>
-<span class="sd">            :class:`~pydispatch.dispatch.Dispatcher` instance.</span>
+<span class="sd">            This will match the attribute name for the :class:`Dispatcher` instance.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -244,8 +244,7 @@
     <span class="k">def</span> <span class="nf">_del_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">__storage</span><span class="p">[</span><span class="nb">id</span><span class="p">(</span><span class="n">obj</span><span class="p">)]</span>
     <span class="k">def</span> <span class="nf">_on_weakref_fin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_id</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">obj_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__storage</span><span class="p">:</span>
-            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">__storage</span><span class="p">[</span><span class="n">obj_id</span><span class="p">]</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">__storage</span><span class="p">[</span><span class="n">obj_id</span><span class="p">]</span>
     <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">objcls</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span>
@@ -266,7 +265,7 @@
         <span class="sd">&quot;&quot;&quot;Called internally to emit changes from the instance object</span>
 
 <span class="sd">        The keyword arguments here will be passed to callbacks through the</span>
-<span class="sd">        instance object&#39;s :meth:`~pydispatch.dispatch.Dispatcher.emit` method.</span>
+<span class="sd">        instance object&#39;s :meth:`~Dispatcher.emit` method.</span>
 
 <span class="sd">        Keyword Args:</span>
 <span class="sd">            property: The :class:`Property` instance. This is useful if multiple</span>
@@ -287,16 +286,16 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
 
 <div class="viewcode-block" id="ListProperty"><a class="viewcode-back" href="../../api.html#pydispatch.properties.ListProperty">[docs]</a><span class="k">class</span> <span class="nc">ListProperty</span><span class="p">(</span><span class="n">Property</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Property with a :class:`list` type value</span>
+    <span class="sd">&quot;&quot;&quot;Property with a ``list`` type value</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        default (Optional): If supplied, this will be the default value of the</span>
-<span class="sd">            Property for all instances of the class. Otherwise :obj:`None`</span>
-<span class="sd">        copy_on_change (bool, optional): If :obj:`True`, the list will be copied</span>
+<span class="sd">            Property for all instances of the class. Otherwise ``None``</span>
+<span class="sd">        copy_on_change (bool, optional): If ``True``, the ``list`` will be copied</span>
 <span class="sd">            when contents are modified. This can be useful for observing the</span>
-<span class="sd">            original state of the list from within callbacks. The copied</span>
+<span class="sd">            original state of the ``list`` from within callbacks. The copied</span>
 <span class="sd">            (original) state will be available from the keyword argument &#39;old&#39;.</span>
-<span class="sd">            The default is :obj:`False` (for performance and memory reasons).</span>
+<span class="sd">            The default if ``False`` (for performance and memory reasons).</span>
 
 <span class="sd">    Changes to the contents of the list are able to be observed through</span>
 <span class="sd">    :class:`ObservableList`.</span>
@@ -323,16 +322,16 @@
         <span class="k">return</span> <span class="n">value</span></div>
 
 <div class="viewcode-block" id="DictProperty"><a class="viewcode-back" href="../../api.html#pydispatch.properties.DictProperty">[docs]</a><span class="k">class</span> <span class="nc">DictProperty</span><span class="p">(</span><span class="n">Property</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Property with a :class:`dict` type value</span>
+    <span class="sd">&quot;&quot;&quot;Property with a ``dict`` type value</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        default (Optional): If supplied, this will be the default value of the</span>
-<span class="sd">            Property for all instances of the class. Otherwise :obj:`None`</span>
-<span class="sd">        copy_on_change (bool, optional): If :obj:`True`, the dict will be copied</span>
+<span class="sd">            Property for all instances of the class. Otherwise ``None``</span>
+<span class="sd">        copy_on_change (bool, optional): If ``True``, the ``dict`` will be copied</span>
 <span class="sd">            when contents are modified. This can be useful for observing the</span>
-<span class="sd">            original state of the dict from within callbacks. The copied</span>
+<span class="sd">            original state of the ``dict`` from within callbacks. The copied</span>
 <span class="sd">            (original) state will be available from the keyword argument &#39;old&#39;.</span>
-<span class="sd">            The default is :obj:`False` (for performance and memory reasons).</span>
+<span class="sd">            The default if ``False`` (for performance and memory reasons).</span>
 
 <span class="sd">    Changes to the contents of the dict are able to be observed through</span>
 <span class="sd">    :class:`ObservableDict`.</span>
@@ -359,13 +358,12 @@
         <span class="k">return</span> <span class="n">value</span></div>
 
 <span class="k">class</span> <span class="nc">Observable</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Mixin used by :class:`ObservableList` and :class:`ObservableDict`</span>
-<span class="sd">    to emit changes and build other observables</span>
+    <span class="sd">&quot;&quot;&quot;Used by container subclasses to emit changes and build other observables</span>
 
 <span class="sd">    When an item is added to an observable container (a subclass of Observable)</span>
 <span class="sd">    it is type-checked and, if possible replaced by an observable version of it.</span>
 
-<span class="sd">    In other words, if a dict is added to a :class:`ObservableDict`, it is</span>
+<span class="sd">    In other words, if a ``dict`` is added to a :class:`ObservableDict`, it is</span>
 <span class="sd">    copied and replaced by another :class:`ObservableDict`. This allows nested</span>
 <span class="sd">    containers to be observed and their changes to be tracked.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -403,10 +401,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">_on_change</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">old</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">ObservableList</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">Observable</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A :class:`list` subclass that tracks changes to its contents</span>
-
-<span class="sd">    Note:</span>
-<span class="sd">        This class is for internal use and not intended to be used directly</span>
+    <span class="sd">&quot;&quot;&quot;A ``list`` object that tracks changes to its contents</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initlist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_complete</span> <span class="o">=</span> <span class="kc">False</span>
@@ -471,10 +466,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_emit_change</span><span class="p">(</span><span class="n">old</span><span class="o">=</span><span class="n">old</span><span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">ObservableDict</span><span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">Observable</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A :class:`dict` subclass that tracks changes to its contents</span>
-
-<span class="sd">    Note:</span>
-<span class="sd">        This class is for internal use and not intended to be used directly</span>
+    <span class="sd">&quot;&quot;&quot;A ``dict`` object that tracks changes to its contents</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initdict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_complete</span> <span class="o">=</span> <span class="kc">False</span>

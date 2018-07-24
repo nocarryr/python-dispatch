@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API &mdash; python-dispatch 0.1.0 documentation</title>
+  <title>API &mdash; python-dispatch 0.0.1 documentation</title>
   
 
   
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.0.1
               </div>
             
           
@@ -194,7 +194,7 @@ definition:</p>
 <dl class="method">
 <dt id="pydispatch.dispatch.Dispatcher.bind">
 <code class="descname">bind</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydispatch/dispatch.html#Dispatcher.bind"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.dispatch.Dispatcher.bind" title="Permalink to this definition">¶</a></dt>
-<dd><p>Subscribes to events or to <a class="reference internal" href="#pydispatch.properties.Property" title="pydispatch.properties.Property"><code class="xref py py-class docutils literal notranslate"><span class="pre">Property</span></code></a> updates</p>
+<dd><p>Subscribes to events or to <code class="xref py py-class docutils literal notranslate"><span class="pre">Property</span></code> updates</p>
 <p>Keyword arguments are used with the Event or Property names as keys
 and the callbacks as values:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Foo</span><span class="p">(</span><span class="n">Dispatcher</span><span class="p">):</span>
@@ -209,112 +209,6 @@ and the callbacks as values:</p>
 </div>
 <p>The callbacks are stored as weak references and their order is not
 maintained relative to the order of binding.</p>
-<p><strong>Async Callbacks</strong>:</p>
-<blockquote>
-<div><p>Callbacks may be <a class="reference external" href="https://docs.python.org/3/glossary.html#term-coroutine-function" title="(in Python v3.7)"><span class="xref std std-term">coroutine functions</span></a>
-(defined using <a class="reference external" href="https://docs.python.org/3/reference/compound_stmts.html#async-def" title="(in Python v3.7)"><code class="xref std std-keyword docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code></a> or decorated with
-<a class="reference external" href="https://docs.python.org/3/library/asyncio-task.html#asyncio.coroutine" title="(in Python v3.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;asyncio.coroutine</span></code></a>), but an event loop
-must be explicitly provided with the keyword
-argument <code class="docutils literal notranslate"><span class="pre">&quot;__aio_loop__&quot;</span></code> (an instance of
-<a class="reference external" href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.BaseEventLoop" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">asyncio.BaseEventLoop</span></code></a>):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">from</span> <span class="nn">pydispatch</span> <span class="k">import</span> <span class="n">Dispatcher</span>
-
-<span class="k">class</span> <span class="nc">Foo</span><span class="p">(</span><span class="n">Dispatcher</span><span class="p">):</span>
-    <span class="n">_events_</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;test_event&#39;</span><span class="p">]</span>
-
-<span class="k">class</span> <span class="nc">Bar</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">got_foo_event</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">wait_for_foo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">got_foo_event</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;got foo!&#39;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">on_foo_test_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">got_foo_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
-
-<span class="n">foo</span> <span class="o">=</span> <span class="n">Foo</span><span class="p">()</span>
-<span class="n">bar</span> <span class="o">=</span> <span class="n">Bar</span><span class="p">()</span>
-
-<span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
-<span class="n">foo</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">test_event</span><span class="o">=</span><span class="n">bar</span><span class="o">.</span><span class="n">on_foo_test_event</span><span class="p">,</span> <span class="n">__aio_loop__</span><span class="o">=</span><span class="n">loop</span><span class="p">)</span>
-
-<span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">bar</span><span class="o">.</span><span class="n">wait_for_foo</span><span class="p">())</span>
-</pre></div>
-</div>
-<p>This can also be done using <a class="reference internal" href="#pydispatch.dispatch.Dispatcher.bind_async" title="pydispatch.dispatch.Dispatcher.bind_async"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bind_async()</span></code></a>.</p>
-<div class="versionadded">
-<p><span class="versionmodified">New in version 0.1.0.</span></p>
-</div>
-</div></blockquote>
-</dd></dl>
-
-<dl class="method">
-<dt id="pydispatch.dispatch.Dispatcher.bind_async">
-<code class="descname">bind_async</code><span class="sig-paren">(</span><em>loop</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydispatch/dispatch.html#Dispatcher.bind_async"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.dispatch.Dispatcher.bind_async" title="Permalink to this definition">¶</a></dt>
-<dd><p>Subscribes to events with async callbacks</p>
-<p>Functionality is matches the <a class="reference internal" href="#pydispatch.dispatch.Dispatcher.bind" title="pydispatch.dispatch.Dispatcher.bind"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bind()</span></code></a> method, except the provided
-callbacks should be coroutine functions. When the event is dispatched,
-callbacks will be placed on the given event loop.</p>
-<p>For keyword arguments, see <a class="reference internal" href="#pydispatch.dispatch.Dispatcher.bind" title="pydispatch.dispatch.Dispatcher.bind"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bind()</span></code></a>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>loop</strong> – The <a class="reference external" href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.BaseEventLoop" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventLoop</span></code></a> to use when
-events are dispatched</td>
-</tr>
-</tbody>
-</table>
-<dl class="docutils">
-<dt>Availability:</dt>
-<dd>Python&gt;=3.5</dd>
-</dl>
-<div class="versionadded">
-<p><span class="versionmodified">New in version 0.1.0.</span></p>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt id="pydispatch.dispatch.Dispatcher.emission_lock">
-<code class="descname">emission_lock</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydispatch/dispatch.html#Dispatcher.emission_lock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.dispatch.Dispatcher.emission_lock" title="Permalink to this definition">¶</a></dt>
-<dd><p>Holds emission of events and dispatches the last event on release</p>
-<p>The context manager returned will store the last event data called by
-<a class="reference internal" href="#pydispatch.dispatch.Dispatcher.emit" title="pydispatch.dispatch.Dispatcher.emit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">emit()</span></code></a> and prevent callbacks until it exits. On exit, it will
-dispatch the last event captured (if any):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Foo</span><span class="p">(</span><span class="n">Dispatcher</span><span class="p">):</span>
-    <span class="n">_events_</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;my_event&#39;</span><span class="p">]</span>
-
-<span class="k">def</span> <span class="nf">on_my_event</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-
-<span class="n">foo</span> <span class="o">=</span> <span class="n">Foo</span><span class="p">()</span>
-<span class="n">foo</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">my_event</span><span class="o">=</span><span class="n">on_my_event</span><span class="p">)</span>
-
-<span class="k">with</span> <span class="n">foo</span><span class="o">.</span><span class="n">emission_lock</span><span class="p">(</span><span class="s1">&#39;my_event&#39;</span><span class="p">):</span>
-    <span class="n">foo</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s1">&#39;my_event&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">foo</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s1">&#39;my_event&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="mi">2</span>
-</pre></div>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The name of the <a class="reference internal" href="#pydispatch.dispatch.Event" title="pydispatch.dispatch.Event"><code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code></a> or
-<a class="reference internal" href="#pydispatch.properties.Property" title="pydispatch.properties.Property"><code class="xref py py-class docutils literal notranslate"><span class="pre">Property</span></code></a></td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A context manager to be used by the <a class="reference external" href="https://docs.python.org/3/reference/compound_stmts.html#with" title="(in Python v3.7)"><code class="xref std std-keyword docutils literal notranslate"><span class="pre">with</span></code></a> statement.<p>If available, this will also be an async context manager to be used
-with the <a class="reference external" href="https://docs.python.org/3/reference/compound_stmts.html#async-with" title="(in Python v3.7)"><code class="xref std std-keyword docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span></code></a> statement (see <a class="reference external" href="https://www.python.org/dev/peps/pep-0492/#asynchronous-context-managers-and-async-with">PEP 492</a>).</p>
-</td>
-</tr>
-</tbody>
-</table>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">The context manager is re-entrant, meaning that multiple calls to
-this method within nested context scopes are possible.</p>
-</div>
 </dd></dl>
 
 <dl class="method">
@@ -323,7 +217,7 @@ this method within nested context scopes are possible.</p>
 <dd><p>Dispatches an event to any subscribed listeners</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">If a listener returns <a class="reference external" href="https://docs.python.org/3/library/constants.html#False" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code></a>, the event will stop dispatching to
+<p class="last">If a listener returns <code class="docutils literal notranslate"><span class="pre">False</span></code>, the event will stop dispatching to
 other listeners. Any other return value is ignored.</p>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
@@ -339,26 +233,6 @@ other listeners. Any other return value is ignored.</p>
 </tr>
 </tbody>
 </table>
-</dd></dl>
-
-<dl class="method">
-<dt id="pydispatch.dispatch.Dispatcher.get_dispatcher_event">
-<code class="descname">get_dispatcher_event</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydispatch/dispatch.html#Dispatcher.get_dispatcher_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.dispatch.Dispatcher.get_dispatcher_event" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves an Event object by name</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The name of the <a class="reference internal" href="#pydispatch.dispatch.Event" title="pydispatch.dispatch.Event"><code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code></a> or
-<a class="reference internal" href="#pydispatch.properties.Property" title="pydispatch.properties.Property"><code class="xref py py-class docutils literal notranslate"><span class="pre">Property</span></code></a> object to retrieve</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The <a class="reference internal" href="#pydispatch.dispatch.Event" title="pydispatch.dispatch.Event"><code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code></a> instance for the event or property definition</td>
-</tr>
-</tbody>
-</table>
-<div class="versionadded">
-<p><span class="versionmodified">New in version 0.1.0.</span></p>
-</div>
 </dd></dl>
 
 <dl class="method">
@@ -378,7 +252,7 @@ other listeners. Any other return value is ignored.</p>
 <dl class="method">
 <dt id="pydispatch.dispatch.Dispatcher.unbind">
 <code class="descname">unbind</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydispatch/dispatch.html#Dispatcher.unbind"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.dispatch.Dispatcher.unbind" title="Permalink to this definition">¶</a></dt>
-<dd><p>Unsubscribes from events or <a class="reference internal" href="#pydispatch.properties.Property" title="pydispatch.properties.Property"><code class="xref py py-class docutils literal notranslate"><span class="pre">Property</span></code></a> updates</p>
+<dd><p>Unsubscribes from events or <code class="xref py py-class docutils literal notranslate"><span class="pre">Property</span></code> updates</p>
 <p>Multiple arguments can be given. Each of which can be either the method
 that was used for the original call to <a class="reference internal" href="#pydispatch.dispatch.Dispatcher.bind" title="pydispatch.dispatch.Dispatcher.bind"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bind()</span></code></a> or an instance
 object.</p>
@@ -406,9 +280,10 @@ Properties will be ‘unbound’.</p>
 </div>
 <div class="section" id="module-pydispatch.properties">
 <span id="pydispatch-properties-module"></span><h2>pydispatch.properties module<a class="headerlink" href="#module-pydispatch.properties" title="Permalink to this headline">¶</a></h2>
+<p>Properties</p>
 <p><a class="reference internal" href="#pydispatch.properties.Property" title="pydispatch.properties.Property"><code class="xref py py-class docutils literal notranslate"><span class="pre">Property</span></code></a> objects can be defined on subclasses of
-<a class="reference internal" href="#pydispatch.dispatch.Dispatcher" title="pydispatch.dispatch.Dispatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dispatcher</span></code></a> to create instance attributes that act
-as events when their values change:</p>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Dispatcher</span></code> to create instance attributes that act as events
+when their values change:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydispatch</span> <span class="k">import</span> <span class="n">Dispatcher</span><span class="p">,</span> <span class="n">Property</span>
 
 <span class="k">class</span> <span class="nc">Foo</span><span class="p">(</span><span class="n">Dispatcher</span><span class="p">):</span>
@@ -449,68 +324,26 @@ equality checking. In most cases, this will be handled automatically.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>default</strong> (<em>Optional</em>) – If supplied, this will be the default value of the
-Property for all instances of the class. Otherwise <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></td>
+Property for all instances of the class. Otherwise <code class="docutils literal notranslate"><span class="pre">None</span></code></td>
 </tr>
 </tbody>
 </table>
-<dl class="attribute">
-<dt id="pydispatch.properties.Property.name">
-<code class="descname">name</code><a class="headerlink" href="#pydispatch.properties.Property.name" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>str</em> – The name of the Property as defined in the class definition.
-This will match the attribute name for the
-<a class="reference internal" href="#pydispatch.dispatch.Dispatcher" title="pydispatch.dispatch.Dispatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dispatcher</span></code></a> instance.</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="class">
 <dt id="pydispatch.properties.ListProperty">
-<em class="property">class </em><code class="descname">ListProperty</code><span class="sig-paren">(</span><em>default=None</em>, <em>copy_on_change=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydispatch/properties.html#ListProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.properties.ListProperty" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descname">ListProperty</code><span class="sig-paren">(</span><em>default=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydispatch/properties.html#ListProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.properties.ListProperty" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pydispatch.properties.Property" title="pydispatch.properties.Property"><code class="xref py py-class docutils literal notranslate"><span class="pre">pydispatch.properties.Property</span></code></a></p>
-<p>Property with a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> type value</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>default</strong> (<em>Optional</em>) – If supplied, this will be the default value of the
-Property for all instances of the class. Otherwise <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></li>
-<li><strong>copy_on_change</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – If <a class="reference external" href="https://docs.python.org/3/library/constants.html#True" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code></a>, the list will be copied
-when contents are modified. This can be useful for observing the
-original state of the list from within callbacks. The copied
-(original) state will be available from the keyword argument ‘old’.
-The default is <a class="reference external" href="https://docs.python.org/3/library/constants.html#False" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code></a> (for performance and memory reasons).</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
+<p>Property with a <code class="docutils literal notranslate"><span class="pre">list</span></code> type value</p>
 <p>Changes to the contents of the list are able to be observed through
 <code class="xref py py-class docutils literal notranslate"><span class="pre">ObservableList</span></code>.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="pydispatch.properties.DictProperty">
-<em class="property">class </em><code class="descname">DictProperty</code><span class="sig-paren">(</span><em>default=None</em>, <em>copy_on_change=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydispatch/properties.html#DictProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.properties.DictProperty" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descname">DictProperty</code><span class="sig-paren">(</span><em>default=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydispatch/properties.html#DictProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.properties.DictProperty" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pydispatch.properties.Property" title="pydispatch.properties.Property"><code class="xref py py-class docutils literal notranslate"><span class="pre">pydispatch.properties.Property</span></code></a></p>
-<p>Property with a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> type value</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>default</strong> (<em>Optional</em>) – If supplied, this will be the default value of the
-Property for all instances of the class. Otherwise <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></li>
-<li><strong>copy_on_change</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – If <a class="reference external" href="https://docs.python.org/3/library/constants.html#True" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code></a>, the dict will be copied
-when contents are modified. This can be useful for observing the
-original state of the dict from within callbacks. The copied
-(original) state will be available from the keyword argument ‘old’.
-The default is <a class="reference external" href="https://docs.python.org/3/library/constants.html#False" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code></a> (for performance and memory reasons).</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
+<p>Property with a <code class="docutils literal notranslate"><span class="pre">dict</span></code> type value</p>
 <p>Changes to the contents of the dict are able to be observed through
 <code class="xref py py-class docutils literal notranslate"><span class="pre">ObservableDict</span></code>.</p>
 </dd></dl>
@@ -587,7 +420,7 @@ The default is <a class="reference external" href="https://docs.python.org/3/lib
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0',
+            VERSION:'0.0.1',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

@@ -169,16 +169,8 @@
 <h1>Source code for pydispatch.dispatch</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">types</span>
 
-<span class="kn">from</span> <span class="nn">pydispatch.utils</span> <span class="k">import</span> <span class="p">(</span>
-    <span class="n">WeakMethodContainer</span><span class="p">,</span>
-    <span class="n">EmissionHoldLock</span><span class="p">,</span>
-    <span class="n">AIO_AVAILABLE</span><span class="p">,</span>
-    <span class="n">iscoroutinefunction</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">pydispatch.utils</span> <span class="k">import</span> <span class="n">WeakMethodContainer</span>
 <span class="kn">from</span> <span class="nn">pydispatch.properties</span> <span class="k">import</span> <span class="n">Property</span>
-<span class="k">if</span> <span class="n">AIO_AVAILABLE</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">asyncio</span>
-    <span class="kn">from</span> <span class="nn">pydispatch.aioutils</span> <span class="k">import</span> <span class="n">AioWeakMethodContainer</span><span class="p">,</span> <span class="n">AioEventWaiters</span>
 
 
 <div class="viewcode-block" id="Event"><a class="viewcode-back" href="../../api.html#pydispatch.dispatch.Event">[docs]</a><span class="k">class</span> <span class="nc">Event</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -186,50 +178,26 @@
 
 <span class="sd">    This is used internally by :class:`Dispatcher`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;listeners&#39;</span><span class="p">,</span> <span class="s1">&#39;aio_waiters&#39;</span><span class="p">,</span> <span class="s1">&#39;aio_listeners&#39;</span><span class="p">,</span> <span class="s1">&#39;emission_lock&#39;</span><span class="p">)</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;listeners&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">listeners</span> <span class="o">=</span> <span class="n">WeakMethodContainer</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">AIO_AVAILABLE</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">aio_listeners</span> <span class="o">=</span> <span class="n">AioWeakMethodContainer</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">aio_waiters</span> <span class="o">=</span> <span class="n">AioEventWaiters</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">emission_lock</span> <span class="o">=</span> <span class="n">EmissionHoldLock</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">add_listener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">AIO_AVAILABLE</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">iscoroutinefunction</span><span class="p">(</span><span class="n">callback</span><span class="p">):</span>
-                <span class="n">loop</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;__aio_loop__&#39;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">loop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Coroutine function given without event loop&#39;</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">aio_listeners</span><span class="o">.</span><span class="n">add_method</span><span class="p">(</span><span class="n">loop</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span>
-                <span class="k">return</span>
+    <span class="k">def</span> <span class="nf">add_listener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">listeners</span><span class="o">.</span><span class="n">add_method</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">remove_listener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">FunctionType</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">listeners</span><span class="o">.</span><span class="n">del_method</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">AIO_AVAILABLE</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">aio_listeners</span><span class="o">.</span><span class="n">del_method</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">listeners</span><span class="o">.</span><span class="n">del_instance</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">AIO_AVAILABLE</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">aio_listeners</span><span class="o">.</span><span class="n">del_instance</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 <div class="viewcode-block" id="Event.__call__"><a class="viewcode-back" href="../../api.html#pydispatch.dispatch.Event.__call__">[docs]</a>    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Dispatches the event to listeners</span>
 
 <span class="sd">        Called by :meth:`~Dispatcher.emit`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">emission_lock</span><span class="o">.</span><span class="n">held</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">emission_lock</span><span class="o">.</span><span class="n">last_event</span> <span class="o">=</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
-            <span class="k">return</span>
-        <span class="k">if</span> <span class="n">AIO_AVAILABLE</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">aio_waiters</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">aio_listeners</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">listeners</span><span class="o">.</span><span class="n">iter_methods</span><span class="p">():</span>
             <span class="n">r</span> <span class="o">=</span> <span class="n">m</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">r</span></div>
-    <span class="k">if</span> <span class="n">AIO_AVAILABLE</span><span class="p">:</span>
-        <span class="k">def</span> <span class="nf">__await__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">aio_waiters</span><span class="o">.</span><span class="fm">__await__</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;&lt;</span><span class="si">{}</span><span class="s1">: </span><span class="si">{}</span><span class="s1">&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -249,8 +217,6 @@
 
 <span class="sd">    Once defined, an event can be dispatched to listeners by calling :meth:`emit`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">__initialized_subclasses</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-    <span class="n">__skip_initialized</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">def</span> <span class="nf">iter_bases</span><span class="p">(</span><span class="n">_cls</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">_cls</span> <span class="ow">is</span> <span class="nb">object</span><span class="p">:</span>
@@ -259,22 +225,18 @@
             <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">_cls</span><span class="o">.</span><span class="vm">__bases__</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">_cls_</span> <span class="ow">in</span> <span class="n">iter_bases</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
                     <span class="k">yield</span> <span class="n">_cls_</span>
-        <span class="n">skip_initialized</span> <span class="o">=</span> <span class="n">Dispatcher</span><span class="o">.</span><span class="n">_Dispatcher__skip_initialized</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">skip_initialized</span> <span class="ow">or</span> <span class="bp">cls</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Dispatcher</span><span class="o">.</span><span class="n">_Dispatcher__initialized_subclasses</span><span class="p">:</span>
-            <span class="n">props</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="n">events</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">_cls</span> <span class="ow">in</span> <span class="n">iter_bases</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-                <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">_cls</span><span class="p">):</span>
-                    <span class="n">prop</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">_cls</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">attr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">props</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="n">Property</span><span class="p">):</span>
-                        <span class="n">props</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">prop</span>
-                        <span class="n">prop</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">attr</span>
-                    <span class="n">_events</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">_cls</span><span class="p">,</span> <span class="s1">&#39;_events_&#39;</span><span class="p">,</span> <span class="p">[])</span>
-                    <span class="n">events</span> <span class="o">|=</span> <span class="nb">set</span><span class="p">(</span><span class="n">_events</span><span class="p">)</span>
-            <span class="bp">cls</span><span class="o">.</span><span class="n">_PROPERTIES_</span> <span class="o">=</span> <span class="n">props</span>
-            <span class="bp">cls</span><span class="o">.</span><span class="n">_EVENTS_</span> <span class="o">=</span> <span class="n">events</span>
-            <span class="k">if</span> <span class="n">skip_initialized</span><span class="p">:</span>
-                <span class="n">Dispatcher</span><span class="o">.</span><span class="n">_Dispatcher__initialized_subclasses</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="n">props</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">_cls</span> <span class="ow">in</span> <span class="n">iter_bases</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">_cls</span><span class="p">):</span>
+                <span class="n">prop</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">_cls</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">attr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">props</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="n">Property</span><span class="p">):</span>
+                    <span class="n">props</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">prop</span>
+                    <span class="n">prop</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">attr</span>
+                <span class="n">_events</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">_cls</span><span class="p">,</span> <span class="s1">&#39;_events_&#39;</span><span class="p">,</span> <span class="p">[])</span>
+                <span class="n">events</span> <span class="o">|=</span> <span class="nb">set</span><span class="p">(</span><span class="n">_events</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_PROPERTIES_</span> <span class="o">=</span> <span class="n">props</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_EVENTS_</span> <span class="o">=</span> <span class="n">events</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Dispatcher</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">_Dispatcher__init_events</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">obj</span>
@@ -303,7 +265,7 @@
                 <span class="k">continue</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__events</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">Event</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
 <div class="viewcode-block" id="Dispatcher.bind"><a class="viewcode-back" href="../../api.html#pydispatch.dispatch.Dispatcher.bind">[docs]</a>    <span class="k">def</span> <span class="nf">bind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Subscribes to events or to :class:`~pydispatch.properties.Property` updates</span>
+        <span class="sd">&quot;&quot;&quot;Subscribes to events or to :class:`~pydispatch.property.Property` updates</span>
 
 <span class="sd">        Keyword arguments are used with the Event or Property names as keys</span>
 <span class="sd">        and the callbacks as values::</span>
@@ -319,45 +281,7 @@
 
 <span class="sd">        The callbacks are stored as weak references and their order is not</span>
 <span class="sd">        maintained relative to the order of binding.</span>
-
-<span class="sd">        **Async Callbacks**:</span>
-
-<span class="sd">            Callbacks may be :term:`coroutine functions &lt;coroutine function&gt;`</span>
-<span class="sd">            (defined using :keyword:`async def` or decorated with</span>
-<span class="sd">            :func:`@asyncio.coroutine &lt;asyncio.coroutine&gt;`), but an event loop</span>
-<span class="sd">            must be explicitly provided with the keyword</span>
-<span class="sd">            argument ``&quot;__aio_loop__&quot;`` (an instance of</span>
-<span class="sd">            :class:`asyncio.BaseEventLoop`)::</span>
-
-<span class="sd">                import asyncio</span>
-<span class="sd">                from pydispatch import Dispatcher</span>
-
-<span class="sd">                class Foo(Dispatcher):</span>
-<span class="sd">                    _events_ = [&#39;test_event&#39;]</span>
-
-<span class="sd">                class Bar(object):</span>
-<span class="sd">                    def __init__(self):</span>
-<span class="sd">                        self.got_foo_event = asyncio.Event()</span>
-<span class="sd">                    async def wait_for_foo(self):</span>
-<span class="sd">                        await self.got_foo_event.wait()</span>
-<span class="sd">                        print(&#39;got foo!&#39;)</span>
-<span class="sd">                    async def on_foo_test_event(self, *args, **kwargs):</span>
-<span class="sd">                        self.got_foo_event.set()</span>
-
-<span class="sd">                foo = Foo()</span>
-<span class="sd">                bar = Bar()</span>
-
-<span class="sd">                loop = asyncio.get_event_loop()</span>
-<span class="sd">                foo.bind(test_event=bar.on_foo_test_event, __aio_loop__=loop)</span>
-
-<span class="sd">                loop.run_until_complete(bar.wait_for_foo())</span>
-
-<span class="sd">            This can also be done using :meth:`bind_async`.</span>
-
-<span class="sd">            .. versionadded:: 0.1.0</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">aio_loop</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;__aio_loop__&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">props</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__property_events</span>
         <span class="n">events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__events</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">cb</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -365,9 +289,9 @@
                 <span class="n">e</span> <span class="o">=</span> <span class="n">props</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">e</span> <span class="o">=</span> <span class="n">events</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-            <span class="n">e</span><span class="o">.</span><span class="n">add_listener</span><span class="p">(</span><span class="n">cb</span><span class="p">,</span> <span class="n">__aio_loop__</span><span class="o">=</span><span class="n">aio_loop</span><span class="p">)</span></div>
+            <span class="n">e</span><span class="o">.</span><span class="n">add_listener</span><span class="p">(</span><span class="n">cb</span><span class="p">)</span></div>
 <div class="viewcode-block" id="Dispatcher.unbind"><a class="viewcode-back" href="../../api.html#pydispatch.dispatch.Dispatcher.unbind">[docs]</a>    <span class="k">def</span> <span class="nf">unbind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Unsubscribes from events or :class:`~pydispatch.properties.Property` updates</span>
+        <span class="sd">&quot;&quot;&quot;Unsubscribes from events or :class:`Property` updates</span>
 
 <span class="sd">        Multiple arguments can be given. Each of which can be either the method</span>
 <span class="sd">        that was used for the original call to :meth:`bind` or an instance</span>
@@ -383,31 +307,11 @@
                 <span class="n">prop</span><span class="o">.</span><span class="n">remove_listener</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
                 <span class="n">e</span><span class="o">.</span><span class="n">remove_listener</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span></div>
-<div class="viewcode-block" id="Dispatcher.bind_async"><a class="viewcode-back" href="../../api.html#pydispatch.dispatch.Dispatcher.bind_async">[docs]</a>    <span class="k">def</span> <span class="nf">bind_async</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loop</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Subscribes to events with async callbacks</span>
-
-<span class="sd">        Functionality is matches the :meth:`bind` method, except the provided</span>
-<span class="sd">        callbacks should be coroutine functions. When the event is dispatched,</span>
-<span class="sd">        callbacks will be placed on the given event loop.</span>
-
-<span class="sd">        For keyword arguments, see :meth:`bind`.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            loop: The :class:`EventLoop &lt;asyncio.BaseEventLoop&gt;` to use when</span>
-<span class="sd">                events are dispatched</span>
-
-<span class="sd">        Availability:</span>
-<span class="sd">            Python&gt;=3.5</span>
-
-<span class="sd">        .. versionadded:: 0.1.0</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;__aio_loop__&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loop</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 <div class="viewcode-block" id="Dispatcher.emit"><a class="viewcode-back" href="../../api.html#pydispatch.dispatch.Dispatcher.emit">[docs]</a>    <span class="k">def</span> <span class="nf">emit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Dispatches an event to any subscribed listeners</span>
 
 <span class="sd">        Note:</span>
-<span class="sd">            If a listener returns :obj:`False`, the event will stop dispatching to</span>
+<span class="sd">            If a listener returns ``False``, the event will stop dispatching to</span>
 <span class="sd">            other listeners. Any other return value is ignored.</span>
 
 <span class="sd">        Args:</span>
@@ -418,65 +322,7 @@
         <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__property_events</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">e</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__events</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">e</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
-<div class="viewcode-block" id="Dispatcher.get_dispatcher_event"><a class="viewcode-back" href="../../api.html#pydispatch.dispatch.Dispatcher.get_dispatcher_event">[docs]</a>    <span class="k">def</span> <span class="nf">get_dispatcher_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Retrieves an Event object by name</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            name (str): The name of the :class:`Event` or</span>
-<span class="sd">                :class:`~pydispatch.properties.Property` object to retrieve</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            The :class:`Event` instance for the event or property definition</span>
-
-<span class="sd">        .. versionadded:: 0.1.0</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__property_events</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">e</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__events</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">e</span></div>
-<div class="viewcode-block" id="Dispatcher.emission_lock"><a class="viewcode-back" href="../../api.html#pydispatch.dispatch.Dispatcher.emission_lock">[docs]</a>    <span class="k">def</span> <span class="nf">emission_lock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Holds emission of events and dispatches the last event on release</span>
-
-<span class="sd">        The context manager returned will store the last event data called by</span>
-<span class="sd">        :meth:`emit` and prevent callbacks until it exits. On exit, it will</span>
-<span class="sd">        dispatch the last event captured (if any)::</span>
-
-<span class="sd">            class Foo(Dispatcher):</span>
-<span class="sd">                _events_ = [&#39;my_event&#39;]</span>
-
-<span class="sd">            def on_my_event(value):</span>
-<span class="sd">                print(value)</span>
-
-<span class="sd">            foo = Foo()</span>
-<span class="sd">            foo.bind(my_event=on_my_event)</span>
-
-<span class="sd">            with foo.emission_lock(&#39;my_event&#39;):</span>
-<span class="sd">                foo.emit(&#39;my_event&#39;, 1)</span>
-<span class="sd">                foo.emit(&#39;my_event&#39;, 2)</span>
-
-<span class="sd">            &gt;&gt;&gt; 2</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            name (str): The name of the :class:`Event` or</span>
-<span class="sd">                :class:`~pydispatch.properties.Property`</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            A context manager to be used by the :keyword:`with` statement.</span>
-
-<span class="sd">            If available, this will also be an async context manager to be used</span>
-<span class="sd">            with the :keyword:`async with` statement (see `PEP 492`_).</span>
-
-<span class="sd">        Note:</span>
-<span class="sd">            The context manager is re-entrant, meaning that multiple calls to</span>
-<span class="sd">            this method within nested context scopes are possible.</span>
-
-<span class="sd">        .. _PEP 492: https://www.python.org/dev/peps/pep-0492/#asynchronous-context-managers-and-async-with</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__property_events</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">e</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__events</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">e</span><span class="o">.</span><span class="n">emission_lock</span></div></div>
+        <span class="k">return</span> <span class="n">e</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

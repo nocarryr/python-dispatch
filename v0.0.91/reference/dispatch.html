@@ -215,69 +215,6 @@ and the callbacks as values:</p>
 </div>
 <p>The callbacks are stored as weak references and their order is not
 maintained relative to the order of binding.</p>
-<p><strong>Async Callbacks</strong>:</p>
-<blockquote>
-<div><p>Callbacks may be <a class="reference external" href="https://docs.python.org/3/glossary.html#term-coroutine-function" title="(in Python v3.7)"><span class="xref std std-term">coroutine functions</span></a>
-(defined using <a class="reference external" href="https://docs.python.org/3/reference/compound_stmts.html#async-def" title="(in Python v3.7)"><code class="xref std std-keyword docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code></a> or decorated with
-<a class="reference external" href="https://docs.python.org/3/library/asyncio-task.html#asyncio.coroutine" title="(in Python v3.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;asyncio.coroutine</span></code></a>), but an event loop
-must be explicitly provided with the keyword
-argument <code class="docutils literal notranslate"><span class="pre">&quot;__aio_loop__&quot;</span></code> (an instance of
-<a class="reference external" href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.BaseEventLoop" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">asyncio.BaseEventLoop</span></code></a>):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">from</span> <span class="nn">pydispatch</span> <span class="k">import</span> <span class="n">Dispatcher</span>
-
-<span class="k">class</span> <span class="nc">Foo</span><span class="p">(</span><span class="n">Dispatcher</span><span class="p">):</span>
-    <span class="n">_events_</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;test_event&#39;</span><span class="p">]</span>
-
-<span class="k">class</span> <span class="nc">Bar</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">got_foo_event</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">wait_for_foo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">got_foo_event</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;got foo!&#39;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">on_foo_test_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">got_foo_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
-
-<span class="n">foo</span> <span class="o">=</span> <span class="n">Foo</span><span class="p">()</span>
-<span class="n">bar</span> <span class="o">=</span> <span class="n">Bar</span><span class="p">()</span>
-
-<span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
-<span class="n">foo</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">test_event</span><span class="o">=</span><span class="n">bar</span><span class="o">.</span><span class="n">on_foo_test_event</span><span class="p">,</span> <span class="n">__aio_loop__</span><span class="o">=</span><span class="n">loop</span><span class="p">)</span>
-
-<span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">bar</span><span class="o">.</span><span class="n">wait_for_foo</span><span class="p">())</span>
-</pre></div>
-</div>
-<p>This can also be done using <a class="reference internal" href="#pydispatch.dispatch.Dispatcher.bind_async" title="pydispatch.dispatch.Dispatcher.bind_async"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bind_async()</span></code></a>.</p>
-<div class="versionadded">
-<p><span class="versionmodified">New in version 0.1.0.</span></p>
-</div>
-</div></blockquote>
-</dd></dl>
-
-<dl class="method">
-<dt id="pydispatch.dispatch.Dispatcher.bind_async">
-<code class="descname">bind_async</code><span class="sig-paren">(</span><em>loop</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/dispatch.html#Dispatcher.bind_async"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.dispatch.Dispatcher.bind_async" title="Permalink to this definition">¶</a></dt>
-<dd><p>Subscribes to events with async callbacks</p>
-<p>Functionality is matches the <a class="reference internal" href="#pydispatch.dispatch.Dispatcher.bind" title="pydispatch.dispatch.Dispatcher.bind"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bind()</span></code></a> method, except the provided
-callbacks should be coroutine functions. When the event is dispatched,
-callbacks will be placed on the given event loop.</p>
-<p>For keyword arguments, see <a class="reference internal" href="#pydispatch.dispatch.Dispatcher.bind" title="pydispatch.dispatch.Dispatcher.bind"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bind()</span></code></a>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>loop</strong> – The <a class="reference external" href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.BaseEventLoop" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventLoop</span></code></a> to use when
-events are dispatched</td>
-</tr>
-</tbody>
-</table>
-<dl class="docutils">
-<dt>Availability:</dt>
-<dd>Python&gt;=3.5</dd>
-</dl>
-<div class="versionadded">
-<p><span class="versionmodified">New in version 0.1.0.</span></p>
-</div>
 </dd></dl>
 
 <dl class="method">
@@ -345,26 +282,6 @@ other listeners. Any other return value is ignored.</p>
 </tr>
 </tbody>
 </table>
-</dd></dl>
-
-<dl class="method">
-<dt id="pydispatch.dispatch.Dispatcher.get_dispatcher_event">
-<code class="descname">get_dispatcher_event</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/dispatch.html#Dispatcher.get_dispatcher_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.dispatch.Dispatcher.get_dispatcher_event" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves an Event object by name</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The name of the <a class="reference internal" href="#pydispatch.dispatch.Event" title="pydispatch.dispatch.Event"><code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code></a> or
-<a class="reference internal" href="properties.html#pydispatch.properties.Property" title="pydispatch.properties.Property"><code class="xref py py-class docutils literal notranslate"><span class="pre">Property</span></code></a> object to retrieve</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The <a class="reference internal" href="#pydispatch.dispatch.Event" title="pydispatch.dispatch.Event"><code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code></a> instance for the event or property definition</td>
-</tr>
-</tbody>
-</table>
-<div class="versionadded">
-<p><span class="versionmodified">New in version 0.1.0.</span></p>
-</div>
 </dd></dl>
 
 <dl class="method">
