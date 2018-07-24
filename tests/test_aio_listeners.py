@@ -77,6 +77,7 @@ class LoopThread(threading.Thread):
         self.stopped = threading.Event()
     def run(self):
         loop = self.loop = asyncio.new_event_loop()
+        loop.set_debug(self.mainloop.get_debug())
         asyncio.set_event_loop(loop)
         listener = AsyncListener(loop, self.mainloop)
         sender = self.sender
@@ -95,8 +96,12 @@ class LoopThread(threading.Thread):
         self.running.clear()
         self.stopped.wait()
 
+@pytest.fixture(params=[True, False])
+def loop_debug(request):
+    return request.param
+
 @pytest.mark.asyncio
-async def test_simple(sender_cls):
+async def test_simple(sender_cls, loop_debug):
 
     class Sender(sender_cls):
         prop_a = Property()
@@ -104,6 +109,7 @@ async def test_simple(sender_cls):
         _events_ = ['on_test_a', 'on_test_b', 'on_test_c']
 
     loop = asyncio.get_event_loop()
+    loop.set_debug(loop_debug)
 
     sender = Sender()
     listener = AsyncListener(loop, loop)
@@ -131,7 +137,7 @@ async def test_simple(sender_cls):
             assert data['loop'] is loop
 
 @pytest.mark.asyncio
-async def test_unbind(sender_cls):
+async def test_unbind(sender_cls, loop_debug):
 
     class Sender(sender_cls):
         prop_a = Property()
@@ -139,6 +145,7 @@ async def test_unbind(sender_cls):
         _events_ = ['on_test_a', 'on_test_b', 'on_test_c']
 
     loop = asyncio.get_event_loop()
+    loop.set_debug(loop_debug)
 
     sender = Sender()
     listener = AsyncListener(loop, loop)
@@ -217,7 +224,7 @@ async def test_unbind(sender_cls):
     await check_events_unbound()
 
 @pytest.mark.asyncio
-async def test_multiple_loops(sender_cls):
+async def test_multiple_loops(sender_cls, loop_debug):
 
     class Sender(sender_cls):
         prop_a = Property()
@@ -226,6 +233,7 @@ async def test_multiple_loops(sender_cls):
 
     sender = Sender()
     mainloop = asyncio.get_event_loop()
+    mainloop.set_debug(loop_debug)
 
     async def send_event(name, *listener_threads):
         sender.trigger_event(name)
@@ -271,7 +279,7 @@ async def test_multiple_loops(sender_cls):
         t.stop()
 
 @pytest.mark.asyncio
-async def test_event_await(sender_cls):
+async def test_event_await(sender_cls, loop_debug):
 
     class Sender(sender_cls):
         prop_a = Property()
@@ -279,7 +287,7 @@ async def test_event_await(sender_cls):
         _events_ = ['on_test_a', 'on_test_b', 'on_test_c']
 
     loop = asyncio.get_event_loop()
-    loop.set_debug(True)
+    loop.set_debug(loop_debug)
 
     sender = Sender()
 
