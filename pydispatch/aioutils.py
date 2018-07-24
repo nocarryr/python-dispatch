@@ -138,7 +138,8 @@ class AioEventWaiter(object):
         await self.aio_event.wait()
         return self.args, self.kwargs
     def __await__(self):
-        return self.wait()
+        task = asyncio.ensure_future(self.wait())
+        return task.__await__()
 
 class AioEventWaiters(object):
     """Container used to manage :keyword:`await` use with events
@@ -188,7 +189,8 @@ class AioEventWaiters(object):
         waiter = await self.add_waiter()
         return await waiter
     def __await__(self):
-        return self.wait()
+        task = asyncio.ensure_future(self.wait())
+        return task.__await__()
     def __call__(self, *args, **kwargs):
         """Triggers any stored :class:`waiters <AioEventWaiter>`
 
