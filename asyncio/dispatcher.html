@@ -1,0 +1,358 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Dispatcher &mdash; python-dispatch 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/banner.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Properties" href="properties.html" />
+    <link rel="prev" title="Overview" href="overview.html" />
+ 
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-26848999-10"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-26848999-10');
+</script>
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> python-dispatch
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="overview.html">Overview</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Dispatcher</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#callback-return-values">Callback Return Values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#event-names">Event Names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#subclasses-and-init">Subclasses and <code class="docutils literal notranslate"><span class="pre">__init__</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="properties.html">Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="async.html">asyncio support</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference/index.html">Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">python-dispatch</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="overview.html">Overview</a> &raquo;</li>
+        
+      <li>Dispatcher</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/dispatcher.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+
+
+    
+    
+
+
+
+    <p class="scv-banner scv-sphinx_rtd_theme"><a href="../v0.1.0/dispatcher.html"><b>Warning:</b> This document is for the development version of python-dispatch. The latest version is v0.1.0.</a></p>
+<div class="section" id="dispatcher">
+<h1>Dispatcher<a class="headerlink" href="#dispatcher" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference internal" href="reference/dispatch.html#pydispatch.dispatch.Dispatcher" title="pydispatch.dispatch.Dispatcher"><code class="xref any py py-class docutils literal notranslate"><span class="pre">Dispatcher</span></code></a> is the core component of the framework.
+Subclassing this enables all of the event functionality.</p>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydispatch</span> <span class="k">import</span> <span class="n">Dispatcher</span>
+
+<span class="k">class</span> <span class="nc">MyEmitter</span><span class="p">(</span><span class="n">Dispatcher</span><span class="p">):</span>
+    <span class="n">_events_</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;on_state&#39;</span><span class="p">,</span> <span class="s1">&#39;new_data&#39;</span><span class="p">]</span>
+    <span class="k">def</span> <span class="nf">do_some_stuff</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># do stuff that makes new data</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_some_data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s1">&#39;new_data&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+
+<span class="c1"># An observer - could inherit from Dispatcher or any other class</span>
+<span class="k">class</span> <span class="nc">MyListener</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">on_new_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;I got data: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">on_emitter_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;emitter state changed&#39;</span><span class="p">)</span>
+
+<span class="n">emitter</span> <span class="o">=</span> <span class="n">MyEmitter</span><span class="p">()</span>
+<span class="n">listener</span> <span class="o">=</span> <span class="n">MyListener</span><span class="p">()</span>
+
+<span class="n">emitter</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">on_state</span><span class="o">=</span><span class="n">listener</span><span class="o">.</span><span class="n">on_emitter_state</span><span class="p">)</span>
+<span class="n">emitter</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">new_data</span><span class="o">=</span><span class="n">listener</span><span class="o">.</span><span class="n">on_new_data</span><span class="p">)</span>
+
+<span class="n">emitter</span><span class="o">.</span><span class="n">do_some_stuff</span><span class="p">()</span>
+<span class="c1"># &gt;&gt;&gt; I got data: ...</span>
+
+<span class="n">emitter</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s1">&#39;on_state&#39;</span><span class="p">)</span>
+<span class="c1"># &gt;&gt;&gt; emitter state changed</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="reference/dispatch.html#pydispatch.dispatch.Dispatcher.bind" title="pydispatch.dispatch.Dispatcher.bind"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">bind</span></code></a> method above could also be combined:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emitter</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">on_state</span><span class="o">=</span><span class="n">listener</span><span class="o">.</span><span class="n">on_emitter_state</span><span class="p">,</span>
+             <span class="n">new_data</span><span class="o">=</span><span class="n">listener</span><span class="o">.</span><span class="n">on_new_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="reference/dispatch.html#pydispatch.dispatch.Event" title="pydispatch.dispatch.Event"><code class="xref any py py-class docutils literal notranslate"><span class="pre">Events</span></code></a> can also be created after object creation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emitter</span><span class="o">.</span><span class="n">register_event</span><span class="p">(</span><span class="s1">&#39;need_data&#39;</span><span class="p">)</span>
+
+<span class="c1"># Multiple events can also be created:</span>
+<span class="n">emitter</span><span class="o">.</span><span class="n">register_event</span><span class="p">(</span><span class="s1">&#39;value_changed&#39;</span><span class="p">,</span> <span class="s1">&#39;something_happened&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Stop listening by calling <a class="reference internal" href="reference/dispatch.html#pydispatch.dispatch.Dispatcher.unbind" title="pydispatch.dispatch.Dispatcher.unbind"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">unbind</span></code></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emitter</span><span class="o">.</span><span class="n">unbind</span><span class="p">(</span><span class="n">listener</span><span class="o">.</span><span class="n">on_emitter_state</span><span class="p">)</span>
+
+<span class="c1"># Or to unbind all events, just supply the instance object:</span>
+<span class="n">emitter</span><span class="o">.</span><span class="n">unbind</span><span class="p">(</span><span class="n">listener</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="callback-return-values">
+<h2>Callback Return Values<a class="headerlink" href="#callback-return-values" title="Permalink to this headline">¶</a></h2>
+<p>Event propagation will stop if any callback returns <a class="reference external" href="https://docs.python.org/3/library/constants.html#False" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code></a>. Any other
+return value is ignored.</p>
+</div>
+<div class="section" id="event-names">
+<h2>Event Names<a class="headerlink" href="#event-names" title="Permalink to this headline">¶</a></h2>
+<p>There are no restrictions on event names. The idea is to keep things as simple
+and non-restrictive as possible. When calling <a class="reference internal" href="reference/dispatch.html#pydispatch.dispatch.Dispatcher.emit" title="pydispatch.dispatch.Dispatcher.emit"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">emit</span></code></a>, and
+positional or keyword arguments supplied will be passed along to listeners.</p>
+</div>
+<div class="section" id="subclasses-and-init">
+<h2>Subclasses and <code class="docutils literal notranslate"><span class="pre">__init__</span></code><a class="headerlink" href="#subclasses-and-init" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="reference/dispatch.html#pydispatch.dispatch.Dispatcher" title="pydispatch.dispatch.Dispatcher"><code class="xref any py py-class docutils literal notranslate"><span class="pre">Dispatcher</span></code></a> class does not use <code class="docutils literal notranslate"><span class="pre">__init__</span></code> for any
+of its functionality. This is again to keep things simple and get the
+framework out of your way.
+It uses <code class="docutils literal notranslate"><span class="pre">__new__</span></code> to handle instance creation. If your subclasses use
+<code class="docutils literal notranslate"><span class="pre">__new__</span></code> for something, the call to <code class="docutils literal notranslate"><span class="pre">super()</span></code> is required,
+but you should probably check the code to determine how it fits with your own.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="properties.html" class="btn btn-neutral float-right" title="Properties" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="overview.html" class="btn btn-neutral" title="Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Matthew Reid.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        <span class="fa fa-book"> Other Versions</span>
+        v: asyncio
+        <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        <dl>
+            <dt>Tags</dt>
+            <dd><a href="../v0.0.1/index.html">v0.0.1</a></dd>
+            <dd><a href="../v0.0.2/index.html">v0.0.2</a></dd>
+            <dd><a href="../v0.0.3/index.html">v0.0.3</a></dd>
+            <dd><a href="../v0.0.4/index.html">v0.0.4</a></dd>
+            <dd><a href="../v0.0.5/index.html">v0.0.5</a></dd>
+            <dd><a href="../v0.0.6/index.html">v0.0.6</a></dd>
+            <dd><a href="../v0.0.7/index.html">v0.0.7</a></dd>
+            <dd><a href="../v0.0.8/index.html">v0.0.8</a></dd>
+            <dd><a href="../v0.0.9/index.html">v0.0.9</a></dd>
+            <dd><a href="../v0.0.91/dispatcher.html">v0.0.91</a></dd>
+            <dd><a href="../v0.1.0/dispatcher.html">v0.1.0</a></dd>
+        </dl>
+        <dl>
+            <dt>Branches</dt>
+            <dd><a href="dispatcher.html">asyncio</a></dd>
+            <dd><a href="../doc-build-temp/dispatcher.html">doc-build-temp</a></dd>
+            <dd><a href="../master/dispatcher.html">master</a></dd>
+        </dl>
+    </div>
+</div>
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

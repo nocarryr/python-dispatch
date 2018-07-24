@@ -1,0 +1,440 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Python Dispatch &mdash; python-dispatch 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/banner.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Overview" href="overview.html" />
+ 
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-26848999-10"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-26848999-10');
+</script>
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="#" class="icon icon-home"> python-dispatch
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference/index.html">Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">python-dispatch</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>Python Dispatch</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+
+
+
+
+
+<div class="section" id="python-dispatch">
+<h1>Python Dispatch<a class="headerlink" href="#python-dispatch" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="id1">
+<h1>python-dispatch<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>Lightweight event handling for Python</p>
+<a class="reference external image-reference" href="https://travis-ci.org/nocarryr/python-dispatch"><img alt="Build Status" src="https://travis-ci.org/nocarryr/python-dispatch.svg?branch=master" /></a>
+<a class="reference external image-reference" href="https://coveralls.io/github/nocarryr/python-dispatch?branch=master"><img alt="Coverage Status" src="https://coveralls.io/repos/github/nocarryr/python-dispatch/badge.svg?branch=master" /></a>
+<a class="reference external image-reference" href="https://badge.fury.io/py/python-dispatch"><img alt="PyPI version" src="https://badge.fury.io/py/python-dispatch.svg" /></a>
+<a class="reference external image-reference" href="https://raw.githubusercontent.com/nocarryr/python-dispatch/master/LICENSE.txt"><img alt="GitHub license" src="https://img.shields.io/badge/license-MIT-blue.svg" /></a>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>This is an implementation of the “Observer Pattern” with inspiration from the
+<a class="reference external" href="kivy.org">Kivy</a> framework. Many of the features though are intentionally
+stripped down and more generalized. The goal is to have a simple drop-in
+library with no dependencies that stays out of the programmer’s way.</p>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>pip install python-dispatch
+</pre></div>
+</div>
+</div>
+<div class="section" id="links">
+<h2>Links<a class="headerlink" href="#links" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">&#160;</th>
+<th class="head">&#160;</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Project Home</td>
+<td><a class="reference external" href="https://github.com/nocarryr/python-dispatch">https://github.com/nocarryr/python-dispatch</a></td>
+</tr>
+<tr class="row-odd"><td>PyPI</td>
+<td><a class="reference external" href="https://pypi.python.org/pypi/python-dispatch">https://pypi.python.org/pypi/python-dispatch</a></td>
+</tr>
+<tr class="row-even"><td>Documentation</td>
+<td><a class="reference external" href="https://nocarryr.github.io/python-dispatch">https://nocarryr.github.io/python-dispatch</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="events">
+<h3>Events<a class="headerlink" href="#events" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydispatch</span> <span class="kn">import</span> <span class="n">Dispatcher</span>
+
+<span class="k">class</span> <span class="nc">MyEmitter</span><span class="p">(</span><span class="n">Dispatcher</span><span class="p">):</span>
+    <span class="c1"># Events are defined in classes and subclasses with the &#39;_events_&#39; attribute</span>
+    <span class="n">_events_</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;on_state&#39;</span><span class="p">,</span> <span class="s1">&#39;new_data&#39;</span><span class="p">]</span>
+    <span class="k">def</span> <span class="nf">do_some_stuff</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># do stuff that makes new data</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_some_data</span><span class="p">()</span>
+        <span class="c1"># Then emit the change with optional positional and keyword arguments</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s1">&#39;new_data&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+
+<span class="c1"># An observer - could inherit from Dispatcher or any other class</span>
+<span class="k">class</span> <span class="nc">MyListener</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">on_new_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;I got data: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">on_emitter_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;emitter state changed&#39;</span><span class="p">)</span>
+
+<span class="n">emitter</span> <span class="o">=</span> <span class="n">MyEmitter</span><span class="p">()</span>
+<span class="n">listener</span> <span class="o">=</span> <span class="n">MyListener</span><span class="p">()</span>
+
+<span class="n">emitter</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">on_state</span><span class="o">=</span><span class="n">listener</span><span class="o">.</span><span class="n">on_emitter_state</span><span class="p">)</span>
+<span class="n">emitter</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">new_data</span><span class="o">=</span><span class="n">listener</span><span class="o">.</span><span class="n">on_new_data</span><span class="p">)</span>
+
+<span class="n">emitter</span><span class="o">.</span><span class="n">do_some_stuff</span><span class="p">()</span>
+<span class="c1"># &gt;&gt;&gt; I got data: ...</span>
+
+<span class="n">emitter</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s1">&#39;on_state&#39;</span><span class="p">)</span>
+<span class="c1"># &gt;&gt;&gt; emitter state changed</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="properties">
+<h3>Properties<a class="headerlink" href="#properties" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydispatch</span> <span class="kn">import</span> <span class="n">Dispatcher</span><span class="p">,</span> <span class="n">Property</span>
+
+<span class="k">class</span> <span class="nc">MyEmitter</span><span class="p">(</span><span class="n">Dispatcher</span><span class="p">):</span>
+    <span class="c1"># Property objects are defined and named at the class level.</span>
+    <span class="c1"># They will become instance attributes that will emit events when their values change</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Property</span><span class="p">()</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">Property</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">MyListener</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">on_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;emitter name is {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">on_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;emitter value is {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+<span class="n">emitter</span> <span class="o">=</span> <span class="n">MyEmitter</span><span class="p">()</span>
+<span class="n">listener</span> <span class="o">=</span> <span class="n">MyListener</span><span class="p">()</span>
+
+<span class="n">emitter</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">listener</span><span class="o">.</span><span class="n">on_name</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">listener</span><span class="o">.</span><span class="n">on_value</span><span class="p">)</span>
+
+<span class="n">emitter</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;foo&#39;</span>
+<span class="c1"># &gt;&gt;&gt; emitter name is foo</span>
+<span class="n">emitter</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="c1"># &gt;&gt;&gt; emitter value is 42</span>
+</pre></div>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dispatcher.html">Dispatcher</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dispatcher.html#usage">Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dispatcher.html#callback-return-values">Callback Return Values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dispatcher.html#event-names">Event Names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dispatcher.html#subclasses-and-init">Subclasses and <code class="docutils literal notranslate"><span class="pre">__init__</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="properties.html">Properties</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="properties.html#usage">Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="properties.html#container-properties">Container Properties</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="async.html">asyncio support</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="async.html#callbacks">Callbacks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="async.html#async-awaitable-events">Async (awaitable) Events</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference/index.html">Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference/dispatch.html">pydispatch.dispatch module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/dispatch.html#dispatcher-class">Dispatcher class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/dispatch.html#event-class">Event class</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference/properties.html">pydispatch.properties module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/properties.html#property-class">Property class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/properties.html#listproperty-class">ListProperty class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/properties.html#dictproperty-class">DictProperty class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/properties.html#observable-class">Observable class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/properties.html#observablelist-class">ObservableList class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/properties.html#observabledict-class">ObservableDict class</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference/utils.html">pydispatch.utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/utils.html#weakmethodcontainer-class">WeakMethodContainer class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/utils.html#informativewvdict-class">InformativeWVDict class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/utils.html#emissionholdlock-class">EmissionHoldLock class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/utils.html#id1">EmissionHoldLock_ class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/utils.html#aioemissionholdlock-class">AioEmissionHoldLock class</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference/aioutils.html">pydispatch.aioutils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/aioutils.html#aioweakmethodcontainer-class">AioWeakMethodContainer class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/aioutils.html#aioeventwaiters-class">AioEventWaiters class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/aioutils.html#aioeventwaiter-class">AioEventWaiter class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/aioutils.html#aiosimplelock-class">AioSimpleLock class</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="overview.html" class="btn btn-neutral float-right" title="Overview" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Matthew Reid.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        <span class="fa fa-book"> Other Versions</span>
+        v: v0.1.0
+        <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        <dl>
+            <dt>Tags</dt>
+            <dd><a href="../v0.0.1/index.html">v0.0.1</a></dd>
+            <dd><a href="../v0.0.2/index.html">v0.0.2</a></dd>
+            <dd><a href="../v0.0.3/index.html">v0.0.3</a></dd>
+            <dd><a href="../v0.0.4/index.html">v0.0.4</a></dd>
+            <dd><a href="../v0.0.5/index.html">v0.0.5</a></dd>
+            <dd><a href="../v0.0.6/index.html">v0.0.6</a></dd>
+            <dd><a href="../v0.0.7/index.html">v0.0.7</a></dd>
+            <dd><a href="../v0.0.8/index.html">v0.0.8</a></dd>
+            <dd><a href="../v0.0.9/index.html">v0.0.9</a></dd>
+            <dd><a href="../v0.0.91/index.html">v0.0.91</a></dd>
+            <dd><a href="index.html">v0.1.0</a></dd>
+        </dl>
+        <dl>
+            <dt>Branches</dt>
+            <dd><a href="../asyncio/index.html">asyncio</a></dd>
+            <dd><a href="../doc-build-temp/index.html">doc-build-temp</a></dd>
+            <dd><a href="../master/index.html">master</a></dd>
+        </dl>
+    </div>
+</div>
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

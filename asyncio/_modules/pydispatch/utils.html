@@ -1,0 +1,442 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pydispatch.utils &mdash; python-dispatch 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/banner.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+ 
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-26848999-10"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-26848999-10');
+</script>
+
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> python-dispatch
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/index.html">Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">python-dispatch</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>pydispatch.utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+
+
+    
+    
+
+
+
+    <p class="scv-banner scv-sphinx_rtd_theme"><b>Warning:</b> This document is for the development version of python-dispatch.</p>
+<h1>Source code for pydispatch.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">weakref</span>
+<span class="kn">from</span> <span class="nn">_weakref</span> <span class="k">import</span> <span class="n">ref</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">_weakref</span> <span class="k">import</span> <span class="n">_remove_dead_weakref</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_remove_dead_weakref</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">del</span> <span class="n">o</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+<span class="kn">import</span> <span class="nn">types</span>
+
+<span class="n">AIO_AVAILABLE</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">AIO_AVAILABLE</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">asyncio</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="n">PY2</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">major</span> <span class="o">==</span> <span class="mi">2</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">PY2</span><span class="p">:</span>
+    <span class="n">basestring</span> <span class="o">=</span> <span class="nb">str</span>
+
+<span class="k">def</span> <span class="nf">get_method_vars</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">PY2</span><span class="p">:</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">im_func</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">im_self</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="vm">__func__</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="vm">__self__</span>
+    <span class="k">return</span> <span class="n">f</span><span class="p">,</span> <span class="n">obj</span>
+
+<span class="k">def</span> <span class="nf">iscoroutinefunction</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">AIO_AVAILABLE</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">iscoroutinefunction</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="WeakMethodContainer"><a class="viewcode-back" href="../../reference/utils.html#pydispatch.utils.WeakMethodContainer">[docs]</a><span class="k">class</span> <span class="nc">WeakMethodContainer</span><span class="p">(</span><span class="n">weakref</span><span class="o">.</span><span class="n">WeakValueDictionary</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Container to store weak references to callbacks</span>
+
+<span class="sd">    Instance methods are stored using the underlying :term:`function` object</span>
+<span class="sd">    and the instance id (using :func:`id(obj) &lt;id&gt;`) as the key (a two-tuple)</span>
+<span class="sd">    and the object itself as the value. This ensures proper weak referencing.</span>
+
+<span class="sd">    Functions are stored using the string &quot;function&quot; and the id of the function</span>
+<span class="sd">    as the key (a two-tuple).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="WeakMethodContainer.keys"><a class="viewcode-back" href="../../reference/utils.html#pydispatch.utils.WeakMethodContainer.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">PY2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterkeys</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">WeakMethodContainer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span></div>
+<div class="viewcode-block" id="WeakMethodContainer.add_method"><a class="viewcode-back" href="../../reference/utils.html#pydispatch.utils.WeakMethodContainer.add_method">[docs]</a>    <span class="k">def</span> <span class="nf">add_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add an instance method or function</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            m: The instance method or function to store</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">FunctionType</span><span class="p">):</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;function&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">(</span><span class="n">m</span><span class="p">)]</span> <span class="o">=</span> <span class="n">m</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">f</span><span class="p">,</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">get_method_vars</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+            <span class="n">wrkey</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="nb">id</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">wrkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span></div>
+<div class="viewcode-block" id="WeakMethodContainer.del_method"><a class="viewcode-back" href="../../reference/utils.html#pydispatch.utils.WeakMethodContainer.del_method">[docs]</a>    <span class="k">def</span> <span class="nf">del_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove an instance method or function if it exists</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            m: The instance method or function to remove</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">FunctionType</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">iscoroutinefunction</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+            <span class="n">wrkey</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;function&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">(</span><span class="n">m</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">f</span><span class="p">,</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">get_method_vars</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+            <span class="n">wrkey</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="nb">id</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">wrkey</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="n">wrkey</span><span class="p">]</span></div>
+<div class="viewcode-block" id="WeakMethodContainer.del_instance"><a class="viewcode-back" href="../../reference/utils.html#pydispatch.utils.WeakMethodContainer.del_instance">[docs]</a>    <span class="k">def</span> <span class="nf">del_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove any stored instance methods that belong to an object</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj: The instance object to remove</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">to_remove</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">wrkey</span><span class="p">,</span> <span class="n">_obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_instances</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="n">_obj</span><span class="p">:</span>
+                <span class="n">to_remove</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">wrkey</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">wrkey</span> <span class="ow">in</span> <span class="n">to_remove</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="n">wrkey</span><span class="p">]</span></div>
+<div class="viewcode-block" id="WeakMethodContainer.iter_instances"><a class="viewcode-back" href="../../reference/utils.html#pydispatch.utils.WeakMethodContainer.iter_instances">[docs]</a>    <span class="k">def</span> <span class="nf">iter_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Iterate over the stored objects</span>
+
+<span class="sd">        Yields:</span>
+<span class="sd">            wrkey: The two-tuple key used to store the object</span>
+<span class="sd">            obj: The instance or function object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">wrkey</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">wrkey</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">yield</span> <span class="n">wrkey</span><span class="p">,</span> <span class="n">obj</span></div>
+<div class="viewcode-block" id="WeakMethodContainer.iter_methods"><a class="viewcode-back" href="../../reference/utils.html#pydispatch.utils.WeakMethodContainer.iter_methods">[docs]</a>    <span class="k">def</span> <span class="nf">iter_methods</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Iterate over stored functions and instance methods</span>
+
+<span class="sd">        Yields:</span>
+<span class="sd">            Instance methods or function objects</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">wrkey</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_instances</span><span class="p">():</span>
+            <span class="n">f</span><span class="p">,</span> <span class="n">obj_id</span> <span class="o">=</span> <span class="n">wrkey</span>
+            <span class="k">if</span> <span class="n">f</span> <span class="o">==</span> <span class="s1">&#39;function&#39;</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="bp">self</span><span class="p">[</span><span class="n">wrkey</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span></div></div>
+
+<span class="k">class</span> <span class="nc">InformativeDict</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">InformativeDict</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__delitem__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">del_callback</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+<div class="viewcode-block" id="InformativeWVDict"><a class="viewcode-back" href="../../reference/utils.html#pydispatch.utils.InformativeWVDict">[docs]</a><span class="k">class</span> <span class="nc">InformativeWVDict</span><span class="p">(</span><span class="n">weakref</span><span class="o">.</span><span class="n">WeakValueDictionary</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A WeakValueDictionary providing a callback for deletion</span>
+
+<span class="sd">    Keyword Arguments:</span>
+<span class="sd">        del_callback: A callback function that will be called when an item is</span>
+<span class="sd">            either deleted or dereferenced. It will be called with the key as</span>
+<span class="sd">            the only argument.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">del_callback</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;del_callback&#39;</span><span class="p">)</span>
+        <span class="n">weakref</span><span class="o">.</span><span class="n">WeakValueDictionary</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="n">wr</span><span class="p">,</span> <span class="n">selfref</span><span class="o">=</span><span class="n">ref</span><span class="p">(</span><span class="bp">self</span><span class="p">)):</span>
+            <span class="bp">self</span> <span class="o">=</span> <span class="n">selfref</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iterating</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_pending_removals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wr</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Atomic removal is necessary since this function</span>
+                    <span class="c1"># can be called asynchronously by the GC</span>
+                    <span class="n">_remove_dead_weakref</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">wr</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_data_del_callback</span><span class="p">(</span><span class="n">wr</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remove</span> <span class="o">=</span> <span class="n">remove</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">InformativeDict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">del_callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_del_callback</span>
+    <span class="k">def</span> <span class="nf">_data_del_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">del_callback</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EmissionHoldLock_"><a class="viewcode-back" href="../../reference/utils.html#pydispatch.utils.EmissionHoldLock_">[docs]</a><span class="k">class</span> <span class="nc">EmissionHoldLock_</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Context manager used for :meth:`pydispatch.dispatch.Dispatcher.emission_lock`</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        event_instance: The :class:`~pydispatch.dispatch.Event` instance</span>
+<span class="sd">            associated with the lock</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        event_instance: The :class:`~pydispatch.dispatch.Event` instance</span>
+<span class="sd">            associated with the lock</span>
+<span class="sd">        last_event: The positional and keyword arguments from the event&#39;s last</span>
+<span class="sd">            emission as a two-tuple. If no events were triggered while the lock</span>
+<span class="sd">            was held, :obj:`None`.</span>
+<span class="sd">        held (bool): The internal state of the lock</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event_instance</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_instance</span> <span class="o">=</span> <span class="n">event_instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_event</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">held</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">def</span> <span class="nf">acquire</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">held</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">held</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_event</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">def</span> <span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">held</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_event</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_event</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_event</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">held</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">event_instance</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span>
+    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
+
+<span class="k">if</span> <span class="n">AIO_AVAILABLE</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">pydispatch.aioutils</span> <span class="k">import</span> <span class="n">AioEmissionHoldLock</span>
+<div class="viewcode-block" id="EmissionHoldLock"><a class="viewcode-back" href="../../reference/utils.html#pydispatch.utils.EmissionHoldLock">[docs]</a>    <span class="k">class</span> <span class="nc">EmissionHoldLock</span><span class="p">(</span><span class="n">EmissionHoldLock_</span><span class="p">,</span> <span class="n">AioEmissionHoldLock</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">EmissionHoldLock</span> <span class="o">=</span> <span class="n">EmissionHoldLock_</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Matthew Reid.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        <span class="fa fa-book"> Other Versions</span>
+        v: asyncio
+        <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        <dl>
+            <dt>Tags</dt>
+            <dd><a href="../../../v0.0.1/index.html">v0.0.1</a></dd>
+            <dd><a href="../../../v0.0.2/index.html">v0.0.2</a></dd>
+            <dd><a href="../../../v0.0.3/index.html">v0.0.3</a></dd>
+            <dd><a href="../../../v0.0.4/index.html">v0.0.4</a></dd>
+            <dd><a href="../../../v0.0.5/index.html">v0.0.5</a></dd>
+            <dd><a href="../../../v0.0.6/index.html">v0.0.6</a></dd>
+            <dd><a href="../../../v0.0.7/index.html">v0.0.7</a></dd>
+            <dd><a href="../../../v0.0.8/index.html">v0.0.8</a></dd>
+            <dd><a href="../../../v0.0.9/index.html">v0.0.9</a></dd>
+            <dd><a href="../../../v0.0.91/index.html">v0.0.91</a></dd>
+            <dd><a href="../../../v0.1.0/index.html">v0.1.0</a></dd>
+        </dl>
+        <dl>
+            <dt>Branches</dt>
+            <dd><a href="utils.html">asyncio</a></dd>
+            <dd><a href="../../../doc-build-temp/index.html">doc-build-temp</a></dd>
+            <dd><a href="../../../master/index.html">master</a></dd>
+        </dl>
+    </div>
+</div>
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

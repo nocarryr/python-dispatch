@@ -1,0 +1,595 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pydispatch.aioutils module &mdash; python-dispatch 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/banner.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="pydispatch.utils module" href="utils.html" />
+ 
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-26848999-10"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-26848999-10');
+</script>
+
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> python-dispatch
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dispatch.html">pydispatch.dispatch module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="properties.html">pydispatch.properties module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">pydispatch.utils module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">pydispatch.aioutils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#aioweakmethodcontainer-class">AioWeakMethodContainer class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aioeventwaiters-class">AioEventWaiters class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aioeventwaiter-class">AioEventWaiter class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiosimplelock-class">AioSimpleLock class</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">python-dispatch</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Reference</a> &raquo;</li>
+        
+      <li>pydispatch.aioutils module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/reference/aioutils.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+
+
+    
+    
+
+
+
+    <p class="scv-banner scv-sphinx_rtd_theme"><a href="../../v0.1.0/reference/aioutils.html"><b>Warning:</b> This document is for the development version of python-dispatch. The latest version is v0.1.0.</a></p>
+<div class="section" id="module-pydispatch.aioutils">
+<span id="pydispatch-aioutils-module"></span><h1>pydispatch.aioutils module<a class="headerlink" href="#module-pydispatch.aioutils" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="aioweakmethodcontainer-class">
+<h2>AioWeakMethodContainer class<a class="headerlink" href="#aioweakmethodcontainer-class" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydispatch.aioutils.AioWeakMethodContainer">
+<em class="property">class </em><code class="descname">AioWeakMethodContainer</code><a class="reference internal" href="../_modules/pydispatch/aioutils.html#AioWeakMethodContainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.aioutils.AioWeakMethodContainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="utils.html#pydispatch.utils.WeakMethodContainer" title="pydispatch.utils.WeakMethodContainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">pydispatch.utils.WeakMethodContainer</span></code></a></p>
+<p>Storage for coroutine functions as weak references</p>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.1.0.</span></p>
+</div>
+<dl class="method">
+<dt id="pydispatch.aioutils.AioWeakMethodContainer.__call__">
+<code class="descname">__call__</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/aioutils.html#AioWeakMethodContainer.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.aioutils.AioWeakMethodContainer.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Triggers all stored callbacks (coroutines)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>*args</strong> – Positional arguments to pass to callbacks</li>
+<li><strong>**kwargs</strong> – Keyword arguments to pass to callbacks</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydispatch.aioutils.AioWeakMethodContainer.add_method">
+<code class="descname">add_method</code><span class="sig-paren">(</span><em>loop</em>, <em>callback</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/aioutils.html#AioWeakMethodContainer.add_method"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.aioutils.AioWeakMethodContainer.add_method" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a coroutine function</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>loop</strong> – The <a class="reference external" href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.BaseEventLoop" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">event</span> <span class="pre">loop</span></code></a> instance
+on which to schedule callbacks</li>
+<li><strong>callback</strong> – The <a class="reference external" href="https://docs.python.org/3/glossary.html#term-coroutine-function" title="(in Python v3.7)"><span class="xref std std-term">coroutine function</span></a> to add</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydispatch.aioutils.AioWeakMethodContainer.iter_instances">
+<code class="descname">iter_instances</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/aioutils.html#AioWeakMethodContainer.iter_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.aioutils.AioWeakMethodContainer.iter_instances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate over the stored objects</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="utils.html#pydispatch.utils.WeakMethodContainer.iter_instances" title="pydispatch.utils.WeakMethodContainer.iter_instances"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pydispatch.utils.WeakMethodContainer.iter_instances()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydispatch.aioutils.AioWeakMethodContainer.iter_methods">
+<code class="descname">iter_methods</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/aioutils.html#AioWeakMethodContainer.iter_methods"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.aioutils.AioWeakMethodContainer.iter_methods" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate over stored coroutine functions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Yields:</th><td class="field-body">Stored <a class="reference external" href="https://docs.python.org/3/glossary.html#term-coroutine-function" title="(in Python v3.7)"><span class="xref std std-term">coroutine function</span></a> objects</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="utils.html#pydispatch.utils.WeakMethodContainer.iter_instances" title="pydispatch.utils.WeakMethodContainer.iter_instances"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pydispatch.utils.WeakMethodContainer.iter_instances()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydispatch.aioutils.AioWeakMethodContainer.submit_coroutine">
+<code class="descname">submit_coroutine</code><span class="sig-paren">(</span><em>coro</em>, <em>loop</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/aioutils.html#AioWeakMethodContainer.submit_coroutine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.aioutils.AioWeakMethodContainer.submit_coroutine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Schedule and await a coroutine on the specified loop</p>
+<p>The coroutine is wrapped and scheduled using
+<a class="reference external" href="https://docs.python.org/3/library/asyncio-task.html#asyncio.run_coroutine_threadsafe" title="(in Python v3.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">asyncio.run_coroutine_threadsafe()</span></code></a>. While the coroutine is
+“awaited”, the result is not available as method returns immediately.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>coro</strong> – The <a class="reference external" href="https://docs.python.org/3/glossary.html#term-coroutine" title="(in Python v3.7)"><span class="xref std std-term">coroutine</span></a> to schedule</li>
+<li><strong>loop</strong> – The <a class="reference external" href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.BaseEventLoop" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">event</span> <span class="pre">loop</span></code></a> on which to
+schedule the coroutine</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This method is used internally by <a class="reference internal" href="#pydispatch.aioutils.AioWeakMethodContainer.__call__" title="pydispatch.aioutils.AioWeakMethodContainer.__call__"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__call__()</span></code></a> and is not meant
+to be called directly.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="aioeventwaiters-class">
+<h2>AioEventWaiters class<a class="headerlink" href="#aioeventwaiters-class" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydispatch.aioutils.AioEventWaiters">
+<em class="property">class </em><code class="descname">AioEventWaiters</code><a class="reference internal" href="../_modules/pydispatch/aioutils.html#AioEventWaiters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.aioutils.AioEventWaiters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Container used to manage <a class="reference external" href="https://docs.python.org/3/reference/expressions.html#await" title="(in Python v3.7)"><code class="xref std std-keyword docutils literal notranslate"><span class="pre">await</span></code></a> use with events</p>
+<p>Used by <a class="reference internal" href="dispatch.html#pydispatch.dispatch.Event" title="pydispatch.dispatch.Event"><code class="xref py py-class docutils literal notranslate"><span class="pre">pydispatch.dispatch.Event</span></code></a> when it is
+<a class="reference external" href="https://docs.python.org/3/reference/expressions.html#await" title="(in Python v3.7)"><code class="xref std std-keyword docutils literal notranslate"><span class="pre">awaited</span></code></a></p>
+<dl class="attribute">
+<dt id="pydispatch.aioutils.AioEventWaiters.waiters">
+<code class="descname">waiters</code><a class="headerlink" href="#pydispatch.aioutils.AioEventWaiters.waiters" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>set</em> – Instances of <a class="reference internal" href="#pydispatch.aioutils.AioEventWaiter" title="pydispatch.aioutils.AioEventWaiter"><code class="xref py py-class docutils literal notranslate"><span class="pre">AioEventWaiter</span></code></a> currently “awaiting”
+the event</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pydispatch.aioutils.AioEventWaiters.lock">
+<code class="descname">lock</code><a class="headerlink" href="#pydispatch.aioutils.AioEventWaiters.lock" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>AioSimpleLock</em> – A sync/async lock to guard modification to the
+<a class="reference internal" href="#pydispatch.aioutils.AioEventWaiters.waiters" title="pydispatch.aioutils.AioEventWaiters.waiters"><code class="xref py py-attr docutils literal notranslate"><span class="pre">waiters</span></code></a> container during event emission</p>
+</dd></dl>
+
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.1.0.</span></p>
+</div>
+<dl class="method">
+<dt id="pydispatch.aioutils.AioEventWaiters.__call__">
+<code class="descname">__call__</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/aioutils.html#AioEventWaiters.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.aioutils.AioEventWaiters.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Triggers any stored <a class="reference internal" href="#pydispatch.aioutils.AioEventWaiter" title="pydispatch.aioutils.AioEventWaiter"><code class="xref py py-class docutils literal notranslate"><span class="pre">waiters</span></code></a></p>
+<p>Calls <a class="reference internal" href="#pydispatch.aioutils.AioEventWaiter.trigger" title="pydispatch.aioutils.AioEventWaiter.trigger"><code class="xref py py-meth docutils literal notranslate"><span class="pre">AioEventWaiter.trigger()</span></code></a> method on all instances stored in
+<a class="reference internal" href="#pydispatch.aioutils.AioEventWaiters.waiters" title="pydispatch.aioutils.AioEventWaiters.waiters"><code class="xref py py-attr docutils literal notranslate"><span class="pre">waiters</span></code></a>. After completion, the <a class="reference internal" href="#pydispatch.aioutils.AioEventWaiters.waiters" title="pydispatch.aioutils.AioEventWaiters.waiters"><code class="xref py py-attr docutils literal notranslate"><span class="pre">waiters</span></code></a> are removed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>*args</strong> – Positional arguments to pass to <a class="reference internal" href="#pydispatch.aioutils.AioEventWaiter.trigger" title="pydispatch.aioutils.AioEventWaiter.trigger"><code class="xref py py-meth docutils literal notranslate"><span class="pre">AioEventWaiter.trigger()</span></code></a></li>
+<li><strong>**kwargs</strong> – Keyword arguments to pass to <a class="reference internal" href="#pydispatch.aioutils.AioEventWaiter.trigger" title="pydispatch.aioutils.AioEventWaiter.trigger"><code class="xref py py-meth docutils literal notranslate"><span class="pre">AioEventWaiter.trigger()</span></code></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydispatch.aioutils.AioEventWaiters.add_waiter">
+<code class="descname">add_waiter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/aioutils.html#AioEventWaiters.add_waiter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.aioutils.AioEventWaiters.add_waiter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a <a class="reference internal" href="#pydispatch.aioutils.AioEventWaiter" title="pydispatch.aioutils.AioEventWaiter"><code class="xref py py-class docutils literal notranslate"><span class="pre">AioEventWaiter</span></code></a> to the <a class="reference internal" href="#pydispatch.aioutils.AioEventWaiters.waiters" title="pydispatch.aioutils.AioEventWaiters.waiters"><code class="xref py py-attr docutils literal notranslate"><span class="pre">waiters</span></code></a> container</p>
+<p>The event loop to use for <a class="reference internal" href="#pydispatch.aioutils.AioEventWaiter.loop" title="pydispatch.aioutils.AioEventWaiter.loop"><code class="xref py py-attr docutils literal notranslate"><span class="pre">AioEventWaiter.loop</span></code></a> is found in the
+current context using <a class="reference external" href="https://docs.python.org/3/library/asyncio-eventloops.html#asyncio.get_event_loop" title="(in Python v3.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">asyncio.get_event_loop()</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The created <a class="reference internal" href="#pydispatch.aioutils.AioEventWaiter" title="pydispatch.aioutils.AioEventWaiter"><code class="xref py py-class docutils literal notranslate"><span class="pre">AioEventWaiter</span></code></a> instance</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">waiter</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydispatch.aioutils.AioEventWaiters.wait">
+<code class="descname">wait</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/aioutils.html#AioEventWaiters.wait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.aioutils.AioEventWaiters.wait" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a <a class="reference internal" href="#pydispatch.aioutils.AioEventWaiter" title="pydispatch.aioutils.AioEventWaiter"><code class="xref py py-class docutils literal notranslate"><span class="pre">waiter</span></code></a> and “awaits” its result</p>
+<p>This method is used by <a class="reference internal" href="dispatch.html#pydispatch.dispatch.Event" title="pydispatch.dispatch.Event"><code class="xref py py-class docutils literal notranslate"><span class="pre">pydispatch.dispatch.Event</span></code></a> instances when
+they are “awaited” and is the primary functionality of
+<a class="reference internal" href="#pydispatch.aioutils.AioEventWaiters" title="pydispatch.aioutils.AioEventWaiters"><code class="xref py py-class docutils literal notranslate"><span class="pre">AioEventWaiters</span></code></a> and <a class="reference internal" href="#pydispatch.aioutils.AioEventWaiter" title="pydispatch.aioutils.AioEventWaiter"><code class="xref py py-class docutils literal notranslate"><span class="pre">AioEventWaiter</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Positional arguments attached to the event
+kwargs (dict): Keyword arguments attached to the event</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">args (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="aioeventwaiter-class">
+<h2>AioEventWaiter class<a class="headerlink" href="#aioeventwaiter-class" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydispatch.aioutils.AioEventWaiter">
+<em class="property">class </em><code class="descname">AioEventWaiter</code><span class="sig-paren">(</span><em>loop</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/aioutils.html#AioEventWaiter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.aioutils.AioEventWaiter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stores necessary information for a single “waiter”</p>
+<p>Used by <a class="reference internal" href="#pydispatch.aioutils.AioEventWaiters" title="pydispatch.aioutils.AioEventWaiters"><code class="xref py py-class docutils literal notranslate"><span class="pre">AioEventWaiters</span></code></a> to handle <a class="reference external" href="https://docs.python.org/3/reference/expressions.html#await" title="(in Python v3.7)"><code class="xref std std-keyword docutils literal notranslate"><span class="pre">awaiting</span></code></a>
+an <a class="reference internal" href="dispatch.html#pydispatch.dispatch.Event" title="pydispatch.dispatch.Event"><code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code></a> on a specific
+<a class="reference external" href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.BaseEventLoop" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">event</span> <span class="pre">loop</span></code></a></p>
+<dl class="attribute">
+<dt id="pydispatch.aioutils.AioEventWaiter.loop">
+<code class="descname">loop</code><a class="headerlink" href="#pydispatch.aioutils.AioEventWaiter.loop" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference external" href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.BaseEventLoop" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventLoop</span></code></a> instance</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pydispatch.aioutils.AioEventWaiter.aio_event">
+<code class="descname">aio_event</code><a class="headerlink" href="#pydispatch.aioutils.AioEventWaiter.aio_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>An <a class="reference external" href="https://docs.python.org/3/library/asyncio-sync.html#asyncio.Event" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">asyncio.Event</span></code></a> used to track event emission</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pydispatch.aioutils.AioEventWaiter.args">
+<code class="descname">args</code><a class="headerlink" href="#pydispatch.aioutils.AioEventWaiter.args" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list</em> – The positional arguments attached to the event</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pydispatch.aioutils.AioEventWaiter.kwargs">
+<code class="descname">kwargs</code><a class="headerlink" href="#pydispatch.aioutils.AioEventWaiter.kwargs" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>dict</em> – The keyword arguments attached to the event</p>
+</dd></dl>
+
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.1.0.</span></p>
+</div>
+<dl class="method">
+<dt id="pydispatch.aioutils.AioEventWaiter.trigger">
+<code class="descname">trigger</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/aioutils.html#AioEventWaiter.trigger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.aioutils.AioEventWaiter.trigger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called on event emission and notifies the <a class="reference internal" href="#pydispatch.aioutils.AioEventWaiter.wait" title="pydispatch.aioutils.AioEventWaiter.wait"><code class="xref py py-meth docutils literal notranslate"><span class="pre">wait()</span></code></a> method</p>
+<p>Called by <a class="reference internal" href="#pydispatch.aioutils.AioEventWaiters" title="pydispatch.aioutils.AioEventWaiters"><code class="xref py py-class docutils literal notranslate"><span class="pre">AioEventWaiters</span></code></a> when the
+<a class="reference internal" href="dispatch.html#pydispatch.dispatch.Event" title="pydispatch.dispatch.Event"><code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code></a> instance is dispatched.</p>
+<p>Positional and keyword arguments are stored as instance attributes for
+use in the <a class="reference internal" href="#pydispatch.aioutils.AioEventWaiter.wait" title="pydispatch.aioutils.AioEventWaiter.wait"><code class="xref py py-meth docutils literal notranslate"><span class="pre">wait()</span></code></a> method and <a class="reference internal" href="#pydispatch.aioutils.AioEventWaiter.aio_event" title="pydispatch.aioutils.AioEventWaiter.aio_event"><code class="xref py py-attr docutils literal notranslate"><span class="pre">aio_event</span></code></a> is set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydispatch.aioutils.AioEventWaiter.wait">
+<code class="descname">wait</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/aioutils.html#AioEventWaiter.wait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.aioutils.AioEventWaiter.wait" title="Permalink to this definition">¶</a></dt>
+<dd><p>Waits for event emission and returns the event parameters</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Positional arguments attached to the event
+kwargs (dict): Keyword arguments attached to the event</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">args (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="aiosimplelock-class">
+<h2>AioSimpleLock class<a class="headerlink" href="#aiosimplelock-class" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydispatch.aioutils.AioSimpleLock">
+<em class="property">class </em><code class="descname">AioSimpleLock</code><a class="reference internal" href="../_modules/pydispatch/aioutils.html#AioSimpleLock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.aioutils.AioSimpleLock" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://docs.python.org/3/library/asyncio-sync.html#asyncio.Lock" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">asyncio.Lock</span></code></a> alternative backed by a <a class="reference external" href="https://docs.python.org/3/library/threading.html#threading.Lock" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Lock</span></code></a></p>
+<p>This is a context manager that supports use in both <a class="reference external" href="https://docs.python.org/3/reference/compound_stmts.html#with" title="(in Python v3.7)"><code class="xref std std-keyword docutils literal notranslate"><span class="pre">with</span></code></a> and
+<a class="reference external" href="https://docs.python.org/3/reference/compound_stmts.html#async-with" title="(in Python v3.7)"><code class="xref std std-keyword docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span></code></a> context blocks.</p>
+<dl class="attribute">
+<dt id="pydispatch.aioutils.AioSimpleLock.lock">
+<code class="descname">lock</code><a class="headerlink" href="#pydispatch.aioutils.AioSimpleLock.lock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instance of <a class="reference external" href="https://docs.python.org/3/library/threading.html#threading.Lock" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Lock</span></code></a></p>
+</dd></dl>
+
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.1.0.</span></p>
+</div>
+<dl class="method">
+<dt id="pydispatch.aioutils.AioSimpleLock.acquire">
+<code class="descname">acquire</code><span class="sig-paren">(</span><em>blocking=True</em>, <em>timeout=-1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/aioutils.html#AioSimpleLock.acquire"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.aioutils.AioSimpleLock.acquire" title="Permalink to this definition">¶</a></dt>
+<dd><p>Acquire the <a class="reference internal" href="#pydispatch.aioutils.AioSimpleLock.lock" title="pydispatch.aioutils.AioSimpleLock.lock"><code class="xref py py-attr docutils literal notranslate"><span class="pre">lock</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>blocking</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – See <a class="reference external" href="https://docs.python.org/3/library/threading.html#threading.Lock.acquire" title="(in Python v3.7)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">threading.Lock.acquire()</span></code></a></li>
+<li><strong>timeout</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – See <a class="reference external" href="https://docs.python.org/3/library/threading.html#threading.Lock.acquire" title="(in Python v3.7)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">threading.Lock.acquire()</span></code></a></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/3/library/constants.html#True" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code></a> if the lock was acquired, otherwise <a class="reference external" href="https://docs.python.org/3/library/constants.html#False" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code></a></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydispatch.aioutils.AioSimpleLock.acquire_async">
+<code class="descname">acquire_async</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/aioutils.html#AioSimpleLock.acquire_async"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.aioutils.AioSimpleLock.acquire_async" title="Permalink to this definition">¶</a></dt>
+<dd><p>Acquire the <a class="reference internal" href="#pydispatch.aioutils.AioSimpleLock.lock" title="pydispatch.aioutils.AioSimpleLock.lock"><code class="xref py py-attr docutils literal notranslate"><span class="pre">lock</span></code></a> asynchronously</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydispatch.aioutils.AioSimpleLock.release">
+<code class="descname">release</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/aioutils.html#AioSimpleLock.release"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.aioutils.AioSimpleLock.release" title="Permalink to this definition">¶</a></dt>
+<dd><p>Release the <a class="reference internal" href="#pydispatch.aioutils.AioSimpleLock.lock" title="pydispatch.aioutils.AioSimpleLock.lock"><code class="xref py py-attr docutils literal notranslate"><span class="pre">lock</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="utils.html" class="btn btn-neutral" title="pydispatch.utils module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Matthew Reid.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        <span class="fa fa-book"> Other Versions</span>
+        v: master
+        <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        <dl>
+            <dt>Tags</dt>
+            <dd><a href="../../v0.0.1/index.html">v0.0.1</a></dd>
+            <dd><a href="../../v0.0.2/index.html">v0.0.2</a></dd>
+            <dd><a href="../../v0.0.3/index.html">v0.0.3</a></dd>
+            <dd><a href="../../v0.0.4/index.html">v0.0.4</a></dd>
+            <dd><a href="../../v0.0.5/index.html">v0.0.5</a></dd>
+            <dd><a href="../../v0.0.6/index.html">v0.0.6</a></dd>
+            <dd><a href="../../v0.0.7/index.html">v0.0.7</a></dd>
+            <dd><a href="../../v0.0.8/index.html">v0.0.8</a></dd>
+            <dd><a href="../../v0.0.9/index.html">v0.0.9</a></dd>
+            <dd><a href="../../v0.0.91/index.html">v0.0.91</a></dd>
+            <dd><a href="../../v0.1.0/reference/aioutils.html">v0.1.0</a></dd>
+        </dl>
+        <dl>
+            <dt>Branches</dt>
+            <dd><a href="../../asyncio/reference/aioutils.html">asyncio</a></dd>
+            <dd><a href="../../doc-build-temp/reference/aioutils.html">doc-build-temp</a></dd>
+            <dd><a href="aioutils.html">master</a></dd>
+        </dl>
+    </div>
+</div>
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,417 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>asyncio support &mdash; python-dispatch 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/banner.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Reference" href="reference/index.html" />
+    <link rel="prev" title="Properties" href="properties.html" />
+ 
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-26848999-10"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-26848999-10');
+</script>
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> python-dispatch
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="overview.html">Overview</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dispatcher.html">Dispatcher</a></li>
+<li class="toctree-l2"><a class="reference internal" href="properties.html">Properties</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">asyncio support</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#callbacks">Callbacks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#async-awaitable-events">Async (awaitable) Events</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference/index.html">Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">python-dispatch</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="overview.html">Overview</a> &raquo;</li>
+        
+      <li>asyncio support</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/async.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+
+
+    
+    
+
+
+
+    <p class="scv-banner scv-sphinx_rtd_theme"><a href="../v0.1.0/async.html"><b>Warning:</b> This document is for the development version of python-dispatch. The latest version is v0.1.0.</a></p>
+<div class="section" id="asyncio-support">
+<h1>asyncio support<a class="headerlink" href="#asyncio-support" title="Permalink to this headline">¶</a></h1>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.1.0.</span></p>
+</div>
+<div class="section" id="callbacks">
+<h2>Callbacks<a class="headerlink" href="#callbacks" title="Permalink to this headline">¶</a></h2>
+<p>Callbacks can also be <a class="reference external" href="https://docs.python.org/3/glossary.html#term-coroutine-function" title="(in Python v3.7)"><span class="xref std std-term">coroutine functions</span></a>
+(defined using <a class="reference external" href="https://docs.python.org/3/reference/compound_stmts.html#async-def" title="(in Python v3.7)"><code class="xref std std-keyword docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code></a> or decorated with
+<a class="reference external" href="https://docs.python.org/3/library/asyncio-task.html#asyncio.coroutine" title="(in Python v3.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;asyncio.coroutine</span></code></a>).  For this to work properly,
+the <code class="xref py py-class docutils literal notranslate"><span class="pre">event</span> <span class="pre">loop</span></code> they belong to <strong>must</strong>
+be specified. This requirement is in place to prevent issues when multiple event
+loops are in use (via threads, etc).</p>
+<p>The loop can be specified using the <a class="reference internal" href="reference/dispatch.html#pydispatch.dispatch.Dispatcher.bind_async" title="pydispatch.dispatch.Dispatcher.bind_async"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">Dispatcher.bind_async</span></code></a> method,
+or passed as a keyword argument to <a class="reference internal" href="reference/dispatch.html#pydispatch.dispatch.Dispatcher.bind" title="pydispatch.dispatch.Dispatcher.bind"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">Dispatcher.bind</span></code></a>.</p>
+<div class="section" id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="bind-async-method">
+<h4>bind_async method<a class="headerlink" href="#bind-async-method" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">pydispatch</span> <span class="k">import</span> <span class="n">Dispatcher</span>
+
+<span class="k">class</span> <span class="nc">MyEmitter</span><span class="p">(</span><span class="n">Dispatcher</span><span class="p">):</span>
+    <span class="n">events</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;on_state&#39;</span><span class="p">]</span>
+
+<span class="k">class</span> <span class="nc">MyAsyncListener</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_received</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">on_emitter_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_received</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+
+<span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+<span class="n">emitter</span> <span class="o">=</span> <span class="n">MyEmitter</span><span class="p">()</span>
+<span class="n">listener</span> <span class="o">=</span> <span class="n">MyAsyncListener</span><span class="p">()</span>
+
+<span class="c1"># Pass the event loop as first argument to &quot;bind_async&quot;</span>
+<span class="n">emitter</span><span class="o">.</span><span class="n">bind_async</span><span class="p">(</span><span class="n">loop</span><span class="p">,</span> <span class="n">on_state</span><span class="o">=</span><span class="n">listener</span><span class="o">.</span><span class="n">on_emitter_state</span><span class="p">)</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">trigger_and_wait_for_event</span><span class="p">():</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">emitter</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s1">&#39;on_state&#39;</span><span class="p">)</span>
+
+    <span class="c1"># listener.event_received should be set from &quot;on_emitter_state&quot;</span>
+    <span class="k">await</span> <span class="n">listener</span><span class="o">.</span><span class="n">event_received</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+
+<span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">trigger_and_wait_for_event</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="bind-with-keyword-argument">
+<h4>bind (with keyword argument)<a class="headerlink" href="#bind-with-keyword-argument" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">pydispatch</span> <span class="k">import</span> <span class="n">Dispatcher</span>
+
+<span class="k">class</span> <span class="nc">MyEmitter</span><span class="p">(</span><span class="n">Dispatcher</span><span class="p">):</span>
+    <span class="n">events</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;on_state&#39;</span><span class="p">]</span>
+
+<span class="k">class</span> <span class="nc">MyAsyncListener</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_received</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">on_emitter_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_received</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+
+<span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+<span class="n">emitter</span> <span class="o">=</span> <span class="n">MyEmitter</span><span class="p">()</span>
+<span class="n">listener</span> <span class="o">=</span> <span class="n">MyAsyncListener</span><span class="p">()</span>
+
+<span class="c1"># Pass the event loop using __aio_loop__</span>
+<span class="n">emitter</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">on_state</span><span class="o">=</span><span class="n">listener</span><span class="o">.</span><span class="n">on_emitter_state</span><span class="p">,</span> <span class="n">__aio_loop__</span><span class="o">=</span><span class="n">loop</span><span class="p">)</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">trigger_and_wait_for_event</span><span class="p">():</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">emitter</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s1">&#39;on_state&#39;</span><span class="p">)</span>
+
+    <span class="c1"># listener.event_received should be set from &quot;on_emitter_state&quot;</span>
+    <span class="k">await</span> <span class="n">listener</span><span class="o">.</span><span class="n">event_received</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+
+<span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">trigger_and_wait_for_event</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="async-awaitable-events">
+<h2>Async (awaitable) Events<a class="headerlink" href="#async-awaitable-events" title="Permalink to this headline">¶</a></h2>
+<p>Event (and <a class="reference internal" href="reference/properties.html#pydispatch.properties.Property" title="pydispatch.properties.Property"><code class="xref any py py-class docutils literal notranslate"><span class="pre">Property</span></code></a>) objects are <a class="reference external" href="https://docs.python.org/3/glossary.html#term-awaitable" title="(in Python v3.7)"><span class="xref std std-term">awaitable</span></a>. This allows event
+subscription without callbacks in an async environment. The <a class="reference internal" href="reference/dispatch.html#pydispatch.dispatch.Event" title="pydispatch.dispatch.Event"><code class="xref any py py-class docutils literal notranslate"><span class="pre">Event</span></code></a> instance
+itself must first be obtained using the <a class="reference internal" href="reference/dispatch.html#pydispatch.dispatch.Dispatcher.get_dispatcher_event" title="pydispatch.dispatch.Dispatcher.get_dispatcher_event"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">Dispatcher.get_dispatcher_event</span></code></a>
+method. Any positional and keyword arguments from the event are returned as a
+two-tuple:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">wait_for_event</span><span class="p">(</span><span class="n">event_name</span><span class="p">):</span>
+    <span class="n">event</span> <span class="o">=</span> <span class="n">emitter</span><span class="o">.</span><span class="n">get_dispatcher_event</span><span class="p">(</span><span class="n">event_name</span><span class="p">)</span>
+    <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="k">await</span> <span class="n">event</span>
+    <span class="k">return</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span>
+
+<span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">wait_for_event</span><span class="p">(</span><span class="s1">&#39;on_state&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>This can also be done with <a class="reference internal" href="reference/properties.html#pydispatch.properties.Property" title="pydispatch.properties.Property"><code class="xref any py py-class docutils literal notranslate"><span class="pre">Property</span></code></a> objects:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">pydispatch</span> <span class="k">import</span> <span class="n">Dispatcher</span><span class="p">,</span> <span class="n">Property</span>
+
+
+<span class="k">class</span> <span class="nc">MyEmitter</span><span class="p">(</span><span class="n">Dispatcher</span><span class="p">):</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">Property</span><span class="p">()</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">change_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="o">.</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">i</span>
+
+<span class="k">class</span> <span class="nc">MyAsyncListener</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">wait_for_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">emitter</span><span class="p">):</span>
+        <span class="n">event</span> <span class="o">=</span> <span class="n">emitter</span><span class="o">.</span><span class="n">get_dispatcher_event</span><span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="k">await</span> <span class="n">event</span>
+            <span class="n">instance</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">args</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;=</span> <span class="mi">9</span><span class="p">:</span>
+                <span class="k">break</span>
+
+<span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+<span class="n">emitter</span> <span class="o">=</span> <span class="n">MyEmitter</span><span class="p">()</span>
+<span class="n">listener</span> <span class="o">=</span> <span class="n">MyAsyncListener</span><span class="p">()</span>
+
+<span class="c1"># Make the emitter value iterate from 0-9</span>
+<span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="n">emitter</span><span class="o">.</span><span class="n">change_values</span><span class="p">())</span>
+
+<span class="c1"># Listens for changes, then exits after value reaches 9</span>
+<span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">listener</span><span class="o">.</span><span class="n">wait_for_value</span><span class="p">(</span><span class="n">emitter</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="reference/index.html" class="btn btn-neutral float-right" title="Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="properties.html" class="btn btn-neutral" title="Properties" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Matthew Reid.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        <span class="fa fa-book"> Other Versions</span>
+        v: master
+        <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        <dl>
+            <dt>Tags</dt>
+            <dd><a href="../v0.0.1/index.html">v0.0.1</a></dd>
+            <dd><a href="../v0.0.2/index.html">v0.0.2</a></dd>
+            <dd><a href="../v0.0.3/index.html">v0.0.3</a></dd>
+            <dd><a href="../v0.0.4/index.html">v0.0.4</a></dd>
+            <dd><a href="../v0.0.5/index.html">v0.0.5</a></dd>
+            <dd><a href="../v0.0.6/index.html">v0.0.6</a></dd>
+            <dd><a href="../v0.0.7/index.html">v0.0.7</a></dd>
+            <dd><a href="../v0.0.8/index.html">v0.0.8</a></dd>
+            <dd><a href="../v0.0.9/index.html">v0.0.9</a></dd>
+            <dd><a href="../v0.0.91/index.html">v0.0.91</a></dd>
+            <dd><a href="../v0.1.0/async.html">v0.1.0</a></dd>
+        </dl>
+        <dl>
+            <dt>Branches</dt>
+            <dd><a href="../asyncio/async.html">asyncio</a></dd>
+            <dd><a href="../doc-build-temp/async.html">doc-build-temp</a></dd>
+            <dd><a href="async.html">master</a></dd>
+        </dl>
+    </div>
+</div>
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

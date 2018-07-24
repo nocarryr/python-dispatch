@@ -1,0 +1,453 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pydispatch.utils module &mdash; python-dispatch 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/banner.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pydispatch.aioutils module" href="aioutils.html" />
+    <link rel="prev" title="pydispatch.properties module" href="properties.html" />
+ 
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-26848999-10"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-26848999-10');
+</script>
+
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> python-dispatch
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dispatch.html">pydispatch.dispatch module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="properties.html">pydispatch.properties module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">pydispatch.utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#weakmethodcontainer-class">WeakMethodContainer class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#informativewvdict-class">InformativeWVDict class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#emissionholdlock-class">EmissionHoldLock class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">EmissionHoldLock_ class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aioemissionholdlock-class">AioEmissionHoldLock class</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="aioutils.html">pydispatch.aioutils module</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">python-dispatch</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Reference</a> &raquo;</li>
+        
+      <li>pydispatch.utils module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/reference/utils.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+
+
+
+
+
+<div class="section" id="module-pydispatch.utils">
+<span id="pydispatch-utils-module"></span><h1>pydispatch.utils module<a class="headerlink" href="#module-pydispatch.utils" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="weakmethodcontainer-class">
+<h2>WeakMethodContainer class<a class="headerlink" href="#weakmethodcontainer-class" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydispatch.utils.WeakMethodContainer">
+<em class="property">class </em><code class="descname">WeakMethodContainer</code><span class="sig-paren">(</span><em>**kw</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/utils.html#WeakMethodContainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.utils.WeakMethodContainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Container to store weak references to callbacks</p>
+<p>Instance methods are stored using the underlying <a class="reference external" href="https://docs.python.org/3/glossary.html#term-function" title="(in Python v3.7)"><span class="xref std std-term">function</span></a> object
+and the instance id (using <a class="reference external" href="https://docs.python.org/3/library/functions.html#id" title="(in Python v3.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">id(obj)</span></code></a>) as the key (a two-tuple)
+and the object itself as the value. This ensures proper weak referencing.</p>
+<p>Functions are stored using the string “function” and the id of the function
+as the key (a two-tuple).</p>
+<dl class="method">
+<dt id="pydispatch.utils.WeakMethodContainer.add_method">
+<code class="descname">add_method</code><span class="sig-paren">(</span><em>m</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/utils.html#WeakMethodContainer.add_method"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.utils.WeakMethodContainer.add_method" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an instance method or function</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m</strong> – The instance method or function to store</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydispatch.utils.WeakMethodContainer.del_instance">
+<code class="descname">del_instance</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/utils.html#WeakMethodContainer.del_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.utils.WeakMethodContainer.del_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove any stored instance methods that belong to an object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>obj</strong> – The instance object to remove</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydispatch.utils.WeakMethodContainer.del_method">
+<code class="descname">del_method</code><span class="sig-paren">(</span><em>m</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/utils.html#WeakMethodContainer.del_method"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.utils.WeakMethodContainer.del_method" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove an instance method or function if it exists</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m</strong> – The instance method or function to remove</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydispatch.utils.WeakMethodContainer.iter_instances">
+<code class="descname">iter_instances</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/utils.html#WeakMethodContainer.iter_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.utils.WeakMethodContainer.iter_instances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate over the stored objects</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Yields:</th><td class="field-body"><em>wrkey</em> – The two-tuple key used to store the object
+obj: The instance or function object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydispatch.utils.WeakMethodContainer.iter_methods">
+<code class="descname">iter_methods</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/utils.html#WeakMethodContainer.iter_methods"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.utils.WeakMethodContainer.iter_methods" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate over stored functions and instance methods</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Yields:</th><td class="field-body">Instance methods or function objects</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydispatch.utils.WeakMethodContainer.keys">
+<code class="descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; a set-like object providing a view on D's keys<a class="reference internal" href="../_modules/pydispatch/utils.html#WeakMethodContainer.keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.utils.WeakMethodContainer.keys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="informativewvdict-class">
+<h2>InformativeWVDict class<a class="headerlink" href="#informativewvdict-class" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydispatch.utils.InformativeWVDict">
+<em class="property">class </em><code class="descname">InformativeWVDict</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/utils.html#InformativeWVDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.utils.InformativeWVDict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/weakref.html#weakref.WeakValueDictionary" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">weakref.WeakValueDictionary</span></code></a></p>
+<p>A WeakValueDictionary providing a callback for deletion</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"><strong>del_callback</strong> – A callback function that will be called when an item is
+either deleted or dereferenced. It will be called with the key as
+the only argument.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="emissionholdlock-class">
+<h2>EmissionHoldLock class<a class="headerlink" href="#emissionholdlock-class" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydispatch.utils.EmissionHoldLock">
+<em class="property">class </em><code class="descname">EmissionHoldLock</code><span class="sig-paren">(</span><em>event_instance</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/utils.html#EmissionHoldLock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.utils.EmissionHoldLock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pydispatch.utils.EmissionHoldLock_" title="pydispatch.utils.EmissionHoldLock_"><code class="xref py py-class docutils literal notranslate"><span class="pre">pydispatch.utils.EmissionHoldLock_</span></code></a>, <a class="reference internal" href="#pydispatch.aioutils.AioEmissionHoldLock" title="pydispatch.aioutils.AioEmissionHoldLock"><code class="xref py py-class docutils literal notranslate"><span class="pre">pydispatch.aioutils.AioEmissionHoldLock</span></code></a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="id1">
+<h2>EmissionHoldLock_ class<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydispatch.utils.EmissionHoldLock_">
+<em class="property">class </em><code class="descname">EmissionHoldLock_</code><span class="sig-paren">(</span><em>event_instance</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/utils.html#EmissionHoldLock_"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.utils.EmissionHoldLock_" title="Permalink to this definition">¶</a></dt>
+<dd><p>Context manager used for <a class="reference internal" href="dispatch.html#pydispatch.dispatch.Dispatcher.emission_lock" title="pydispatch.dispatch.Dispatcher.emission_lock"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pydispatch.dispatch.Dispatcher.emission_lock()</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event_instance</strong> – The <a class="reference internal" href="dispatch.html#pydispatch.dispatch.Event" title="pydispatch.dispatch.Event"><code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code></a> instance
+associated with the lock</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="pydispatch.utils.EmissionHoldLock_.event_instance">
+<code class="descname">event_instance</code><a class="headerlink" href="#pydispatch.utils.EmissionHoldLock_.event_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="dispatch.html#pydispatch.dispatch.Event" title="pydispatch.dispatch.Event"><code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code></a> instance
+associated with the lock</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pydispatch.utils.EmissionHoldLock_.last_event">
+<code class="descname">last_event</code><a class="headerlink" href="#pydispatch.utils.EmissionHoldLock_.last_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>The positional and keyword arguments from the event’s last
+emission as a two-tuple. If no events were triggered while the lock
+was held, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pydispatch.utils.EmissionHoldLock_.held">
+<code class="descname">held</code><a class="headerlink" href="#pydispatch.utils.EmissionHoldLock_.held" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>bool</em> – The internal state of the lock</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="aioemissionholdlock-class">
+<h2>AioEmissionHoldLock class<a class="headerlink" href="#aioemissionholdlock-class" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydispatch.aioutils.AioEmissionHoldLock">
+<em class="property">class </em><code class="descname">AioEmissionHoldLock</code><a class="reference internal" href="../_modules/pydispatch/aioutils.html#AioEmissionHoldLock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.aioutils.AioEmissionHoldLock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Async context manager mixin for <a class="reference internal" href="#pydispatch.utils.EmissionHoldLock_" title="pydispatch.utils.EmissionHoldLock_"><code class="xref py py-class docutils literal notranslate"><span class="pre">pydispatch.utils.EmissionHoldLock_</span></code></a></p>
+<p>Supports use in <a class="reference external" href="https://docs.python.org/3/reference/compound_stmts.html#async-with" title="(in Python v3.7)"><code class="xref std std-keyword docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span></code></a> statements</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="aioutils.html" class="btn btn-neutral float-right" title="pydispatch.aioutils module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="properties.html" class="btn btn-neutral" title="pydispatch.properties module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Matthew Reid.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        <span class="fa fa-book"> Other Versions</span>
+        v: v0.1.0
+        <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        <dl>
+            <dt>Tags</dt>
+            <dd><a href="../../v0.0.1/index.html">v0.0.1</a></dd>
+            <dd><a href="../../v0.0.2/index.html">v0.0.2</a></dd>
+            <dd><a href="../../v0.0.3/index.html">v0.0.3</a></dd>
+            <dd><a href="../../v0.0.4/index.html">v0.0.4</a></dd>
+            <dd><a href="../../v0.0.5/index.html">v0.0.5</a></dd>
+            <dd><a href="../../v0.0.6/index.html">v0.0.6</a></dd>
+            <dd><a href="../../v0.0.7/index.html">v0.0.7</a></dd>
+            <dd><a href="../../v0.0.8/index.html">v0.0.8</a></dd>
+            <dd><a href="../../v0.0.9/index.html">v0.0.9</a></dd>
+            <dd><a href="../../v0.0.91/index.html">v0.0.91</a></dd>
+            <dd><a href="utils.html">v0.1.0</a></dd>
+        </dl>
+        <dl>
+            <dt>Branches</dt>
+            <dd><a href="../../asyncio/reference/utils.html">asyncio</a></dd>
+            <dd><a href="../../doc-build-temp/reference/utils.html">doc-build-temp</a></dd>
+            <dd><a href="../../master/reference/utils.html">master</a></dd>
+        </dl>
+    </div>
+</div>
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,431 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Overview &mdash; python-dispatch 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/banner.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API" href="api.html" />
+    <link rel="prev" title="Welcome to python-dispatch’s documentation!" href="index.html" />
+ 
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-26848999-10"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-26848999-10');
+</script>
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> python-dispatch
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dispatcher">Dispatcher</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#properties">Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#container-properties">Container Properties</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">python-dispatch</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Overview</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/overview.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+
+
+    
+    
+
+
+
+    <p class="scv-banner scv-sphinx_rtd_theme"><a href="../v0.1.0/overview.html"><b>Warning:</b> This document is for an old version of python-dispatch. The latest version is v0.1.0.</a></p>
+<div class="section" id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="dispatcher">
+<h2>Dispatcher<a class="headerlink" href="#dispatcher" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="api.html#pydispatch.dispatch.Dispatcher">Dispatcher</a> is the core component of the framework.
+Subclassing this enables all of the event functionality.</p>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydispatch</span> <span class="k">import</span> <span class="n">Dispatcher</span>
+
+<span class="k">class</span> <span class="nc">MyEmitter</span><span class="p">(</span><span class="n">Dispatcher</span><span class="p">):</span>
+    <span class="n">_events_</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;on_state&#39;</span><span class="p">,</span> <span class="s1">&#39;new_data&#39;</span><span class="p">]</span>
+    <span class="k">def</span> <span class="nf">do_some_stuff</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># do stuff that makes new data</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_some_data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s1">&#39;new_data&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+
+<span class="c1"># An observer - could inherit from Dispatcher or any other class</span>
+<span class="k">class</span> <span class="nc">MyListener</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">on_new_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;I got data: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">on_emitter_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;emitter state changed&#39;</span><span class="p">)</span>
+
+<span class="n">emitter</span> <span class="o">=</span> <span class="n">MyEmitter</span><span class="p">()</span>
+<span class="n">listener</span> <span class="o">=</span> <span class="n">MyListener</span><span class="p">()</span>
+
+<span class="n">emitter</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">on_state</span><span class="o">=</span><span class="n">listener</span><span class="o">.</span><span class="n">on_emitter_state</span><span class="p">)</span>
+<span class="n">emitter</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">new_data</span><span class="o">=</span><span class="n">listener</span><span class="o">.</span><span class="n">on_new_data</span><span class="p">)</span>
+
+<span class="n">emitter</span><span class="o">.</span><span class="n">do_some_stuff</span><span class="p">()</span>
+<span class="c1"># &gt;&gt;&gt; I got data: ...</span>
+
+<span class="n">emitter</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s1">&#39;on_state&#39;</span><span class="p">)</span>
+<span class="c1"># &gt;&gt;&gt; emitter state changed</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">bind</span></code> method above could also be combined:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emitter</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">on_state</span><span class="o">=</span><span class="n">listener</span><span class="o">.</span><span class="n">on_emitter_state</span><span class="p">,</span>
+             <span class="n">new_data</span><span class="o">=</span><span class="n">listener</span><span class="o">.</span><span class="n">on_new_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Events can also be created after object creation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emitter</span><span class="o">.</span><span class="n">register_event</span><span class="p">(</span><span class="s1">&#39;need_data&#39;</span><span class="p">)</span>
+
+<span class="c1"># Multiple events can also be created:</span>
+<span class="n">emitter</span><span class="o">.</span><span class="n">register_event</span><span class="p">(</span><span class="s1">&#39;value_changed&#39;</span><span class="p">,</span> <span class="s1">&#39;something_happened&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Stop listening by calling <code class="docutils literal notranslate"><span class="pre">unbind</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emitter</span><span class="o">.</span><span class="n">unbind</span><span class="p">(</span><span class="n">listener</span><span class="o">.</span><span class="n">on_emitter_state</span><span class="p">)</span>
+
+<span class="c1"># Or to unbind all events, just supply the instance object:</span>
+<span class="n">emitter</span><span class="o">.</span><span class="n">unbind</span><span class="p">(</span><span class="n">listener</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Event propagation will stop if any callback returns <code class="docutils literal notranslate"><span class="pre">False</span></code>. Any other return
+value is ignored.</p>
+<p>There are no restrictions on event names. The idea is to keep things as simple
+and non-restrictive as possible. When calling <code class="docutils literal notranslate"><span class="pre">emit</span></code>, and positional or keyword
+arguments supplied will be passed along to listeners.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The <a class="reference external" href="api.html#pydispatch.dispatch.Dispatcher">Dispatcher</a> class does not use <code class="docutils literal notranslate"><span class="pre">__init__</span></code> for any
+of its functionality. This is again to keep things simple and get the
+framework out of your way.
+It uses <code class="docutils literal notranslate"><span class="pre">__new__</span></code> to handle instance creation. If your subclasses use
+<code class="docutils literal notranslate"><span class="pre">__new__</span></code> for something, the call to <code class="docutils literal notranslate"><span class="pre">super()</span></code> is required,
+but you should probably check the code to determine how it fits with your own.</p>
+</div>
+</div>
+<div class="section" id="properties">
+<h2>Properties<a class="headerlink" href="#properties" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="api.html#pydispatch.properties.Property">Property</a> objects can be defined on subclasses of <a class="reference external" href="api.html#pydispatch.dispatch.Dispatcher">Dispatcher</a> to create
+instance attributes that emit events when their values change.
+Binding and unbinding works exactly the same as with events.
+The callback signature is slightly different however. The first two arguments
+will be:</p>
+<ol class="arabic simple">
+<li>The instance object that generated the event</li>
+<li>The Property value</li>
+</ol>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydispatch</span> <span class="k">import</span> <span class="n">Dispatcher</span><span class="p">,</span> <span class="n">Property</span>
+
+<span class="k">class</span> <span class="nc">MyEmitter</span><span class="p">(</span><span class="n">Dispatcher</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Property</span><span class="p">()</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">Property</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">MyListener</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">on_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;emitter name is </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">on_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;emitter value is </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+<span class="n">emitter</span> <span class="o">=</span> <span class="n">MyEmitter</span><span class="p">()</span>
+<span class="n">listener</span> <span class="o">=</span> <span class="n">MyListener</span><span class="p">()</span>
+
+<span class="n">emitter</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">listener</span><span class="o">.</span><span class="n">on_name</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">listener</span><span class="o">.</span><span class="n">on_value</span><span class="p">)</span>
+
+<span class="n">emitter</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;foo&#39;</span>
+<span class="c1"># &gt;&gt;&gt; emitter name is foo</span>
+<span class="n">emitter</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="c1"># &gt;&gt;&gt; emitter value is 42</span>
+</pre></div>
+</div>
+<p>If the attribute is set to the same value, an event is not dispatched:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emitter</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="c1"># No event</span>
+<span class="n">emitter</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mi">43</span>
+<span class="c1"># &gt;&gt;&gt; emitter value is 43</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="container-properties">
+<h2>Container Properties<a class="headerlink" href="#container-properties" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><code class="docutils literal notranslate"><span class="pre">dict</span></code> and <code class="docutils literal notranslate"><span class="pre">list</span></code> objects are implemented as subclasses of <code class="docutils literal notranslate"><span class="pre">Property</span></code>:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="api.html#pydispatch.properties.DictProperty">DictProperty</a></li>
+<li><a class="reference external" href="api.html#pydispatch.properties.ListProperty">ListProperty</a></li>
+</ul>
+</dd>
+</dl>
+<p>They will emit events when their contents change. Nesting is also supported,
+so even the contents of a <code class="docutils literal notranslate"><span class="pre">list</span></code> or <code class="docutils literal notranslate"><span class="pre">dict</span></code> anywhere inside of the structure
+can trigger an event.</p>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydispatch</span> <span class="k">import</span> <span class="n">Dispatcher</span>
+<span class="kn">from</span> <span class="nn">pydispatch.properties</span> <span class="k">import</span> <span class="n">ListProperty</span><span class="p">,</span> <span class="n">DictProperty</span>
+
+<span class="k">class</span> <span class="nc">MyEmitter</span><span class="p">(</span><span class="n">Dispatcher</span><span class="p">):</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">ListProperty</span><span class="p">()</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">DictProperty</span><span class="p">()</span>
+
+<span class="n">emitter</span> <span class="o">=</span> <span class="n">MyEmitter</span><span class="p">()</span>
+
+<span class="n">emitter</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">emitter</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+<span class="c1"># &gt;&gt;&gt; [&#39;foo&#39;]</span>
+
+<span class="n">emitter</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="s1">&#39;baz&#39;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">emitter</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+<span class="c1"># &gt;&gt;&gt; [&#39;foo&#39;, &#39;bar&#39;, &#39;baz&#39;]</span>
+
+<span class="n">emitter</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;foo&#39;</span><span class="p">:</span><span class="s1">&#39;bar&#39;</span><span class="p">}</span>
+<span class="c1"># or</span>
+<span class="n">emitter</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;foo&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;bar&#39;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">emitter</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="c1"># &gt;&gt;&gt; {&#39;foo&#39;:&#39;bar&#39;}</span>
+
+<span class="n">emitter</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;fruit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;apple&#39;</span><span class="p">:</span><span class="s1">&#39;red&#39;</span><span class="p">}</span>
+<span class="n">emitter</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;fruit&#39;</span><span class="p">][</span><span class="s1">&#39;banana&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;yellow&#39;</span>
+<span class="c1"># event would be dispatched to listeners</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="api.html" class="btn btn-neutral float-right" title="API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Welcome to python-dispatch’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Matthew Reid.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        <span class="fa fa-book"> Other Versions</span>
+        v: v0.0.1
+        <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        <dl>
+            <dt>Tags</dt>
+            <dd><a href="overview.html">v0.0.1</a></dd>
+            <dd><a href="../v0.0.2/overview.html">v0.0.2</a></dd>
+            <dd><a href="../v0.0.3/overview.html">v0.0.3</a></dd>
+            <dd><a href="../v0.0.4/overview.html">v0.0.4</a></dd>
+            <dd><a href="../v0.0.5/overview.html">v0.0.5</a></dd>
+            <dd><a href="../v0.0.6/overview.html">v0.0.6</a></dd>
+            <dd><a href="../v0.0.7/overview.html">v0.0.7</a></dd>
+            <dd><a href="../v0.0.8/overview.html">v0.0.8</a></dd>
+            <dd><a href="../v0.0.9/overview.html">v0.0.9</a></dd>
+            <dd><a href="../v0.0.91/overview.html">v0.0.91</a></dd>
+            <dd><a href="../v0.1.0/overview.html">v0.1.0</a></dd>
+        </dl>
+        <dl>
+            <dt>Branches</dt>
+            <dd><a href="../asyncio/overview.html">asyncio</a></dd>
+            <dd><a href="../doc-build-temp/overview.html">doc-build-temp</a></dd>
+            <dd><a href="../master/overview.html">master</a></dd>
+        </dl>
+    </div>
+</div>
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

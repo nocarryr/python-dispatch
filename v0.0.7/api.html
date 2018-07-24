@@ -1,0 +1,640 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>API &mdash; python-dispatch 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/banner.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Overview" href="overview.html" />
+ 
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-26848999-10"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-26848999-10');
+</script>
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> python-dispatch
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-pydispatch.dispatch">pydispatch.dispatch module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pydispatch.properties">pydispatch.properties module</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">python-dispatch</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>API</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+
+
+    
+    
+
+
+
+    <p class="scv-banner scv-sphinx_rtd_theme"><b>Warning:</b> This document is for an old version of python-dispatch.</p>
+<div class="section" id="api">
+<h1>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-pydispatch.dispatch">
+<span id="pydispatch-dispatch-module"></span><h2>pydispatch.dispatch module<a class="headerlink" href="#module-pydispatch.dispatch" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydispatch.dispatch.Dispatcher">
+<em class="property">class </em><code class="descname">Dispatcher</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydispatch/dispatch.html#Dispatcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.dispatch.Dispatcher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Core class used to enable all functionality in the library</p>
+<p>Interfaces with <a class="reference internal" href="#pydispatch.dispatch.Event" title="pydispatch.dispatch.Event"><code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code></a> and <a class="reference internal" href="#pydispatch.properties.Property" title="pydispatch.properties.Property"><code class="xref py py-class docutils literal notranslate"><span class="pre">Property</span></code></a>
+objects upon instance creation.</p>
+<p>Events can be created by calling <a class="reference internal" href="#pydispatch.dispatch.Dispatcher.register_event" title="pydispatch.dispatch.Dispatcher.register_event"><code class="xref py py-meth docutils literal notranslate"><span class="pre">register_event()</span></code></a> or by the subclass
+definition:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Foo</span><span class="p">(</span><span class="n">Dispatcher</span><span class="p">):</span>
+    <span class="n">_events_</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;awesome_event&#39;</span><span class="p">,</span> <span class="s1">&#39;on_less_awesome_event&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Once defined, an event can be dispatched to listeners by calling <a class="reference internal" href="#pydispatch.dispatch.Dispatcher.emit" title="pydispatch.dispatch.Dispatcher.emit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">emit()</span></code></a>.</p>
+<dl class="method">
+<dt id="pydispatch.dispatch.Dispatcher.bind">
+<code class="descname">bind</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydispatch/dispatch.html#Dispatcher.bind"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.dispatch.Dispatcher.bind" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subscribes to events or to <a class="reference internal" href="#pydispatch.properties.Property" title="pydispatch.properties.Property"><code class="xref py py-class docutils literal notranslate"><span class="pre">Property</span></code></a> updates</p>
+<p>Keyword arguments are used with the Event or Property names as keys
+and the callbacks as values:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Foo</span><span class="p">(</span><span class="n">Dispatcher</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Property</span><span class="p">()</span>
+
+<span class="n">foo</span> <span class="o">=</span> <span class="n">Foo</span><span class="p">()</span>
+
+<span class="n">foo</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">my_listener</span><span class="o">.</span><span class="n">on_foo_name_changed</span><span class="p">)</span>
+<span class="n">foo</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">other_listener</span><span class="o">.</span><span class="n">on_name</span><span class="p">,</span>
+         <span class="n">value</span><span class="o">=</span><span class="n">other_listener</span><span class="o">.</span><span class="n">on_value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The callbacks are stored as weak references and their order is not
+maintained relative to the order of binding.</p>
+<p><strong>Async Callbacks</strong>:</p>
+<blockquote>
+<div><p>Callbacks may be <a class="reference external" href="https://docs.python.org/3/glossary.html#term-coroutine-function" title="(in Python v3.7)"><span class="xref std std-term">coroutine functions</span></a>
+(defined using <a class="reference external" href="https://docs.python.org/3/reference/compound_stmts.html#async-def" title="(in Python v3.7)"><code class="xref std std-keyword docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code></a> or decorated with
+<a class="reference external" href="https://docs.python.org/3/library/asyncio-task.html#asyncio.coroutine" title="(in Python v3.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;asyncio.coroutine</span></code></a>), but an event loop
+must be explicitly provided with the keyword
+argument <code class="docutils literal notranslate"><span class="pre">&quot;__aio_loop__&quot;</span></code> (an instance of
+<a class="reference external" href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.BaseEventLoop" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">asyncio.BaseEventLoop</span></code></a>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">pydispatch</span> <span class="k">import</span> <span class="n">Dispatcher</span>
+
+<span class="k">class</span> <span class="nc">Foo</span><span class="p">(</span><span class="n">Dispatcher</span><span class="p">):</span>
+    <span class="n">_events_</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;test_event&#39;</span><span class="p">]</span>
+
+<span class="k">class</span> <span class="nc">Bar</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">got_foo_event</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">wait_for_foo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">got_foo_event</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;got foo!&#39;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">on_foo_test_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">got_foo_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+
+<span class="n">foo</span> <span class="o">=</span> <span class="n">Foo</span><span class="p">()</span>
+<span class="n">bar</span> <span class="o">=</span> <span class="n">Bar</span><span class="p">()</span>
+
+<span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+<span class="n">foo</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">test_event</span><span class="o">=</span><span class="n">bar</span><span class="o">.</span><span class="n">on_foo_test_event</span><span class="p">,</span> <span class="n">__aio_loop__</span><span class="o">=</span><span class="n">loop</span><span class="p">)</span>
+
+<span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">bar</span><span class="o">.</span><span class="n">wait_for_foo</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>This can also be done using <a class="reference internal" href="#pydispatch.dispatch.Dispatcher.bind_async" title="pydispatch.dispatch.Dispatcher.bind_async"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bind_async()</span></code></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.1.0.</span></p>
+</div>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydispatch.dispatch.Dispatcher.bind_async">
+<code class="descname">bind_async</code><span class="sig-paren">(</span><em>loop</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydispatch/dispatch.html#Dispatcher.bind_async"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.dispatch.Dispatcher.bind_async" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subscribes to events with async callbacks</p>
+<p>Functionality is matches the <a class="reference internal" href="#pydispatch.dispatch.Dispatcher.bind" title="pydispatch.dispatch.Dispatcher.bind"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bind()</span></code></a> method, except the provided
+callbacks should be coroutine functions. When the event is dispatched,
+callbacks will be placed on the given event loop.</p>
+<p>For keyword arguments, see <a class="reference internal" href="#pydispatch.dispatch.Dispatcher.bind" title="pydispatch.dispatch.Dispatcher.bind"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bind()</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>loop</strong> – The <a class="reference external" href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.BaseEventLoop" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventLoop</span></code></a> to use when
+events are dispatched</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Availability:</dt>
+<dd>Python&gt;=3.5</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.1.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydispatch.dispatch.Dispatcher.emission_lock">
+<code class="descname">emission_lock</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydispatch/dispatch.html#Dispatcher.emission_lock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.dispatch.Dispatcher.emission_lock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Holds emission of events and dispatches the last event on release</p>
+<p>The context manager returned will store the last event data called by
+<a class="reference internal" href="#pydispatch.dispatch.Dispatcher.emit" title="pydispatch.dispatch.Dispatcher.emit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">emit()</span></code></a> and prevent callbacks until it exits. On exit, it will
+dispatch the last event captured (if any):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Foo</span><span class="p">(</span><span class="n">Dispatcher</span><span class="p">):</span>
+    <span class="n">_events_</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;my_event&#39;</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">on_my_event</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+<span class="n">foo</span> <span class="o">=</span> <span class="n">Foo</span><span class="p">()</span>
+<span class="n">foo</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">my_event</span><span class="o">=</span><span class="n">on_my_event</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">foo</span><span class="o">.</span><span class="n">emission_lock</span><span class="p">(</span><span class="s1">&#39;my_event&#39;</span><span class="p">):</span>
+    <span class="n">foo</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s1">&#39;my_event&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">foo</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s1">&#39;my_event&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="mi">2</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The name of the <a class="reference internal" href="#pydispatch.dispatch.Event" title="pydispatch.dispatch.Event"><code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code></a> or
+<a class="reference internal" href="#pydispatch.properties.Property" title="pydispatch.properties.Property"><code class="xref py py-class docutils literal notranslate"><span class="pre">Property</span></code></a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A context manager to be used by the <a class="reference external" href="https://docs.python.org/3/reference/compound_stmts.html#with" title="(in Python v3.7)"><code class="xref std std-keyword docutils literal notranslate"><span class="pre">with</span></code></a> statement.<p>If available, this will also be an async context manager to be used
+with the <a class="reference external" href="https://docs.python.org/3/reference/compound_stmts.html#async-with" title="(in Python v3.7)"><code class="xref std std-keyword docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span></code></a> statement (see <a class="reference external" href="https://www.python.org/dev/peps/pep-0492/#asynchronous-context-managers-and-async-with">PEP 492</a>).</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The context manager is re-entrant, meaning that multiple calls to
+this method within nested context scopes are possible.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydispatch.dispatch.Dispatcher.emit">
+<code class="descname">emit</code><span class="sig-paren">(</span><em>name</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydispatch/dispatch.html#Dispatcher.emit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.dispatch.Dispatcher.emit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dispatches an event to any subscribed listeners</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If a listener returns <a class="reference external" href="https://docs.python.org/3/library/constants.html#False" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code></a>, the event will stop dispatching to
+other listeners. Any other return value is ignored.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The name of the <a class="reference internal" href="#pydispatch.dispatch.Event" title="pydispatch.dispatch.Event"><code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code></a> to dispatch</li>
+<li><strong>*args</strong> (<em>Optional</em>) – Positional arguments to be sent to listeners</li>
+<li><strong>**kwargs</strong> (<em>Optional</em>) – Keyword arguments to be sent to listeners</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydispatch.dispatch.Dispatcher.get_dispatcher_event">
+<code class="descname">get_dispatcher_event</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydispatch/dispatch.html#Dispatcher.get_dispatcher_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.dispatch.Dispatcher.get_dispatcher_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves an Event object by name</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The name of the <a class="reference internal" href="#pydispatch.dispatch.Event" title="pydispatch.dispatch.Event"><code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code></a> or
+<a class="reference internal" href="#pydispatch.properties.Property" title="pydispatch.properties.Property"><code class="xref py py-class docutils literal notranslate"><span class="pre">Property</span></code></a> object to retrieve</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The <a class="reference internal" href="#pydispatch.dispatch.Event" title="pydispatch.dispatch.Event"><code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code></a> instance for the event or property definition</td>
+</tr>
+</tbody>
+</table>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.1.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydispatch.dispatch.Dispatcher.register_event">
+<code class="descname">register_event</code><span class="sig-paren">(</span><em>*names</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydispatch/dispatch.html#Dispatcher.register_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.dispatch.Dispatcher.register_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Registers new events after instance creation</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>*names</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Name or names of the events to register</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydispatch.dispatch.Dispatcher.unbind">
+<code class="descname">unbind</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydispatch/dispatch.html#Dispatcher.unbind"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.dispatch.Dispatcher.unbind" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unsubscribes from events or <a class="reference internal" href="#pydispatch.properties.Property" title="pydispatch.properties.Property"><code class="xref py py-class docutils literal notranslate"><span class="pre">Property</span></code></a> updates</p>
+<p>Multiple arguments can be given. Each of which can be either the method
+that was used for the original call to <a class="reference internal" href="#pydispatch.dispatch.Dispatcher.bind" title="pydispatch.dispatch.Dispatcher.bind"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bind()</span></code></a> or an instance
+object.</p>
+<p>If an instance of an object is supplied, any previously bound Events and
+Properties will be ‘unbound’.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pydispatch.dispatch.Event">
+<em class="property">class </em><code class="descname">Event</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydispatch/dispatch.html#Event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.dispatch.Event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Holds references to event names and subscribed listeners</p>
+<p>This is used internally by <a class="reference internal" href="#pydispatch.dispatch.Dispatcher" title="pydispatch.dispatch.Dispatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dispatcher</span></code></a>.</p>
+<dl class="method">
+<dt id="pydispatch.dispatch.Event.__call__">
+<code class="descname">__call__</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydispatch/dispatch.html#Event.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.dispatch.Event.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dispatches the event to listeners</p>
+<p>Called by <a class="reference internal" href="#pydispatch.dispatch.Dispatcher.emit" title="pydispatch.dispatch.Dispatcher.emit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">emit()</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydispatch.properties">
+<span id="pydispatch-properties-module"></span><h2>pydispatch.properties module<a class="headerlink" href="#module-pydispatch.properties" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#pydispatch.properties.Property" title="pydispatch.properties.Property"><code class="xref py py-class docutils literal notranslate"><span class="pre">Property</span></code></a> objects can be defined on subclasses of
+<a class="reference internal" href="#pydispatch.dispatch.Dispatcher" title="pydispatch.dispatch.Dispatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dispatcher</span></code></a> to create instance attributes that act
+as events when their values change:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydispatch</span> <span class="k">import</span> <span class="n">Dispatcher</span><span class="p">,</span> <span class="n">Property</span>
+
+<span class="k">class</span> <span class="nc">Foo</span><span class="p">(</span><span class="n">Dispatcher</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Property</span><span class="p">()</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">Property</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+
+<span class="k">class</span> <span class="nc">Listener</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">on_foo_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&#39;s name is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">on_foo_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+
+<span class="n">foo_obj</span> <span class="o">=</span> <span class="n">Foo</span><span class="p">()</span>
+<span class="n">listener_obj</span> <span class="o">=</span> <span class="n">Listener</span><span class="p">()</span>
+
+<span class="n">foo_obj</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">listener_obj</span><span class="o">.</span><span class="n">on_foo_name</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">listener_obj</span><span class="o">.</span><span class="n">on_foo_value</span><span class="p">)</span>
+
+<span class="n">foo_obj</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;bar&#39;</span>
+<span class="c1"># Foo&#39;s name is bar</span>
+
+<span class="n">foo_obj</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="c1"># Foo = 42</span>
+</pre></div>
+</div>
+<p>Type checking is not enforced, so values can be any valid python type.
+Values are however checked for equality to avoid dispatching events for no
+reason. If custom objects are used as values, they must be able to support
+equality checking. In most cases, this will be handled automatically.</p>
+<dl class="class">
+<dt id="pydispatch.properties.Property">
+<em class="property">class </em><code class="descname">Property</code><span class="sig-paren">(</span><em>default=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydispatch/properties.html#Property"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.properties.Property" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Defined on the class level to create an observable attribute</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>default</strong> (<em>Optional</em>) – If supplied, this will be the default value of the
+Property for all instances of the class. Otherwise <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="pydispatch.properties.Property.name">
+<code class="descname">name</code><a class="headerlink" href="#pydispatch.properties.Property.name" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> – The name of the Property as defined in the class definition.
+This will match the attribute name for the
+<a class="reference internal" href="#pydispatch.dispatch.Dispatcher" title="pydispatch.dispatch.Dispatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dispatcher</span></code></a> instance.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydispatch.properties.Property._on_change">
+<code class="descname">_on_change</code><span class="sig-paren">(</span><em>obj</em>, <em>old</em>, <em>value</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydispatch/properties.html#Property._on_change"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.properties.Property._on_change" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called internally to emit changes from the instance object</p>
+<p>The keyword arguments here will be passed to callbacks through the
+instance object’s <a class="reference internal" href="#pydispatch.dispatch.Dispatcher.emit" title="pydispatch.dispatch.Dispatcher.emit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">emit()</span></code></a> method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
+<li><strong>property</strong> – The <a class="reference internal" href="#pydispatch.properties.Property" title="pydispatch.properties.Property"><code class="xref py py-class docutils literal notranslate"><span class="pre">Property</span></code></a> instance. This is useful if multiple
+properties are bound to the same callback. The attribute name</li>
+<li><strong>keys</strong> (<em>optional</em>) – If the <a class="reference internal" href="#pydispatch.properties.Property" title="pydispatch.properties.Property"><code class="xref py py-class docutils literal notranslate"><span class="pre">Property</span></code></a> is a container type
+(<a class="reference internal" href="#pydispatch.properties.ListProperty" title="pydispatch.properties.ListProperty"><code class="xref py py-class docutils literal notranslate"><span class="pre">ListProperty</span></code></a> or <a class="reference internal" href="#pydispatch.properties.DictProperty" title="pydispatch.properties.DictProperty"><code class="xref py py-class docutils literal notranslate"><span class="pre">DictProperty</span></code></a>), the changes
+may be found here.
+This is not implemented for nested containers and will only be
+available for operations that do not alter the size of the
+container.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pydispatch.properties.ListProperty">
+<em class="property">class </em><code class="descname">ListProperty</code><span class="sig-paren">(</span><em>default=None</em>, <em>copy_on_change=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydispatch/properties.html#ListProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.properties.ListProperty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pydispatch.properties.Property" title="pydispatch.properties.Property"><code class="xref py py-class docutils literal notranslate"><span class="pre">pydispatch.properties.Property</span></code></a></p>
+<p>Property with a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> type value</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>default</strong> (<em>Optional</em>) – If supplied, this will be the default value of the
+Property for all instances of the class. Otherwise <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></li>
+<li><strong>copy_on_change</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – If <a class="reference external" href="https://docs.python.org/3/library/constants.html#True" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code></a>, the list will be copied
+when contents are modified. This can be useful for observing the
+original state of the list from within callbacks. The copied
+(original) state will be available from the keyword argument ‘old’.
+The default is <a class="reference external" href="https://docs.python.org/3/library/constants.html#False" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code></a> (for performance and memory reasons).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Changes to the contents of the list are able to be observed through
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ObservableList</span></code>.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pydispatch.properties.DictProperty">
+<em class="property">class </em><code class="descname">DictProperty</code><span class="sig-paren">(</span><em>default=None</em>, <em>copy_on_change=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydispatch/properties.html#DictProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.properties.DictProperty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pydispatch.properties.Property" title="pydispatch.properties.Property"><code class="xref py py-class docutils literal notranslate"><span class="pre">pydispatch.properties.Property</span></code></a></p>
+<p>Property with a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> type value</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>default</strong> (<em>Optional</em>) – If supplied, this will be the default value of the
+Property for all instances of the class. Otherwise <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></li>
+<li><strong>copy_on_change</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – If <a class="reference external" href="https://docs.python.org/3/library/constants.html#True" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code></a>, the dict will be copied
+when contents are modified. This can be useful for observing the
+original state of the dict from within callbacks. The copied
+(original) state will be available from the keyword argument ‘old’.
+The default is <a class="reference external" href="https://docs.python.org/3/library/constants.html#False" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code></a> (for performance and memory reasons).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Changes to the contents of the dict are able to be observed through
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ObservableDict</span></code>.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="overview.html" class="btn btn-neutral" title="Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Matthew Reid.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        <span class="fa fa-book"> Other Versions</span>
+        v: v0.0.7
+        <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        <dl>
+            <dt>Tags</dt>
+            <dd><a href="../v0.0.1/api.html">v0.0.1</a></dd>
+            <dd><a href="../v0.0.2/api.html">v0.0.2</a></dd>
+            <dd><a href="../v0.0.3/api.html">v0.0.3</a></dd>
+            <dd><a href="../v0.0.4/api.html">v0.0.4</a></dd>
+            <dd><a href="../v0.0.5/api.html">v0.0.5</a></dd>
+            <dd><a href="../v0.0.6/api.html">v0.0.6</a></dd>
+            <dd><a href="api.html">v0.0.7</a></dd>
+            <dd><a href="../v0.0.8/api.html">v0.0.8</a></dd>
+            <dd><a href="../v0.0.9/api.html">v0.0.9</a></dd>
+            <dd><a href="../v0.0.91/index.html">v0.0.91</a></dd>
+            <dd><a href="../v0.1.0/index.html">v0.1.0</a></dd>
+        </dl>
+        <dl>
+            <dt>Branches</dt>
+            <dd><a href="../asyncio/index.html">asyncio</a></dd>
+            <dd><a href="../doc-build-temp/index.html">doc-build-temp</a></dd>
+            <dd><a href="../master/index.html">master</a></dd>
+        </dl>
+    </div>
+</div>
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
