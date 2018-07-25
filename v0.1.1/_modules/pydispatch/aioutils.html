@@ -1,0 +1,551 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pydispatch.aioutils &mdash; python-dispatch 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/banner.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+ 
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-26848999-10"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-26848999-10');
+</script>
+
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> python-dispatch
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/index.html">Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">python-dispatch</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>pydispatch.aioutils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+
+
+
+
+
+<h1>Source code for pydispatch.aioutils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">from</span> <span class="nn">_weakref</span> <span class="k">import</span> <span class="n">ref</span>
+<span class="kn">from</span> <span class="nn">_weakrefset</span> <span class="k">import</span> <span class="n">_IterationGuard</span>
+
+<span class="kn">from</span> <span class="nn">pydispatch.utils</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">WeakMethodContainer</span><span class="p">,</span>
+    <span class="n">get_method_vars</span><span class="p">,</span>
+    <span class="n">_remove_dead_weakref</span><span class="p">,</span>
+<span class="p">)</span>
+
+<div class="viewcode-block" id="AioEmissionHoldLock"><a class="viewcode-back" href="../../reference/utils.html#pydispatch.aioutils.AioEmissionHoldLock">[docs]</a><span class="k">class</span> <span class="nc">AioEmissionHoldLock</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Async context manager mixin for :class:`pydispatch.utils.EmissionHoldLock_`</span>
+
+<span class="sd">    Supports use in :keyword:`async with` statements</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">aio_locks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_aio_locks&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aio_locks</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">return</span> <span class="n">d</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_build_aio_lock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="nb">id</span><span class="p">(</span><span class="n">loop</span><span class="p">)</span>
+        <span class="n">lock</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aio_locks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">lock</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">lock</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">(</span><span class="n">loop</span><span class="o">=</span><span class="n">loop</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">aio_locks</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">lock</span>
+        <span class="k">return</span> <span class="n">lock</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">acquire_async</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+        <span class="n">lock</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_aio_lock</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">lock</span><span class="o">.</span><span class="n">locked</span><span class="p">():</span>
+            <span class="k">await</span> <span class="n">lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">release_async</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">lock</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_aio_lock</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">lock</span><span class="o">.</span><span class="n">locked</span><span class="p">:</span>
+            <span class="n">lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">__aenter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">acquire_async</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">__aexit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">release_async</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="AioSimpleLock"><a class="viewcode-back" href="../../reference/aioutils.html#pydispatch.aioutils.AioSimpleLock">[docs]</a><span class="k">class</span> <span class="nc">AioSimpleLock</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;:class:`asyncio.Lock` alternative backed by a :class:`threading.Lock`</span>
+
+<span class="sd">    This is a context manager that supports use in both :keyword:`with` and</span>
+<span class="sd">    :keyword:`async with` context blocks.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        lock: Instance of :class:`threading.Lock`</span>
+
+<span class="sd">    .. versionadded:: 0.1.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;lock&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+<div class="viewcode-block" id="AioSimpleLock.acquire"><a class="viewcode-back" href="../../reference/aioutils.html#pydispatch.aioutils.AioSimpleLock.acquire">[docs]</a>    <span class="k">def</span> <span class="nf">acquire</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">blocking</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Acquire the :attr:`lock`</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            blocking (bool): See :meth:`threading.Lock.acquire`</span>
+<span class="sd">            timeout (float): See :meth:`threading.Lock.acquire`</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: :obj:`True` if the lock was acquired, otherwise :obj:`False`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">(</span><span class="n">blocking</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+<div class="viewcode-block" id="AioSimpleLock.release"><a class="viewcode-back" href="../../reference/aioutils.html#pydispatch.aioutils.AioSimpleLock.release">[docs]</a>    <span class="k">def</span> <span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Release the :attr:`lock`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
+    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span>
+    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+<div class="viewcode-block" id="AioSimpleLock.acquire_async"><a class="viewcode-back" href="../../reference/aioutils.html#pydispatch.aioutils.AioSimpleLock.acquire_async">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">acquire_async</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Acquire the :attr:`lock` asynchronously</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">acquire</span><span class="p">(</span><span class="n">blocking</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">r</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="o">.</span><span class="mi">01</span><span class="p">)</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">acquire</span><span class="p">(</span><span class="n">blocking</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">__aenter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">acquire_async</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">__aexit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="AioEventWaiter"><a class="viewcode-back" href="../../reference/aioutils.html#pydispatch.aioutils.AioEventWaiter">[docs]</a><span class="k">class</span> <span class="nc">AioEventWaiter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Stores necessary information for a single &quot;waiter&quot;</span>
+
+<span class="sd">    Used by :class:`AioEventWaiters` to handle :keyword:`awaiting &lt;await&gt;`</span>
+<span class="sd">    an :class:`~pydispatch.dispatch.Event` on a specific</span>
+<span class="sd">    :class:`event loop &lt;asyncio.BaseEventLoop&gt;`</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        loop: The :class:`EventLoop &lt;asyncio.BaseEventLoop&gt;` instance</span>
+<span class="sd">        aio_event: An :class:`asyncio.Event` used to track event emission</span>
+<span class="sd">        args (list): The positional arguments attached to the event</span>
+<span class="sd">        kwargs (dict): The keyword arguments attached to the event</span>
+
+<span class="sd">    .. versionadded:: 0.1.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;loop&#39;</span><span class="p">,</span> <span class="s1">&#39;aio_event&#39;</span><span class="p">,</span> <span class="s1">&#39;args&#39;</span><span class="p">,</span> <span class="s1">&#39;kwargs&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loop</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loop</span> <span class="o">=</span> <span class="n">loop</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aio_event</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span><span class="p">(</span><span class="n">loop</span><span class="o">=</span><span class="n">loop</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+<div class="viewcode-block" id="AioEventWaiter.trigger"><a class="viewcode-back" href="../../reference/aioutils.html#pydispatch.aioutils.AioEventWaiter.trigger">[docs]</a>    <span class="k">def</span> <span class="nf">trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called on event emission and notifies the :meth:`wait` method</span>
+
+<span class="sd">        Called by :class:`AioEventWaiters` when the</span>
+<span class="sd">        :class:`~pydispatch.dispatch.Event` instance is dispatched.</span>
+
+<span class="sd">        Positional and keyword arguments are stored as instance attributes for</span>
+<span class="sd">        use in the :meth:`wait` method and :attr:`aio_event` is set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aio_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
+<div class="viewcode-block" id="AioEventWaiter.wait"><a class="viewcode-back" href="../../reference/aioutils.html#pydispatch.aioutils.AioEventWaiter.wait">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Waits for event emission and returns the event parameters</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            args (list): Positional arguments attached to the event</span>
+<span class="sd">            kwargs (dict): Keyword arguments attached to the event</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">aio_event</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span></div>
+    <span class="k">def</span> <span class="nf">__await__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wait</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">task</span><span class="o">.</span><span class="fm">__await__</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="AioEventWaiters"><a class="viewcode-back" href="../../reference/aioutils.html#pydispatch.aioutils.AioEventWaiters">[docs]</a><span class="k">class</span> <span class="nc">AioEventWaiters</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Container used to manage :keyword:`await` use with events</span>
+
+<span class="sd">    Used by :class:`pydispatch.dispatch.Event` when it is</span>
+<span class="sd">    :keyword:`awaited &lt;await&gt;`</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        waiters (set): Instances of :class:`AioEventWaiter` currently &quot;awaiting&quot;</span>
+<span class="sd">            the event</span>
+<span class="sd">        lock (AioSimpleLock): A sync/async lock to guard modification to the</span>
+<span class="sd">            :attr:`waiters` container during event emission</span>
+
+<span class="sd">    .. versionadded:: 0.1.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;waiters&#39;</span><span class="p">,</span> <span class="s1">&#39;lock&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">waiters</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="n">AioSimpleLock</span><span class="p">()</span>
+<div class="viewcode-block" id="AioEventWaiters.add_waiter"><a class="viewcode-back" href="../../reference/aioutils.html#pydispatch.aioutils.AioEventWaiters.add_waiter">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">add_waiter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a :class:`AioEventWaiter` to the :attr:`waiters` container</span>
+
+<span class="sd">        The event loop to use for :attr:`AioEventWaiter.loop` is found in the</span>
+<span class="sd">        current context using :func:`asyncio.get_event_loop`</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            waiter: The created :class:`AioEventWaiter` instance</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+            <span class="n">waiter</span> <span class="o">=</span> <span class="n">AioEventWaiter</span><span class="p">(</span><span class="n">loop</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">waiters</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">waiter</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">waiter</span></div>
+<div class="viewcode-block" id="AioEventWaiters.wait"><a class="viewcode-back" href="../../reference/aioutils.html#pydispatch.aioutils.AioEventWaiters.wait">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creates a :class:`waiter &lt;AioEventWaiter&gt;` and &quot;awaits&quot; its result</span>
+
+<span class="sd">        This method is used by :class:`pydispatch.dispatch.Event` instances when</span>
+<span class="sd">        they are &quot;awaited&quot; and is the primary functionality of</span>
+<span class="sd">        :class:`AioEventWaiters` and :class:`AioEventWaiter`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            args (list): Positional arguments attached to the event</span>
+<span class="sd">            kwargs (dict): Keyword arguments attached to the event</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">waiter</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_waiter</span><span class="p">()</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">waiter</span></div>
+    <span class="k">def</span> <span class="nf">__await__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wait</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">task</span><span class="o">.</span><span class="fm">__await__</span><span class="p">()</span>
+<div class="viewcode-block" id="AioEventWaiters.__call__"><a class="viewcode-back" href="../../reference/aioutils.html#pydispatch.aioutils.AioEventWaiters.__call__">[docs]</a>    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Triggers any stored :class:`waiters &lt;AioEventWaiter&gt;`</span>
+
+<span class="sd">        Calls :meth:`AioEventWaiter.trigger` method on all instances stored in</span>
+<span class="sd">        :attr:`waiters`. After completion, the :attr:`waiters` are removed.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            *args: Positional arguments to pass to :meth:`AioEventWaiter.trigger`</span>
+<span class="sd">            **kwargs: Keyword arguments to pass to :meth:`AioEventWaiter.trigger`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">waiter</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">waiters</span><span class="p">:</span>
+                <span class="n">waiter</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">waiters</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="AioWeakMethodContainer"><a class="viewcode-back" href="../../reference/aioutils.html#pydispatch.aioutils.AioWeakMethodContainer">[docs]</a><span class="k">class</span> <span class="nc">AioWeakMethodContainer</span><span class="p">(</span><span class="n">WeakMethodContainer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Storage for coroutine functions as weak references</span>
+
+<span class="sd">    .. versionadded:: 0.1.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="n">wr</span><span class="p">,</span> <span class="n">selfref</span><span class="o">=</span><span class="n">ref</span><span class="p">(</span><span class="bp">self</span><span class="p">)):</span>
+            <span class="bp">self</span> <span class="o">=</span> <span class="n">selfref</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iterating</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_pending_removals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wr</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Atomic removal is necessary since this function</span>
+                    <span class="c1"># can be called asynchronously by the GC</span>
+                    <span class="n">_remove_dead_weakref</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">wr</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_on_weakref_fin</span><span class="p">(</span><span class="n">wr</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remove</span> <span class="o">=</span> <span class="n">remove</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_loop_map</span> <span class="o">=</span> <span class="p">{}</span>
+<div class="viewcode-block" id="AioWeakMethodContainer.add_method"><a class="viewcode-back" href="../../reference/aioutils.html#pydispatch.aioutils.AioWeakMethodContainer.add_method">[docs]</a>    <span class="k">def</span> <span class="nf">add_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loop</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a coroutine function</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            loop: The :class:`event loop &lt;asyncio.BaseEventLoop&gt;` instance</span>
+<span class="sd">                on which to schedule callbacks</span>
+<span class="sd">            callback: The :term:`coroutine function` to add</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">f</span><span class="p">,</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">get_method_vars</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+        <span class="n">wrkey</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="nb">id</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">wrkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_loop_map</span><span class="p">[</span><span class="n">wrkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">loop</span></div>
+<div class="viewcode-block" id="AioWeakMethodContainer.iter_instances"><a class="viewcode-back" href="../../reference/aioutils.html#pydispatch.aioutils.AioWeakMethodContainer.iter_instances">[docs]</a>    <span class="k">def</span> <span class="nf">iter_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Iterate over the stored objects</span>
+
+<span class="sd">        .. seealso:: :meth:`pydispatch.utils.WeakMethodContainer.iter_instances`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">_IterationGuard</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">yield from</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">iter_instances</span><span class="p">()</span></div>
+<div class="viewcode-block" id="AioWeakMethodContainer.iter_methods"><a class="viewcode-back" href="../../reference/aioutils.html#pydispatch.aioutils.AioWeakMethodContainer.iter_methods">[docs]</a>    <span class="k">def</span> <span class="nf">iter_methods</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Iterate over stored coroutine functions</span>
+
+<span class="sd">        Yields:</span>
+<span class="sd">            Stored :term:`coroutine function` objects</span>
+
+<span class="sd">        .. seealso:: :meth:`pydispatch.utils.WeakMethodContainer.iter_instances`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">wrkey</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_instances</span><span class="p">():</span>
+            <span class="n">f</span><span class="p">,</span> <span class="n">obj_id</span> <span class="o">=</span> <span class="n">wrkey</span>
+            <span class="n">loop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_loop_map</span><span class="p">[</span><span class="n">wrkey</span><span class="p">]</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">loop</span><span class="p">,</span> <span class="n">m</span></div>
+    <span class="k">def</span> <span class="nf">_on_weakref_fin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_loop_map</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_loop_map</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+<div class="viewcode-block" id="AioWeakMethodContainer.submit_coroutine"><a class="viewcode-back" href="../../reference/aioutils.html#pydispatch.aioutils.AioWeakMethodContainer.submit_coroutine">[docs]</a>    <span class="k">def</span> <span class="nf">submit_coroutine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coro</span><span class="p">,</span> <span class="n">loop</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Schedule and await a coroutine on the specified loop</span>
+
+<span class="sd">        The coroutine is wrapped and scheduled using</span>
+<span class="sd">        :func:`asyncio.run_coroutine_threadsafe`. While the coroutine is</span>
+<span class="sd">        &quot;awaited&quot;, the result is not available as method returns immediately.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            coro: The :term:`coroutine` to schedule</span>
+<span class="sd">            loop: The :class:`event loop &lt;asyncio.BaseEventLoop&gt;` on which to</span>
+<span class="sd">                schedule the coroutine</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method is used internally by :meth:`__call__` and is not meant</span>
+<span class="sd">            to be called directly.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">_do_call</span><span class="p">(</span><span class="n">_coro</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">_IterationGuard</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="k">await</span> <span class="n">_coro</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">run_coroutine_threadsafe</span><span class="p">(</span><span class="n">_do_call</span><span class="p">(</span><span class="n">coro</span><span class="p">),</span> <span class="n">loop</span><span class="o">=</span><span class="n">loop</span><span class="p">)</span></div>
+<div class="viewcode-block" id="AioWeakMethodContainer.__call__"><a class="viewcode-back" href="../../reference/aioutils.html#pydispatch.aioutils.AioWeakMethodContainer.__call__">[docs]</a>    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Triggers all stored callbacks (coroutines)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            *args: Positional arguments to pass to callbacks</span>
+<span class="sd">            **kwargs: Keyword arguments to pass to callbacks</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">loop</span><span class="p">,</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_methods</span><span class="p">():</span>
+            <span class="n">coro</span> <span class="o">=</span> <span class="n">m</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">submit_coroutine</span><span class="p">(</span><span class="n">coro</span><span class="p">,</span> <span class="n">loop</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="nf">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_loop_map</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_loop_map</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__delitem__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Matthew Reid.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        <span class="fa fa-book"> Other Versions</span>
+        v: v0.1.1
+        <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        <dl>
+            <dt>Tags</dt>
+            <dd><a href="../../../v0.0.1/index.html">v0.0.1</a></dd>
+            <dd><a href="../../../v0.0.2/index.html">v0.0.2</a></dd>
+            <dd><a href="../../../v0.0.3/index.html">v0.0.3</a></dd>
+            <dd><a href="../../../v0.0.4/index.html">v0.0.4</a></dd>
+            <dd><a href="../../../v0.0.5/index.html">v0.0.5</a></dd>
+            <dd><a href="../../../v0.0.6/index.html">v0.0.6</a></dd>
+            <dd><a href="../../../v0.0.7/index.html">v0.0.7</a></dd>
+            <dd><a href="../../../v0.0.8/index.html">v0.0.8</a></dd>
+            <dd><a href="../../../v0.0.9/index.html">v0.0.9</a></dd>
+            <dd><a href="../../../v0.0.91/index.html">v0.0.91</a></dd>
+            <dd><a href="../../../v0.1.0/index.html">v0.1.0</a></dd>
+            <dd><a href="aioutils.html">v0.1.1</a></dd>
+        </dl>
+        <dl>
+            <dt>Branches</dt>
+            <dd><a href="../../../asyncio/index.html">asyncio</a></dd>
+            <dd><a href="../../../doc-build-temp/index.html">doc-build-temp</a></dd>
+            <dd><a href="../../../master/index.html">master</a></dd>
+        </dl>
+    </div>
+</div>
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

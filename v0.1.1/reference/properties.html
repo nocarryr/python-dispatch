@@ -1,0 +1,472 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pydispatch.properties module &mdash; python-dispatch 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/banner.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pydispatch.utils module" href="utils.html" />
+    <link rel="prev" title="pydispatch.dispatch module" href="dispatch.html" />
+ 
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-26848999-10"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-26848999-10');
+</script>
+
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> python-dispatch
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dispatch.html">pydispatch.dispatch module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">pydispatch.properties module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#property-class">Property class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#listproperty-class">ListProperty class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dictproperty-class">DictProperty class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#observable-class">Observable class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#observablelist-class">ObservableList class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#observabledict-class">ObservableDict class</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">pydispatch.utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="aioutils.html">pydispatch.aioutils module</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">python-dispatch</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Reference</a> &raquo;</li>
+        
+      <li>pydispatch.properties module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/reference/properties.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+
+
+
+
+
+<div class="section" id="module-pydispatch.properties">
+<span id="pydispatch-properties-module"></span><h1>pydispatch.properties module<a class="headerlink" href="#module-pydispatch.properties" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference internal" href="#pydispatch.properties.Property" title="pydispatch.properties.Property"><code class="xref py py-class docutils literal notranslate"><span class="pre">Property</span></code></a> objects can be defined on subclasses of
+<a class="reference internal" href="dispatch.html#pydispatch.dispatch.Dispatcher" title="pydispatch.dispatch.Dispatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dispatcher</span></code></a> to create instance attributes that act
+as events when their values change:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydispatch</span> <span class="k">import</span> <span class="n">Dispatcher</span><span class="p">,</span> <span class="n">Property</span>
+
+<span class="k">class</span> <span class="nc">Foo</span><span class="p">(</span><span class="n">Dispatcher</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Property</span><span class="p">()</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">Property</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+
+<span class="k">class</span> <span class="nc">Listener</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">on_foo_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&#39;s name is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">on_foo_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+
+<span class="n">foo_obj</span> <span class="o">=</span> <span class="n">Foo</span><span class="p">()</span>
+<span class="n">listener_obj</span> <span class="o">=</span> <span class="n">Listener</span><span class="p">()</span>
+
+<span class="n">foo_obj</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">listener_obj</span><span class="o">.</span><span class="n">on_foo_name</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">listener_obj</span><span class="o">.</span><span class="n">on_foo_value</span><span class="p">)</span>
+
+<span class="n">foo_obj</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;bar&#39;</span>
+<span class="c1"># Foo&#39;s name is bar</span>
+
+<span class="n">foo_obj</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="c1"># Foo = 42</span>
+</pre></div>
+</div>
+<p>Type checking is not enforced, so values can be any valid python type.
+Values are however checked for equality to avoid dispatching events for no
+reason. If custom objects are used as values, they must be able to support
+equality checking. In most cases, this will be handled automatically.</p>
+<div class="section" id="property-class">
+<h2>Property class<a class="headerlink" href="#property-class" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydispatch.properties.Property">
+<em class="property">class </em><code class="descname">Property</code><span class="sig-paren">(</span><em>default=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/properties.html#Property"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.properties.Property" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defined on the class level to create an observable attribute</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>default</strong> (<em>Optional</em>) – If supplied, this will be the default value of the
+Property for all instances of the class. Otherwise <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="pydispatch.properties.Property.name">
+<code class="descname">name</code><a class="headerlink" href="#pydispatch.properties.Property.name" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> – The name of the Property as defined in the class definition.
+This will match the attribute name for the
+<a class="reference internal" href="dispatch.html#pydispatch.dispatch.Dispatcher" title="pydispatch.dispatch.Dispatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dispatcher</span></code></a> instance.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydispatch.properties.Property._on_change">
+<code class="descname">_on_change</code><span class="sig-paren">(</span><em>obj</em>, <em>old</em>, <em>value</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/properties.html#Property._on_change"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.properties.Property._on_change" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called internally to emit changes from the instance object</p>
+<p>The keyword arguments here will be passed to callbacks through the
+instance object’s <a class="reference internal" href="dispatch.html#pydispatch.dispatch.Dispatcher.emit" title="pydispatch.dispatch.Dispatcher.emit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">emit()</span></code></a> method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
+<li><strong>property</strong> – The <a class="reference internal" href="#pydispatch.properties.Property" title="pydispatch.properties.Property"><code class="xref py py-class docutils literal notranslate"><span class="pre">Property</span></code></a> instance. This is useful if multiple
+properties are bound to the same callback. The attribute name</li>
+<li><strong>keys</strong> (<em>optional</em>) – If the <a class="reference internal" href="#pydispatch.properties.Property" title="pydispatch.properties.Property"><code class="xref py py-class docutils literal notranslate"><span class="pre">Property</span></code></a> is a container type
+(<a class="reference internal" href="#pydispatch.properties.ListProperty" title="pydispatch.properties.ListProperty"><code class="xref py py-class docutils literal notranslate"><span class="pre">ListProperty</span></code></a> or <a class="reference internal" href="#pydispatch.properties.DictProperty" title="pydispatch.properties.DictProperty"><code class="xref py py-class docutils literal notranslate"><span class="pre">DictProperty</span></code></a>), the changes
+may be found here.
+This is not implemented for nested containers and will only be
+available for operations that do not alter the size of the
+container.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="listproperty-class">
+<h2>ListProperty class<a class="headerlink" href="#listproperty-class" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydispatch.properties.ListProperty">
+<em class="property">class </em><code class="descname">ListProperty</code><span class="sig-paren">(</span><em>default=None</em>, <em>copy_on_change=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/properties.html#ListProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.properties.ListProperty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pydispatch.properties.Property" title="pydispatch.properties.Property"><code class="xref py py-class docutils literal notranslate"><span class="pre">pydispatch.properties.Property</span></code></a></p>
+<p>Property with a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> type value</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>default</strong> (<em>Optional</em>) – If supplied, this will be the default value of the
+Property for all instances of the class. Otherwise <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></li>
+<li><strong>copy_on_change</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – If <a class="reference external" href="https://docs.python.org/3/library/constants.html#True" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code></a>, the list will be copied
+when contents are modified. This can be useful for observing the
+original state of the list from within callbacks. The copied
+(original) state will be available from the keyword argument ‘old’.
+The default is <a class="reference external" href="https://docs.python.org/3/library/constants.html#False" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code></a> (for performance and memory reasons).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Changes to the contents of the list are able to be observed through
+<a class="reference internal" href="#pydispatch.properties.ObservableList" title="pydispatch.properties.ObservableList"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObservableList</span></code></a>.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="dictproperty-class">
+<h2>DictProperty class<a class="headerlink" href="#dictproperty-class" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydispatch.properties.DictProperty">
+<em class="property">class </em><code class="descname">DictProperty</code><span class="sig-paren">(</span><em>default=None</em>, <em>copy_on_change=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/properties.html#DictProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.properties.DictProperty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pydispatch.properties.Property" title="pydispatch.properties.Property"><code class="xref py py-class docutils literal notranslate"><span class="pre">pydispatch.properties.Property</span></code></a></p>
+<p>Property with a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> type value</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>default</strong> (<em>Optional</em>) – If supplied, this will be the default value of the
+Property for all instances of the class. Otherwise <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></li>
+<li><strong>copy_on_change</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – If <a class="reference external" href="https://docs.python.org/3/library/constants.html#True" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code></a>, the dict will be copied
+when contents are modified. This can be useful for observing the
+original state of the dict from within callbacks. The copied
+(original) state will be available from the keyword argument ‘old’.
+The default is <a class="reference external" href="https://docs.python.org/3/library/constants.html#False" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code></a> (for performance and memory reasons).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Changes to the contents of the dict are able to be observed through
+<a class="reference internal" href="#pydispatch.properties.ObservableDict" title="pydispatch.properties.ObservableDict"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObservableDict</span></code></a>.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="observable-class">
+<h2>Observable class<a class="headerlink" href="#observable-class" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydispatch.properties.Observable">
+<em class="property">class </em><code class="descname">Observable</code><a class="reference internal" href="../_modules/pydispatch/properties.html#Observable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.properties.Observable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mixin used by <a class="reference internal" href="#pydispatch.properties.ObservableList" title="pydispatch.properties.ObservableList"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObservableList</span></code></a> and <a class="reference internal" href="#pydispatch.properties.ObservableDict" title="pydispatch.properties.ObservableDict"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObservableDict</span></code></a>
+to emit changes and build other observables</p>
+<p>When an item is added to an observable container (a subclass of Observable)
+it is type-checked and, if possible replaced by an observable version of it.</p>
+<p>In other words, if a dict is added to a <a class="reference internal" href="#pydispatch.properties.ObservableDict" title="pydispatch.properties.ObservableDict"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObservableDict</span></code></a>, it is
+copied and replaced by another <a class="reference internal" href="#pydispatch.properties.ObservableDict" title="pydispatch.properties.ObservableDict"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObservableDict</span></code></a>. This allows nested
+containers to be observed and their changes to be tracked.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="observablelist-class">
+<h2>ObservableList class<a class="headerlink" href="#observablelist-class" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydispatch.properties.ObservableList">
+<em class="property">class </em><code class="descname">ObservableList</code><span class="sig-paren">(</span><em>initlist=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/properties.html#ObservableList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.properties.ObservableList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>, <a class="reference internal" href="#pydispatch.properties.Observable" title="pydispatch.properties.Observable"><code class="xref py py-class docutils literal notranslate"><span class="pre">pydispatch.properties.Observable</span></code></a></p>
+<p>A <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> subclass that tracks changes to its contents</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This class is for internal use and not intended to be used directly</p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="observabledict-class">
+<h2>ObservableDict class<a class="headerlink" href="#observabledict-class" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydispatch.properties.ObservableDict">
+<em class="property">class </em><code class="descname">ObservableDict</code><span class="sig-paren">(</span><em>initdict=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydispatch/properties.html#ObservableDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pydispatch.properties.ObservableDict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>, <a class="reference internal" href="#pydispatch.properties.Observable" title="pydispatch.properties.Observable"><code class="xref py py-class docutils literal notranslate"><span class="pre">pydispatch.properties.Observable</span></code></a></p>
+<p>A <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> subclass that tracks changes to its contents</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This class is for internal use and not intended to be used directly</p>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="utils.html" class="btn btn-neutral float-right" title="pydispatch.utils module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="dispatch.html" class="btn btn-neutral" title="pydispatch.dispatch module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Matthew Reid.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        <span class="fa fa-book"> Other Versions</span>
+        v: v0.1.1
+        <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        <dl>
+            <dt>Tags</dt>
+            <dd><a href="../../v0.0.1/index.html">v0.0.1</a></dd>
+            <dd><a href="../../v0.0.2/index.html">v0.0.2</a></dd>
+            <dd><a href="../../v0.0.3/index.html">v0.0.3</a></dd>
+            <dd><a href="../../v0.0.4/index.html">v0.0.4</a></dd>
+            <dd><a href="../../v0.0.5/index.html">v0.0.5</a></dd>
+            <dd><a href="../../v0.0.6/index.html">v0.0.6</a></dd>
+            <dd><a href="../../v0.0.7/index.html">v0.0.7</a></dd>
+            <dd><a href="../../v0.0.8/index.html">v0.0.8</a></dd>
+            <dd><a href="../../v0.0.9/index.html">v0.0.9</a></dd>
+            <dd><a href="../../v0.0.91/reference/properties.html">v0.0.91</a></dd>
+            <dd><a href="../../v0.1.0/reference/properties.html">v0.1.0</a></dd>
+            <dd><a href="properties.html">v0.1.1</a></dd>
+        </dl>
+        <dl>
+            <dt>Branches</dt>
+            <dd><a href="../../asyncio/reference/properties.html">asyncio</a></dd>
+            <dd><a href="../../doc-build-temp/reference/properties.html">doc-build-temp</a></dd>
+            <dd><a href="../../master/reference/properties.html">master</a></dd>
+        </dl>
+    </div>
+</div>
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
