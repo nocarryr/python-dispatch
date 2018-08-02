@@ -3,6 +3,12 @@ pydispatch.aioutils module
 
 .. automodule:: pydispatch.aioutils
 
+WithAioFutures class
+--------------------
+
+.. autoclass:: pydispatch.aioutils.WithAioFutures
+    :members:
+
 AioWeakMethodContainer class
 ----------------------------
 

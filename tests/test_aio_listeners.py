@@ -3,6 +3,7 @@ import threading
 import pytest
 
 from pydispatch import Property
+from pydispatch.aioutils import WithAioFutures
 
 class AsyncListener:
     def __init__(self, loop, mainloop):
@@ -23,7 +24,7 @@ class AsyncListener:
         self.received_events.append(name)
         cur_loop = asyncio.get_event_loop()
         self.received_event_loops.append(cur_loop)
-        asyncio.run_coroutine_threadsafe(self.event_queue_put({
+        return asyncio.run_coroutine_threadsafe(self.event_queue_put({
             'name':name,
             'args':args,
             'kwargs':kwargs,
@@ -49,7 +50,7 @@ class AsyncListener:
         self.property_event_map[prop.name].append({'value':value, 'kwargs':kwargs})
         cur_loop = asyncio.get_event_loop()
         self.property_event_loops.append(cur_loop)
-        asyncio.run_coroutine_threadsafe(self.prop_queue_put({
+        return asyncio.run_coroutine_threadsafe(self.prop_queue_put({
             'name':prop.name,
             'value':value,
             'kwargs':kwargs,
@@ -69,6 +70,7 @@ class AsyncListener:
         self.property_event_loops.clear()
 
 class LoopThread(threading.Thread):
+    _listener_class = AsyncListener
     def __init__(self, mainloop, sender):
         super().__init__()
         self.mainloop = mainloop
@@ -79,7 +81,7 @@ class LoopThread(threading.Thread):
         loop = self.loop = asyncio.new_event_loop()
         loop.set_debug(self.mainloop.get_debug())
         asyncio.set_event_loop(loop)
-        listener = AsyncListener(loop, self.mainloop)
+        listener = self._listener_class(loop, self.mainloop)
         sender = self.sender
         ev_names = sender._Dispatcher__events.keys()
         sender.bind_async(loop, **{name:listener.on_event for name in ev_names})
@@ -327,6 +329,99 @@ async def test_event_await(sender_cls, loop_debug):
             assert result[0] == name
             instance, value = result[1]
             assert value == i
+
+@pytest.mark.asyncio
+async def test_callback_complete_await(sender_cls, loop_debug):
+
+    class Sender(sender_cls):
+        prop_a = Property()
+        prop_b = Property()
+        _events_ = ['on_test_a', 'on_test_b', 'on_test_c']
+
+    class SlowAsyncListener(AsyncListener):
+        timeout = .5
+        def __init__(self, loop, mainloop):
+            super().__init__(loop, mainloop)
+            self.pending_events = set()
+        async def on_event(self, *args, **kwargs):
+            name = kwargs['triggered_event']
+            self.pending_events.add(name)
+            r = await super().on_event(*args, **kwargs)
+            await asyncio.sleep(self.timeout)
+            self.pending_events.discard(name)
+            return r
+        async def on_prop(self, instance, value, **kwargs):
+            prop = kwargs['property']
+            self.pending_events.add(prop.name)
+            r = await super().on_prop(instance, value, **kwargs)
+            await asyncio.sleep(self.timeout)
+            self.pending_events.discard(prop.name)
+            return r
+
+    sender = Sender()
+    mainloop = asyncio.get_event_loop()
+    mainloop.set_debug(loop_debug)
+
+    async def send_event(name, *listener_threads):
+        start_ts = mainloop.time()
+        async with WithAioFutures(sender, name):
+            await sender.trigger_event(name)
+        now = mainloop.time()
+        assert now - start_ts >= SlowAsyncListener.timeout
+        for t in listener_threads:
+            assert name not in t.listener.pending_events
+        for t in listener_threads:
+            data = await t.listener.event_queue_get()
+            assert data['name'] == name
+            assert data['loop'] is t.loop
+            assert data['loop'] is t.listener.loop
+
+    async def trigger_prop(name, value, *listener_threads):
+        start_ts = mainloop.time()
+        async with WithAioFutures(sender, name) as aio_futures:
+            setattr(sender, name, value)
+            await aio_futures.wait()
+            now = mainloop.time()
+            assert now - start_ts >= SlowAsyncListener.timeout
+            for t in listener_threads:
+                data = await t.listener.prop_queue_get()
+                assert data['name'] == name
+                assert data['value'] == value
+                assert data['loop'] is t.loop
+                assert data['loop'] is t.listener.loop
+
+    threads = []
+    listeners = []
+    loops = []
+    for i in range(4):
+        t = LoopThread(mainloop, sender)
+        t._listener_class = SlowAsyncListener
+        t.start()
+        t.running.wait()
+        threads.append(t)
+        listeners.append(t.listener)
+        loops.append(t.loop)
+    assert len(set(loops)) == len(loops)
+
+    event_names = Sender._events_
+    prop_names = ['prop_a', 'prop_b']
+
+    for name in event_names:
+        print('sending {}'.format(name))
+        await send_event(name, *threads)
+        print('received {}'.format(name))
+
+    for name in prop_names:
+        for i in range(3):
+            print('sending {}={}'.format(name, i))
+            await trigger_prop(name, i, *threads)
+            print('received {}={}'.format(name, i))
+
+    for t in threads:
+        t.stop()
+
+    ## TODO: Test for await method
+
 
 @pytest.mark.asyncio
 async def test_changes_during_emit(sender_cls):

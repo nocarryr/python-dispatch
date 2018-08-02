@@ -17,7 +17,10 @@ class Event(object):
 
     This is used internally by :class:`Dispatcher`.
     """
-    __slots__ = ('name', 'listeners', 'aio_waiters', 'aio_listeners', 'emission_lock')
+    __slots__ = (
+        'name', 'listeners', 'aio_waiters', 'aio_listeners', 'emission_lock',
+        '_return_aio_futures',
+    )
     def __init__(self, name):
         self.name = name
         self.listeners = WeakMethodContainer()
@@ -25,6 +28,7 @@ class Event(object):
             self.aio_listeners = AioWeakMethodContainer()
             self.aio_waiters = AioEventWaiters()
         self.emission_lock = EmissionHoldLock(self)
+        self._return_aio_futures = {}
     def add_listener(self, callback, **kwargs):
         if AIO_AVAILABLE:
             if iscoroutinefunction(callback):
@@ -47,17 +51,40 @@ class Event(object):
         """Dispatches the event to listeners
 
         Called by :meth:`~Dispatcher.emit`
+
+        Returns:
+            If within the context of :class:`pydispatch.aioutils.WithAioFutures`,
+            a wrapped `asyncio.Future` that will block all async callbacks have
+            completed. Otherwise :obj:`None`.
+
+        .. versionchanged:: 0.1.x
+
+            The `asyncio.Future` return value was added
         """
         if self.emission_lock.held:
             self.emission_lock.last_event = (args, kwargs)
             return
+        fut = None
         if AIO_AVAILABLE:
-            self.aio_waiters(*args, **kwargs)
-            self.aio_listeners(*args, **kwargs)
+            loop = asyncio.get_event_loop()
+            return_aio_futures = self._return_aio_futures.get(id(loop))
+            if return_aio_futures:
+                kwargs['__return_aio_futures__'] = True
+            tasks = []
+            tasks.append(self.aio_waiters(*args, **kwargs))
+            tasks.append(self.aio_listeners(*args, **kwargs))
+            if return_aio_futures:
+                if len(tasks):
+                    fut = asyncio.gather(*tasks)
+                else:
+                    fut = asyncio.sleep(0)
+                for return_aio_future in return_aio_futures:
+                    return_aio_future.futures[self.name].append(fut)
         for m in self.listeners.iter_methods():
             r = m(*args, **kwargs)
             if r is False:
-                return r
+                break
+        return fut
     if AIO_AVAILABLE:
         def __await__(self):
             return self.aio_waiters.__await__()

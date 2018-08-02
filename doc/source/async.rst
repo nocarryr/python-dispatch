@@ -135,3 +135,80 @@ This can also be done with :any:`Property` objects::
 
     # Listens for changes, then exits after value reaches 9
     loop.run_until_complete(listener.wait_for_value(emitter))
+
+
+.. _awaitable-callback-completion:
+
+Awaitable Callback Completion
+-----------------------------
+
+.. versionadded:: 0.1.x
+
+The default emission behavior for coroutines only submits the tasks for coroutine
+functions on their associated event loops. The :class:`asyncio.Task`,
+:class:`asyncio.Future` and :class:`concurrent.futures.Future` objects created
+in the process are discarded and thus, not awaited.
+
+In some cases though, it may be desirable to suspend operations until all
+callbacks triggered by :meth:`Dispatcher.emit() <pydispatch.dispatch.Dispatcher.emit>`
+and :class:`~pydispatch.properties.Property` changes have completed.
+
+The :class:`pydispatch.aioutils.WithAioFutures` context manager is provided
+to achieve this.
+
+Example::
+
+    import asyncio
+    from pydispatch import Dispatcher, Property
+    from pydispatch.aioutils import WithAioFutures
+
+    class Emitter(Dispatcher):
+        value = Property(0)
+        _events_ = ['on_event']
+        def __init__(self, loop):
+            self.loop = loop
+            self.bind_async(self.loop,
+                value=self.on_value,
+                on_event=self.on_event_callback,
+            )
+        async def on_value(self, instance, value, **kwargs):
+            # simulate some work
+            await asyncio.sleep(1)
+            print('value:', value)
+        async def on_event_callback(self, *args, **kwargs):
+            # simulate some work
+            await asyncio.sleep(1)
+            print('on_event')
+
+    loop = asyncio.get_event_loop()
+
+    async def run():
+        emitter = Emitter(loop)
+
+        async with WithAioFutures(emitter, 'on_event') as with_aio_futures:
+            start_time = loop.time()
+            fut = emitter.emit('on_event')
+            await fut
+            end_time = loop.time()
+            elapsed = end_time - start_time
+            print('elapsed: ', int(round(elapsed)))
+            # Should have taken at least 1 second from the asyncio.sleep call
+            assert elapsed > 1
+
+        async with WithAioFutures(emitter, 'value') as with_aio_futures:
+            start_time = loop.time()
+            emitter.value = 1
+            # Use the wait() method for Property objects
+            await with_aio_futures.wait('value')
+            end_time = loop.time()
+            elapsed = end_time - start_time
+            print('elapsed: ', int(round(elapsed)))
+            # Should have taken at least 1 second from the asyncio.sleep call
+            assert elapsed > 1
+
+    loop.run_until_complete(run())
+
+    >> on_event
+    >> elapsed: 1
+    >> value: 1
+    >> elapsed: 1

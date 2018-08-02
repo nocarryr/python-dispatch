@@ -94,6 +94,83 @@ class AioSimpleLock(object):
     async def __aexit__(self, *args):
         self.release()
 
+class WithAioFutures(object):
+    """Async context manager to enable :term:`awaitable` event completion
+
+    While this is enabled (using :keyword:`async with`), the specified events
+    will create and return a :class:`~asyncio.Future` object that will block
+    until all callbacks from event emission have completed.
+
+    .. versionadded:: 0.1.x
+
+    See Also:
+        :ref:`awaitable-callback-completion`
+
+    Args:
+        instance: The instance of :class:`~pydispatch.dispatch.Dispatcher`
+            to enable
+        *event_names(str): Name or names of events to enable :term:`awaitable`
+            event completion on
+
+    Attributes:
+        instance: The :class:`pydispatch.dispatch.Dispatcher` instance given
+            during initialization
+        event_names(list): The event names given during initialization
+        futures(dict): Stores futures created by Events using event names as keys
+    """
+    def __init__(self, instance, *event_names):
+        self.instance = instance
+        self.event_names = event_names
+        self.futures = {name:[] for name in event_names}
+    async def wait(self, *event_names):
+        """Wait for any pending callback coroutines to complete
+
+        Event objects store any futures created during emission to the
+        :attr:`futures` attribute. This method will wait for their completion.
+        This is mostly useful for tracking callback completion for changes to
+        :class:`~pydispatch.properties.Property` objects as there would be no
+        return value (compared to the :meth:`pydispatch.dispatch.Dispatcher.emit`
+        method used for Events).
+
+        See the example for details
+
+        Args:
+            *event_names(str): Names of events to wait for. If empty, all events
+                given from :attr:`event_names` will be used.
+
+        Note:
+            This is meant to be used **instead** of the returned future from
+            :meth:`pydispatch.dispatch.Dispatcher.emit`. Using both methods
+            is unnecessary and has not been tested::
+
+                # Not recommended
+                await emitter.emit('on_event')
+                await with_aio_futures.wait()
+
+        """
+        if not len(event_names):
+            event_names = self.event_names
+        for event_name in event_names:
+            futures = self.futures[event_name]
+            if len(futures):
+                await asyncio.wait(futures)
+            futures.clear()
+    async def __aenter__(self):
+        loop = asyncio.get_event_loop()
+        loop_id = id(loop)
+        for event_name in self.event_names:
+            event = self.instance.get_dispatcher_event(event_name)
+            if loop_id not in event._return_aio_futures:
+                event._return_aio_futures[loop_id] = set()
+            event._return_aio_futures[loop_id].add(self)
+        return self
+    async def __aexit__(self, *args):
+        loop = asyncio.get_event_loop()
+        loop_id = id(loop)
+        for event_name in self.event_names:
+            event = self.instance.get_dispatcher_event(event_name)
+            event._return_aio_futures.get(loop_id, set()).discard(self)
+
 class AioEventWaiter(object):
     """Stores necessary information for a single "waiter"
 
@@ -109,12 +186,13 @@ class AioEventWaiter(object):
 
     .. versionadded:: 0.1.0
     """
-    __slots__ = ('loop', 'aio_event', 'args', 'kwargs')
+    __slots__ = ('loop', 'aio_event', 'args', 'kwargs', '_complete_event')
     def __init__(self, loop):
         self.loop = loop
         self.aio_event = asyncio.Event(loop=loop)
         self.args = []
         self.kwargs = {}
+        self._complete_event = asyncio.Event(loop=loop)
     def trigger(self, *args, **kwargs):
         """Called on event emission and notifies the :meth:`wait` method
 
@@ -123,10 +201,27 @@ class AioEventWaiter(object):
 
         Positional and keyword arguments are stored as instance attributes for
         use in the :meth:`wait` method and :attr:`aio_event` is set.
+
+        Returns:
+            If within the context of :class:`WithAioFutures`, a wrapped
+            `asyncio.Future` that will block until the :keyword:`await`
+            operation has completed. Otherwise :obj:`None`.
+
+        .. versionchanged:: 0.1.x
+
+            The `asyncio.Future` return value was added
         """
+        return_aio_futures = kwargs.get('__return_aio_futures__', False)
         self.args = args
         self.kwargs = kwargs
+        fut = None
+        if return_aio_futures:
+            fut = asyncio.wrap_future(asyncio.run_coroutine_threadsafe(
+                self._wait_for_completion(), loop=self.loop,
+            ))
+
         self.aio_event.set()
+        return fut
     async def wait(self):
         """Waits for event emission and returns the event parameters
 
@@ -137,8 +232,13 @@ class AioEventWaiter(object):
         """
         await self.aio_event.wait()
         return self.args, self.kwargs
+    async def _wait_for_completion(self):
+        await self._complete_event.wait()
+    def _on_await_task_complete(self):
+        self._complete_event.set()
     def __await__(self):
         task = asyncio.ensure_future(self.wait())
+        task.add_done_callback(self._on_await_task_complete)
         return task.__await__()
 
 class AioEventWaiters(object):
@@ -200,12 +300,27 @@ class AioEventWaiters(object):
         Args:
             *args: Positional arguments to pass to :meth:`AioEventWaiter.trigger`
             **kwargs: Keyword arguments to pass to :meth:`AioEventWaiter.trigger`
+
+        Returns:
+            If within the context of :class:`WithAioFutures`, a wrapped
+            `asyncio.Future` that will block until the :keyword:`await`
+            operation has completed. Otherwise :obj:`None`.
+
+        .. versionchanged:: 0.1.x
+
+            The `asyncio.Future` return value was added
         """
+        return_aio_futures = kwargs.get('__return_aio_futures__', False)
+        tasks = []
         with self.lock:
             for waiter in self.waiters:
-                waiter.trigger(*args, **kwargs)
+                tasks.append(waiter.trigger(*args, **kwargs))
             self.waiters.clear()
-
+        if return_aio_futures:
+            if len(tasks):
+                return asyncio.gather(*tasks)
+            else:
+                return asyncio.sleep(0)
 
 class AioWeakMethodContainer(WeakMethodContainer):
     """Storage for coroutine functions as weak references
@@ -276,21 +391,46 @@ class AioWeakMethodContainer(WeakMethodContainer):
         Note:
             This method is used internally by :meth:`__call__` and is not meant
             to be called directly.
+
+        Returns:
+            The :class:`concurrent.futures.Future` object created by
+            :func:`asyncio.run_coroutine_threadsafe`
+
+        .. versionchanged:: 0.1.x
+
+            The `concurrent.futures.Future` return value was added
         """
         async def _do_call(_coro):
             with _IterationGuard(self):
                 await _coro
-        asyncio.run_coroutine_threadsafe(_do_call(coro), loop=loop)
+        return asyncio.run_coroutine_threadsafe(_do_call(coro), loop=loop)
     def __call__(self, *args, **kwargs):
         """Triggers all stored callbacks (coroutines)
 
         Args:
             *args: Positional arguments to pass to callbacks
             **kwargs: Keyword arguments to pass to callbacks
+
+        Returns:
+            If within the context of :class:`WithAioFutures`, a wrapped
+            `asyncio.Future` that will block until the :keyword:`await`
+            operation has completed. Otherwise :obj:`None`.
+
+        .. versionchanged:: 0.1.x
+
+            The `asyncio.Future` return value was added
         """
+        return_aio_futures = kwargs.get('__return_aio_futures__', False)
+        tasks = []
         for loop, m in self.iter_methods():
             coro = m(*args, **kwargs)
-            self.submit_coroutine(coro, loop)
+            fut = self.submit_coroutine(coro, loop)
+            tasks.append(asyncio.wrap_future(fut))
+        if return_aio_futures:
+            if len(tasks):
+                return asyncio.gather(*tasks)
+            else:
+                return asyncio.sleep(0)
     def __delitem__(self, key):
         if key in self.event_loop_map:
             del self.event_loop_map[key]

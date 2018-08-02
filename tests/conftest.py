@@ -39,7 +39,7 @@ def sender_cls():
     class Sender(Dispatcher):
         def trigger_event(self, name, *args, **kwargs):
             kwargs['triggered_event'] = name
-            self.emit(name, *args, **kwargs)
+            return self.emit(name, *args, **kwargs)
     return Sender
 
 @pytest.fixture
