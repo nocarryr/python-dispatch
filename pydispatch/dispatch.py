@@ -84,12 +84,11 @@ class Dispatcher(object):
     __skip_initialized = True
     def __new__(cls, *args, **kwargs):
         def iter_bases(_cls):
-            if _cls is object:
-                raise StopIteration
-            yield _cls
-            for b in _cls.__bases__:
-                for _cls_ in iter_bases(b):
-                    yield _cls_
+            if _cls is not object:
+                yield _cls
+                for b in _cls.__bases__:
+                    for _cls_ in iter_bases(b):
+                        yield _cls_
         skip_initialized = Dispatcher._Dispatcher__skip_initialized
         if not skip_initialized or cls not in Dispatcher._Dispatcher__initialized_subclasses:
             props = {}
