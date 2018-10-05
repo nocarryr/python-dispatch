@@ -22,6 +22,8 @@ matrix:
           - AIO_AVAILABLE=true
           - COVERAGERC=".coveragerc"
     - python: "3.7"
+      dist: xenial
+      sudo: required
       env:
           - ALLOW_DEPLOY=false
           - AIO_AVAILABLE=true
