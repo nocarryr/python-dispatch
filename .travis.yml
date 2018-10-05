@@ -11,9 +11,21 @@ matrix:
           - ALLOW_DEPLOY=false
           - AIO_AVAILABLE=false
           - COVERAGERC=".coveragerc-py34"
-    - python: "3.5.2"
+    - python: "3.5"
       env:
-          - ALLOW_DEPLOY=true
+          - ALLOW_DEPLOY=false
+          - AIO_AVAILABLE=false
+          - COVERAGERC=".coveragerc"
+    - python: "3.6"
+      env:
+          - ALLOW_DEPLOY=false
+          - AIO_AVAILABLE=true
+          - COVERAGERC=".coveragerc"
+    - python: "3.7"
+      dist: xenial
+      sudo: required
+      env:
+          - ALLOW_DEPLOY=false
           - AIO_AVAILABLE=true
           - COVERAGERC=".coveragerc"
 install:
@@ -32,7 +44,7 @@ deploy:
   provider: pypi
   distributions: sdist bdist_wheel
   on:
-    python: "3.5.2"
+    python: "3.6"
     tags: true
   user: nocarryr
   password:
