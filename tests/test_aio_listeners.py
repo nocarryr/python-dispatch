@@ -119,8 +119,9 @@ async def test_simple(sender_cls, loop_debug):
     prop_names = sender._Dispatcher__property_events.keys()
     sender.bind_async(loop, **{name:listener.on_prop for name in prop_names})
 
-    with pytest.raises(RuntimeError, message='Coroutine function given without event loop'):
+    with pytest.raises(RuntimeError) as excinfo:
         sender.bind(on_test_a=listener.on_event)
+    assert excinfo.value == 'Coroutine function given without event loop'
 
     for name in ev_names:
         sender.trigger_event(name)
