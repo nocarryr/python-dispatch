@@ -121,7 +121,7 @@ async def test_simple(sender_cls, loop_debug):
 
     with pytest.raises(RuntimeError) as excinfo:
         sender.bind(on_test_a=listener.on_event)
-    assert excinfo.value == 'Coroutine function given without event loop'
+    assert 'Coroutine function given without event loop' in str(excinfo.value)
 
     for name in ev_names:
         sender.trigger_event(name)
