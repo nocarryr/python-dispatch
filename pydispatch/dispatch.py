@@ -233,6 +233,34 @@ class Dispatcher(object):
         """
         kwargs['__aio_loop__'] = loop
         self.bind(**kwargs)
+    def bind1(self, name, cb, aio_loop=None):
+        """Subscribes to an event or to :class:`~pydispatch.properties.Property` update
+
+        For additional information, see :meth:`bind`.
+
+        Args:
+            name (any): The name of the event or
+                :class:`~pydispatch.properties.Property` object.
+            cb: The function or method to call.
+
+        Example:
+
+            class Foo(Dispatcher):
+                name = Property()
+
+            foo = Foo()
+
+            foo.bind1('name', my_listener.on_foo_name_changed)
+            foo.bind1('name', other_listener.on_name)
+            foo.bind1('value', other_listener.on_value)
+        """
+        props = self.__property_events
+        events = self.__events
+        if name in props:
+            e = props[name]
+        else:
+            e = events[name]
+        e.add_listener(cb, __aio_loop__=aio_loop)
     def emit(self, name, *args, **kwargs):
         """Dispatches an event to any subscribed listeners
 
