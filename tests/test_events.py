@@ -18,6 +18,40 @@ def test_basic(listener, sender):
     assert len(listener.received_events) == 3
     assert listener.received_events == names
 
+def test_basic_1_1(listener, sender):
+    sender.register_event('on_test_a')
+    assert 'on_test_a' in sender._Dispatcher__events.keys()
+
+    sender.register_event('on_test_b', 'on_test_c')
+    assert len(sender._Dispatcher__events) == 3
+
+    sender.bind1('on_test_a', listener.on_event)
+    sender.bind1('on_test_b', listener.on_event)
+    sender.bind1('on_test_c', listener.on_event)
+
+    names = ['on_test_a', 'on_test_b', 'on_test_c']
+    for name in names:
+        sender.trigger_event(name)
+    assert len(listener.received_events) == 3
+    assert listener.received_events == names
+
+def test_basic_1_2(listener, sender):
+    sender.register_event('1')
+    assert '1' in sender._Dispatcher__events.keys()
+
+    sender.register_event('2', '3')
+    assert len(sender._Dispatcher__events) == 3
+
+    sender.bind1('1', listener.on_event)
+    sender.bind1('2', listener.on_event)
+    sender.bind1('3', listener.on_event)
+
+    names = ['1', '2', '3']
+    for name in names:
+        sender.trigger_event(name)
+    assert len(listener.received_events) == 3
+    assert listener.received_events == names
+
 def test_cls_events(listener, sender_cls):
     class A(sender_cls):
         _events_ = ['on_test_a']
