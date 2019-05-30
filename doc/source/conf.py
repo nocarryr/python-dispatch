@@ -36,14 +36,9 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages',
     'm2r',
 ]
 
-scv_show_banner = True
-scv_banner_greatest_tag = True
-scv_greatest_tag = True
-scv_banner_main_ref = 'v{}'.format(__version__)
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
