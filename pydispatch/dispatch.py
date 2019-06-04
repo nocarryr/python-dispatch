@@ -188,14 +188,8 @@ class Dispatcher(object):
 
         """
         aio_loop = kwargs.pop('__aio_loop__', None)
-        props = self.__property_events
-        events = self.__events
         for name, cb in kwargs.items():
-            if name in props:
-                e = props[name]
-            else:
-                e = events[name]
-            e.add_listener(cb, __aio_loop__=aio_loop)
+            self.bind1(name, cb, aio_loop)
     def unbind(self, *args):
         """Unsubscribes from events or :class:`~pydispatch.properties.Property` updates
 
@@ -253,6 +247,11 @@ class Dispatcher(object):
             foo.bind1('name', my_listener.on_foo_name_changed)
             foo.bind1('name', other_listener.on_name)
             foo.bind1('value', other_listener.on_value)
+
+        Notes:
+            The event names passed to :meth:`bind` have to be valid Pyton identifiers
+            because :meth:`bind` uses keyword arguments.  This method overcomes that
+            limition.
         """
         props = self.__property_events
         events = self.__events
