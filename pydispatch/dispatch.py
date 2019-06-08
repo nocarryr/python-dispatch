@@ -249,7 +249,7 @@ class Dispatcher(object):
             foo.bind1('value', other_listener.on_value)
 
         Notes:
-            The event names passed to :meth:`bind` have to be valid Pyton identifiers
+            The event names passed to :meth:`bind` have to be valid Python identifiers
             because :meth:`bind` uses keyword arguments.  This method overcomes that
             limition.
         """
