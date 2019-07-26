@@ -20,7 +20,7 @@ pip install python-dispatch
 | -------------:|:-------------------------------------------- |
 | Project Home  | https://github.com/nocarryr/python-dispatch  |
 | PyPI          | https://pypi.python.org/pypi/python-dispatch |
-| Documentation | https://nocarryr.github.io/python-dispatch   |
+| Documentation | https://python-dispatch.readthedocs.io       |
 
 
 ## Usage
