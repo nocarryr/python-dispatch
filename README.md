@@ -87,3 +87,15 @@ emitter.name = 'foo'
 emitter.value = 42
 # >>> emitter value is 42
 ```
+
+## Contributing
+
+Contributions are welcome!
+
+If you want to contribute through code or documentation, please see the
+[Contributing Guide](CONTRIBUTING.md) for information.
+
+## License
+
+This project is released under the MIT License. See the [LICENSE](LICENSE.txt) file
+for more information.
