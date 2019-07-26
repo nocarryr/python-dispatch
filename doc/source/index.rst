@@ -15,8 +15,6 @@ Python Dispatch
    reference/index
 
 
-Indices and tables
-==================
+.. only:: html
 
-* :ref:`genindex`
-* :ref:`search`
+    :ref:`genindex`
