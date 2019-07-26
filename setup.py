@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name = "python-dispatch",
-    version = "0.1.2",
+    version = "0.2.0",
     author = "Matthew Reid",
     author_email = "matt@nomadic-recording.com",
     description = "Lightweight Event Handling",
