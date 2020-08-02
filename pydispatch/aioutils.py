@@ -25,7 +25,7 @@ class AioEmissionHoldLock(object):
         key = id(loop)
         lock = self.aio_locks.get(key)
         if lock is None:
-            lock = asyncio.Lock(loop=loop)
+            lock = asyncio.Lock()
             self.aio_locks[key] = lock
         return lock
     async def acquire_async(self):
@@ -112,7 +112,7 @@ class AioEventWaiter(object):
     __slots__ = ('loop', 'aio_event', 'args', 'kwargs')
     def __init__(self, loop):
         self.loop = loop
-        self.aio_event = asyncio.Event(loop=loop)
+        self.aio_event = asyncio.Event()
         self.args = []
         self.kwargs = {}
     def trigger(self, *args, **kwargs):

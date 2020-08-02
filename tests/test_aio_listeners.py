@@ -11,12 +11,12 @@ class AsyncListener:
         self.received_events = []
         self.received_event_data = []
         self.received_event_loops = []
-        self.received_event_queue = asyncio.Queue(loop=mainloop)
+        self.received_event_queue = asyncio.Queue()
         self.property_events = []
         self.property_event_kwargs = []
         self.property_event_map = {}
         self.property_event_loops = []
-        self.property_queue = asyncio.Queue(loop=mainloop)
+        self.property_queue = asyncio.Queue()
     async def on_event(self, *args, **kwargs):
         self.received_event_data.append({'args':args, 'kwargs':kwargs})
         name = kwargs.get('triggered_event')
@@ -71,7 +71,9 @@ class AsyncListener:
 class LoopThread(threading.Thread):
     def __init__(self, mainloop, sender):
         super().__init__()
-        self.mainloop = mainloop
+        self.mainloop = asyncio.get_event_loop()
+        self.received_event_queue = asyncio.Queue()
+        self.property_queue = asyncio.Queue()
         self.sender = sender
         self.running = threading.Event()
         self.stopped = threading.Event()
@@ -80,6 +82,11 @@ class LoopThread(threading.Thread):
         loop.set_debug(self.mainloop.get_debug())
         asyncio.set_event_loop(loop)
         listener = AsyncListener(loop, self.mainloop)
+
+        # Replace the queue objects with ones that belong to mainloop
+        listener.received_event_queue = self.received_event_queue
+        listener.property_queue = self.property_queue
+
         sender = self.sender
         ev_names = sender._Dispatcher__events.keys()
         sender.bind_async(loop, **{name:listener.on_event for name in ev_names})
