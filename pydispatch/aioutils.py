@@ -210,6 +210,13 @@ class AioEventWaiters(object):
 class AioWeakMethodContainer(WeakMethodContainer):
     """Storage for coroutine functions as weak references
 
+
+    Attributes:
+        event_loop_map(dict): Dict to store weakref keys (as used in
+            :class:`~pydispatch.utils.WeakMethodContainer`) mapped to event loop
+            instances as values
+        pending_tasks(dict):
+
     .. versionadded:: 0.1.0
     """
     def __init__(self):
@@ -226,6 +233,7 @@ class AioWeakMethodContainer(WeakMethodContainer):
                     self._on_weakref_fin(wr.key)
         self._remove = remove
         self.event_loop_map = {}
+        self.pending_tasks = {}
     def add_method(self, loop, callback):
         """Add a coroutine function
 
@@ -261,7 +269,7 @@ class AioWeakMethodContainer(WeakMethodContainer):
     def _on_weakref_fin(self, key):
         if key in self.event_loop_map:
             del self.event_loop_map[key]
-    def submit_coroutine(self, coro, loop):
+    def submit_coroutine(self, coro, loop, cur_loop):
         """Schedule and await a coroutine on the specified loop
 
         The coroutine is wrapped and scheduled using
@@ -277,10 +285,21 @@ class AioWeakMethodContainer(WeakMethodContainer):
             This method is used internally by :meth:`__call__` and is not meant
             to be called directly.
         """
+        loop_id = id(loop)
+
         async def _do_call(_coro):
             with _IterationGuard(self):
                 await _coro
-        asyncio.run_coroutine_threadsafe(_do_call(coro), loop=loop)
+                t = asyncio.Task.current_task()
+                self.pending_tasks[loop_id].discard(t)
+
+        if loop_id not in self.pending_tasks:
+            self.pending_tasks[loop_id] = set()
+        if loop is cur_loop:
+            t = asyncio.ensure_future(_do_call(coro))
+        else:
+            t = asyncio.run_coroutine_threadsafe(_do_call(coro), loop=loop)
+        self.pending_tasks[loop_id].add(t)
     def __call__(self, *args, **kwargs):
         """Triggers all stored callbacks (coroutines)
 
@@ -288,9 +307,44 @@ class AioWeakMethodContainer(WeakMethodContainer):
             *args: Positional arguments to pass to callbacks
             **kwargs: Keyword arguments to pass to callbacks
         """
+        cur_loop = asyncio.get_event_loop()
         for loop, m in self.iter_methods():
             coro = m(*args, **kwargs)
-            self.submit_coroutine(coro, loop)
+            self.submit_coroutine(coro, loop, cur_loop)
+    async def wait_for_tasks(self, timeout=None, return_when=asyncio.ALL_COMPLETED):
+        """Wait for task completion
+
+        Waits for tasks contained in :attr:`pending_tasks` that are attached to
+        the current event loop (if any).
+
+        The arguments and return values match that of :func:`asyncio.wait`
+
+        Args:
+            timeout(float or int, optional): If specified, the maximum number of
+                seconds to wait before returning
+            return_when: A constant used to indicate when the function
+                should return. See :func:`asyncio.wait` for details
+
+        Returns
+        -------
+        done : set
+            Tasks that have completed
+        pending : set
+            Tasks that are pending
+
+        .. versionadded:: 0.1.x
+        """
+        loop = asyncio.get_event_loop()
+        key = id(loop)
+        if key not in self.pending_tasks:
+            return set(), set()
+        tasks = self.pending_tasks[key]
+        if not len(tasks):
+            return set(), set()
+        done, pending = await asyncio.wait(tasks, timeout=timeout, return_when=return_when)
+        for t in done:
+            self.pending_tasks[key].discard(t)
+        return done, pending
     def __delitem__(self, key):
         if key in self.event_loop_map:
             del self.event_loop_map[key]
