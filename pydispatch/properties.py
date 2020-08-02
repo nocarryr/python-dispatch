@@ -41,6 +41,8 @@ from pydispatch.utils import InformativeWVDict
 
 PY2 = sys.version_info < (3,)
 
+__all__ = ['Property', 'ListProperty', 'DictProperty']
+
 class Property(object):
     """Defined on the class level to create an observable attribute
 

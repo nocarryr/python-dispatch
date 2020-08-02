@@ -24,8 +24,8 @@ def test_properties(listener):
     assert listener.property_events == ['a', 'b']
 
 def test_container_properties(listener):
-    from pydispatch import Dispatcher
-    from pydispatch.properties import ListProperty, DictProperty
+    from pydispatch import Dispatcher, ListProperty, DictProperty
+
     class A(Dispatcher):
         test_dict = DictProperty({'defaultkey':'defaultval'})
         test_list = ListProperty(['defaultitem'])
@@ -77,8 +77,8 @@ def test_container_properties(listener):
         assert len(listener.property_events) == 3
 
 def test_list_property_ops(listener):
-    from pydispatch import Dispatcher
-    from pydispatch.properties import ListProperty
+    from pydispatch import Dispatcher, ListProperty
+
     class A(Dispatcher):
         test_list = ListProperty()
 
@@ -120,8 +120,8 @@ def test_list_property_ops(listener):
     assert len(listener.property_events) == 2
 
 def test_dict_property_ops(listener):
-    from pydispatch import Dispatcher
-    from pydispatch.properties import DictProperty
+    from pydispatch import Dispatcher, DictProperty
+
     class A(Dispatcher):
         test_dict = DictProperty({'a':1, 'b':2, 'c':3, 'd':4})
 
@@ -155,10 +155,9 @@ def test_dict_property_ops(listener):
     assert a.test_dict['foo'] == 'bar'
 
 def test_empty_defaults(listener):
-    from pydispatch import Dispatcher
-    from pydispatch.properties import (
-        ListProperty, DictProperty, ObservableList, ObservableDict,
-    )
+    from pydispatch import Dispatcher, ListProperty, DictProperty
+    from pydispatch.properties import ObservableList, ObservableDict
+
     class A(Dispatcher):
         test_dict = DictProperty()
         test_list = ListProperty()
@@ -237,8 +236,7 @@ def test_removal():
     assert len(prop._Property__storage) == 0
 
 def test_self_binding():
-    from pydispatch import Dispatcher
-    from pydispatch.properties import Property, ListProperty, DictProperty
+    from pydispatch import Dispatcher, Property, ListProperty, DictProperty
 
     class A(Dispatcher):
         test_prop = Property()
@@ -267,8 +265,7 @@ def test_self_binding():
     assert a.received == ['test_prop', 'test_dict', 'test_list']
 
 def test_emission_lock(listener):
-    from pydispatch import Dispatcher, Property
-    from pydispatch.properties import ListProperty, DictProperty
+    from pydispatch import Dispatcher, Property, ListProperty, DictProperty
 
     class A(Dispatcher):
         test_prop = Property()
@@ -345,8 +342,7 @@ def test_emission_lock(listener):
     assert listener.property_events[2] == i
 
 def test_copy_on_change(listener):
-    from pydispatch import Dispatcher
-    from pydispatch.properties import ListProperty, DictProperty
+    from pydispatch import Dispatcher, ListProperty, DictProperty
 
     class A(Dispatcher):
         test_dict = DictProperty(copy_on_change=True)

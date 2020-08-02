@@ -58,8 +58,7 @@ structure can trigger an event.
 
 ::
 
-    from pydispatch import Dispatcher
-    from pydispatch.properties import ListProperty, DictProperty
+    from pydispatch import Dispatcher, ListProperty, DictProperty
 
     class MyEmitter(Dispatcher):
         values = ListProperty()
