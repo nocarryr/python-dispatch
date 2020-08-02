@@ -23,6 +23,12 @@ matrix:
       env:
           - AIO_AVAILABLE=true
           - COVERAGERC=".coveragerc"
+    - python: "3.8"
+      dist: xenial
+      sudo: required
+      env:
+          - AIO_AVAILABLE=true
+          - COVERAGERC=".coveragerc"
 install:
   - pip install -U pip setuptools wheel
   - pip install -U pytest pytest-cov coveralls
