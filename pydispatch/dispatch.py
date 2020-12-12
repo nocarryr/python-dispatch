@@ -83,19 +83,12 @@ class Dispatcher(object):
     __initialized_subclasses = set()
     __skip_initialized = True
     def __new__(cls, *args, **kwargs):
-        def iter_bases(_cls):
-            if _cls is not object:
-                yield _cls
-                for b in _cls.__bases__:
-                    for _cls_ in iter_bases(b):
-                        yield _cls_
         skip_initialized = Dispatcher._Dispatcher__skip_initialized
         if not skip_initialized or cls not in Dispatcher._Dispatcher__initialized_subclasses:
             props = {}
             events = set()
-            for _cls in iter_bases(cls):
-                for attr in dir(_cls):
-                    prop = getattr(_cls, attr)
+            for _cls in cls.__mro__:
+                for attr, prop in _cls.__dict__.items():
                     if attr not in props and isinstance(prop, Property):
                         props[attr] = prop
                         prop.name = attr
