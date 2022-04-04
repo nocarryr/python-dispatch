@@ -36,12 +36,43 @@ equality checking. In most cases, this will be handled automatically.
 
 import sys
 import weakref
+import numbers
+from fractions import Fraction
+from typing import Optional, Tuple
 
 from pydispatch.utils import InformativeWVDict
 
 PY2 = sys.version_info < (3,)
 
-__all__ = ['Property', 'ListProperty', 'DictProperty']
+__all__ = [
+    'Property', 'StringProperty', 'BoolProperty', 'IntProperty', 'FloatProperty',
+    'ComplexProperty', 'FractionProperty', 'ListProperty', 'DictProperty',
+]
+
+NumberOrNone = Optional[numbers.Number]
+
+class ValidationError(ValueError):
+    def __init__(self, prop, value, obj=None):
+        self.prop = prop
+        self.obj = obj
+        self.value = value
+    def __str__(self):
+        return f'Value "{self.value!r}" not valid for {self.prop!r}'
+
+class NoneNotAllowedError(ValidationError):
+    def __str__(self):
+        return f'"None" not allowed for {self.prop!r}'
+
+class InvalidTypeError(ValidationError):
+    def __str__(self):
+        value_type = type(self.value)
+        return f'Type "{value_type.__name__}" not valid for {self.prop!r}'
+
+class OutOfRangeError(ValidationError):
+    def __str__(self):
+        vmin, vmax = self.prop.get_range(self.obj)
+        range_str = f'{vmin} <= value <= {vmax}'
+        return f'Value {self.value} must be in range "{range_str}" for {self.prop!r}'
 
 class Property(object):
     """Defined on the class level to create an observable attribute
@@ -49,6 +80,8 @@ class Property(object):
     Args:
         default (Optional): If supplied, this will be the default value of the
             Property for all instances of the class. Otherwise :obj:`None`
+        allownone (bool, optional): If False, prevents assigning :obj:`None`
+            to the Property. Default is True (where *None* is allowed)
 
     Attributes:
         name (str): The name of the Property as defined in the class definition.
@@ -56,9 +89,10 @@ class Property(object):
             :class:`~pydispatch.dispatch.Dispatcher` instance.
 
     """
-    def __init__(self, default=None):
+    def __init__(self, default=None, allownone=True):
         self._name = ''
         self.default = default
+        self.allownone = allownone
         self.__storage = {}
         self.__weakrefs = InformativeWVDict(del_callback=self._on_weakref_fin)
     @property
@@ -87,14 +121,20 @@ class Property(object):
             self._add_instance(obj)
         return self.__storage[obj_id]
     def __set__(self, obj, value):
+        if value is None and not self.allownone:
+            raise NoneNotAllowedError(self, value)
         obj_id = id(obj)
         if obj_id not in self.__storage:
             self._add_instance(obj)
         current = self.__storage[obj_id]
+        if value is not None:
+            value = self._validate_value(obj, value)
         if current == value:
             return
         self.__storage[obj_id] = value
         self._on_change(obj, current, value)
+    def _validate_value(self, obj, value):
+        return value
     def _on_change(self, obj, old, value, **kwargs):
         """Called internally to emit changes from the instance object
 
@@ -118,6 +158,153 @@ class Property(object):
         return '<{}: {}>'.format(self.__class__, self)
     def __str__(self):
         return self.name
+
+class StringProperty(Property):
+    """A Property allowing only string values
+    """
+    def _validate_value(self, obj, value):
+        if not isinstance(value, str):
+            raise InvalidTypeError(self, value)
+        return value
+
+class BoolProperty(Property):
+    """A Property allowing :class:`bool` values
+    """
+    def __init__(self, default=False, allownone=False):
+        super().__init__(default, allownone)
+
+    def _validate_value(self, obj, value):
+        if type(value) is not bool:
+            raise InvalidTypeError(self, value)
+        return value
+
+class NumericProperty(Property):
+    """A Property for numeric values
+
+    Keyword Arguments:
+        min (numbers.Number, optional): The minimum value allowed for the
+            Property. If not provided (or *None*) there is no minimum value.
+        max (numbers.Number, optional): The maximum value allowed for the
+            Property. If not provided (or *None*) there is no maximum value.
+
+    Note:
+        This is a base class for concrete number types such as
+        :class:`IntProperty` and :class:`FloatProperty` providing common
+        functionality for type checking and range validation.
+
+    """
+    _value_type_abc = numbers.Number
+    _value_type_concrete = None
+
+    min: NumberOrNone
+    """If set, the minimum value allowed for the Property. This can be overridden
+    per instance using the :meth:`set_min` and :meth:`set_range` methods.
+    """
+
+    max: NumberOrNone
+    """If set, the maximum value allowed for the Property. This can be overridden
+    per instance using the :meth:`set_min` and :meth:`set_range` methods.
+    """
+
+    def __init__(self, default=0, allownone=False, **kwargs):
+        super().__init__(default, allownone)
+        self.min = kwargs.get('min')
+        self.max = kwargs.get('max')
+        self.__range_storage = {}
+
+    def _on_weakref_fin(self, obj_id):
+        super()._on_weakref_fin(obj_id)
+        if obj_id in self.__range_storage:
+            del self.__range_storage[obj_id]
+
+    def get_range(self, obj) -> Tuple[NumberOrNone, NumberOrNone]:
+        """Get the effective :attr:`min` and :attr:`max` values for a specific
+        *obj* instance
+        """
+        obj_id = id(obj)
+        r = self.__range_storage.get(obj_id)
+        if r is not None:
+            return r
+        return (self.min, self.max)
+
+    def set_range(self, obj, vmin: NumberOrNone, vmax: NumberOrNone):
+        """Set the value range for a specific *obj* instance. This overrides the
+        :attr:`min` and :attr:`max` value defined in the class definition
+        """
+        obj_id = id(obj)
+        self.__range_storage[obj_id] = (vmin, vmax)
+
+    def set_min(self, obj, vmin: NumberOrNone):
+        """Set the minimum value for a specific *obj* instance. This overrides
+        the :attr:`min` value defined in the class definition
+        """
+        obj_id = id(obj)
+        r = self.__range_storage.get(obj_id)
+        if r is not None:
+            _, vmax = r
+        else:
+            vmax = self.max
+        self.__range_storage[obj_id] = (vmin, vmax)
+
+    def set_max(self, obj, vmax: NumberOrNone):
+        """Set the minimum value for a specific *obj* instance. This overrides
+        the :attr:`min` value defined in the class definition
+        """
+        obj_id = id(obj)
+        r = self.__range_storage.get(obj_id)
+        if r is not None:
+            vmin, _ = r
+        else:
+            vmin = self.min
+        self.__range_storage[obj_id] = (vmin, vmax)
+
+    def _validate_value(self, obj, value):
+        if isinstance(value, bool):
+            raise InvalidTypeError(self, value)
+        value = self._coerce_value(obj, value)
+        vmin, vmax = self.get_range(obj)
+        if vmin is not None and value < vmin:
+            raise OutOfRangeError(self, value, obj)
+        elif vmax is not None and value > vmax:
+            raise OutOfRangeError(self, value, obj)
+        return value
+
+    def _coerce_value(self, obj, value):
+        t_abc, t_concrete = self._value_type_abc, self._value_type_concrete
+        if t_abc is not None and not isinstance(value, t_abc):
+            raise InvalidTypeError(self, value)
+        if t_concrete is not None:
+            if isinstance(value, t_concrete):
+                return value
+            try:
+                value = t_concrete(value)
+            except (ValueError, TypeError):
+                raise InvalidTypeError(self, value)
+        return value
+
+class IntProperty(NumericProperty):
+    """Property for :class:`int` types
+    """
+    _value_type_abc = numbers.Integral
+    _value_type_concrete = int
+
+class FloatProperty(NumericProperty):
+    """Property for :class:`float` types
+    """
+    _value_type_abc = numbers.Real
+    _value_type_concrete = float
+
+class ComplexProperty(NumericProperty):
+    """Property for :class:`complex` types
+    """
+    _value_type_abc = numbers.Complex
+    _value_type_concrete = complex
+
+class FractionProperty(NumericProperty):
+    """Property for :class:`fraction.Fraction` types
+    """
+    _value_type_abc = numbers.Rational
+    _value_type_concrete = Fraction
 
 class ListProperty(Property):
     """Property with a :class:`list` type value

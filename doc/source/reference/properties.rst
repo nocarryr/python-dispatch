@@ -1,6 +1,7 @@
 pydispatch.properties module
 ============================
 
+.. currentmodule:: pydispatch.properties
 .. automodule:: pydispatch.properties
 
 Property class
@@ -9,6 +10,46 @@ Property class
 .. autoclass:: pydispatch.properties.Property
     :members:
     :private-members:
+
+
+StringProperty class
+--------------------
+
+.. autoclass:: StringProperty
+    :members:
+    :show-inheritance:
+
+
+BoolProperty class
+------------------
+
+.. autoclass:: BoolProperty
+    :members:
+    :show-inheritance:
+
+
+NumericProperty class
+---------------------
+
+.. autoclass:: NumericProperty
+    :members:
+    :show-inheritance:
+
+
+IntProperty class
+-----------------
+
+.. autoclass:: IntProperty
+    :members:
+    :show-inheritance:
+
+
+FloatProperty class
+-------------------
+
+.. autoclass:: FloatProperty
+    :members:
+    :show-inheritance:
 
 ListProperty class
 ------------------
