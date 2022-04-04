@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ gh-action-ci, master ]
+    branches: [ master ]
   pull_request:
     branches: [ master ]
 
@@ -12,16 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        include:
-          - python-version: "3.6"
-            aio-available: true
-            coverage-rc: ".coveragerc"
-          - python-version: "3.8"
-            aio-available: true
-            coverage-rc: ".coveragerc"
-          - python-version: "3.9"
-            aio-available: true
-            coverage-rc: ".coveragerc"
+        python-version: [3.6, 3.7, 3.8, 3.9]
 
     steps:
     - uses: actions/checkout@v3
@@ -32,20 +23,14 @@ jobs:
     - name: Install base dependencies
       run: |
         python -m pip install --upgrade pip setuptools wheel
-        pip install pytest pytest-cov coveralls
+        pip install pytest pytest-asyncio pytest-cov coveralls
         pip install -e .
-    - name: Install aio dependencies
-      run: pip install pytest-asyncio
-      if: ${{ matrix.aio-available == true }}
     - name: Test with pytest
       run: |
         py.test --cov-config=.coveragerc --cov=pydispatch
-      env:
-        COVERAGERC: ${{ matrix.coverage-rc }}
     - name: Upload to Coveralls
       run: coveralls --service=github
       env:
-        COVERAGERC: ${{ matrix.coverage-rc }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         COVERALLS_FLAG_NAME: run-${{ matrix.python-version }}
         COVERALLS_PARALLEL: true
