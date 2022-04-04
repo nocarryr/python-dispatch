@@ -39,7 +39,7 @@ jobs:
       if: ${{ matrix.aio-available == true }}
     - name: Test with pytest
       run: |
-        py.test --cov-config $COVERAGERC --cov=pydispatch
+        py.test --cov-config=.coveragerc --cov=pydispatch
       env:
         COVERAGERC: ${{ matrix.coverage-rc }}
     - name: Upload to Coveralls
@@ -48,7 +48,6 @@ jobs:
         COVERAGERC: ${{ matrix.coverage-rc }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         COVERALLS_FLAG_NAME: run-${{ matrix.python-version }}
-        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
         COVERALLS_PARALLEL: true
 
   coveralls:
@@ -63,4 +62,3 @@ jobs:
         coveralls --finish
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
