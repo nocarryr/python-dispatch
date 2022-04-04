@@ -1,3 +1,4 @@
+import sys
 import types
 
 from pydispatch.utils import (
@@ -10,6 +11,8 @@ from pydispatch.properties import Property
 if AIO_AVAILABLE:
     import asyncio
     from pydispatch.aioutils import AioWeakMethodContainer, AioEventWaiters
+
+_NEW_CLASS_CREATION = (sys.version_info.major, sys.version_info.minor) >= (3, 6)
 
 
 class Event(object):
@@ -82,15 +85,35 @@ class Dispatcher(object):
     """
     __initialized_subclasses = set()
     __skip_initialized = True
+    def __init_subclass__(cls, *args, **kwargs):
+        super().__init_subclass__()
+        props = getattr(cls, '_PROPERTIES_', {}).copy()
+        events = getattr(cls, '_EVENTS_', set()).copy()
+        for key, val in cls.__dict__.items():
+            if key == '_events_':
+                events |= set(val)
+            elif isinstance(val, Property):
+                props[key] = val
+                val.name = key
+        cls._PROPERTIES_ = props
+        cls._EVENTS_ = events
+
     def __new__(cls, *args, **kwargs):
+        if _NEW_CLASS_CREATION:
+            assert hasattr(cls, '_PROPERTIES_')
+            assert hasattr(cls, '_EVENTS_')
+            obj = super().__new__(cls)
+            obj._Dispatcher__init_events()
+            return obj
+
         def iter_bases(_cls):
             if _cls is not object:
                 yield _cls
                 for b in _cls.__bases__:
                     for _cls_ in iter_bases(b):
                         yield _cls_
-        skip_initialized = Dispatcher._Dispatcher__skip_initialized
-        if not skip_initialized or cls not in Dispatcher._Dispatcher__initialized_subclasses:
+
+        if cls not in Dispatcher._Dispatcher__initialized_subclasses:
             props = {}
             events = set()
             for _cls in iter_bases(cls):
@@ -103,9 +126,8 @@ class Dispatcher(object):
                     events |= set(_events)
             cls._PROPERTIES_ = props
             cls._EVENTS_ = events
-            if skip_initialized:
-                Dispatcher._Dispatcher__initialized_subclasses.add(cls)
-        obj = super(Dispatcher, cls).__new__(cls)
+            Dispatcher._Dispatcher__initialized_subclasses.add(cls)
+        obj = super().__new__(cls)
         obj._Dispatcher__init_events()
         return obj
     def __init__(self, *args, **kwargs):
