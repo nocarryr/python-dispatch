@@ -49,7 +49,7 @@ jobs:
       env:
         COVERAGERC: ${{ matrix.coverage-rc }}
     - name: Upload to Coveralls
-      run: coveralls --rcfile="$COVERAGERC" --service=github
+      run: coveralls --service=github
       env:
         COVERAGERC: ${{ matrix.coverage-rc }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
