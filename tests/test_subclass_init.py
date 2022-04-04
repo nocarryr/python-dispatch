@@ -1,10 +1,6 @@
-import sys
 import math
 import time
 import warnings
-import pytest
-
-VERSION_INFO = (sys.version_info.major, sys.version_info.minor)
 
 def test_dispatcher_construction():
     from pydispatch import Dispatcher, Property
@@ -47,69 +43,7 @@ def test_dispatcher_construction():
     assert b_prop_names == set(b._Dispatcher__property_events.keys())
     assert b_event_names == set(b._Dispatcher__events.keys())
 
-@pytest.mark.skipif(
-    VERSION_INFO >= (3, 6),
-    reason='Python >= 3.6 uses __init_subclass__',
-)
-def test_subclass_new_timing():
-    from pydispatch import Dispatcher, Property
 
-    timings = {}
-
-    for skip_initialized in [False, True]:
-        print('skip_initialized: ', skip_initialized)
-        Dispatcher._Dispatcher__skip_initialized = skip_initialized
-        Dispatcher._Dispatcher__initialized_subclasses.clear()
-
-        class A(Dispatcher):
-            foo = Property()
-            bar = Property()
-            baz = Property()
-            _events_ = [
-                'on_stuff', 'on_more_stuff',
-            ]
-            def __init__(self, *args, **kwargs):
-                self.foo = 1
-                self.bar = 2
-                self.baz = 3
-        class B(A):
-            a = Property()
-            b = Property()
-            c = Property()
-            _events_ = [
-                'on_even_more_stuff', 'on_one_more_thing'
-            ]
-            def __init__(self, *args, **kwargs):
-                super(B, self).__init__(*args, **kwargs)
-                self.a = 1
-                self.b = 2
-                self.c = 3
-
-        times = []
-        start_ts = time.time()
-
-        for i in range(40000):
-            before_init = time.time()
-            obj = B()
-            post_init = time.time()
-            times.append(post_init - before_init)
-
-        total_time = post_init - start_ts
-        min_time = min(times)
-        max_time = max(times)
-        avg_time = math.fsum(times) / len(times)
-        print('total_time={}, avg={}, min={}, max={}'.format(
-            total_time, avg_time, min_time, max_time))
-
-        timings[skip_initialized] = {'total':total_time, 'avg':avg_time}
-
-    assert (timings[True]['avg'] < timings[False]['avg'] or
-                timings[True]['total'] < timings[False]['total'])
-
-@pytest.mark.skipif(
-    VERSION_INFO < (3, 6),
-    reason='__init_subclass__ not available in Python < 3.6',
-)
 def test_new_class_creation():
     from pydispatch import Dispatcher
     from pydispatch.properties import Property, DictProperty
@@ -142,9 +76,6 @@ def test_new_class_creation():
     assert B.prop_a is A.prop_a
 
     a, b, c = A(), B(), C()
-    assert not len(a._Dispatcher__initialized_subclasses)
-    assert not len(b._Dispatcher__initialized_subclasses)
-    assert not len(c._Dispatcher__initialized_subclasses)
 
     for attr in ['prop_b', 'prop_c']:
         assert not hasattr(a, attr)

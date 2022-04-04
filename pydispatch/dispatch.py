@@ -1,4 +1,3 @@
-import sys
 import types
 
 from pydispatch.utils import (
@@ -12,7 +11,6 @@ if AIO_AVAILABLE:
     import asyncio
     from pydispatch.aioutils import AioWeakMethodContainer, AioEventWaiters
 
-_NEW_CLASS_CREATION = (sys.version_info.major, sys.version_info.minor) >= (3, 6)
 
 
 class Event(object):
@@ -83,8 +81,6 @@ class Dispatcher(object):
 
     Once defined, an event can be dispatched to listeners by calling :meth:`emit`.
     """
-    __initialized_subclasses = set()
-    __skip_initialized = True
     def __init_subclass__(cls, *args, **kwargs):
         super().__init_subclass__()
         props = getattr(cls, '_PROPERTIES_', {}).copy()
@@ -99,34 +95,6 @@ class Dispatcher(object):
         cls._EVENTS_ = events
 
     def __new__(cls, *args, **kwargs):
-        if _NEW_CLASS_CREATION:
-            assert hasattr(cls, '_PROPERTIES_')
-            assert hasattr(cls, '_EVENTS_')
-            obj = super().__new__(cls)
-            obj._Dispatcher__init_events()
-            return obj
-
-        def iter_bases(_cls):
-            if _cls is not object:
-                yield _cls
-                for b in _cls.__bases__:
-                    for _cls_ in iter_bases(b):
-                        yield _cls_
-
-        if cls not in Dispatcher._Dispatcher__initialized_subclasses:
-            props = {}
-            events = set()
-            for _cls in iter_bases(cls):
-                for attr in dir(_cls):
-                    prop = getattr(_cls, attr)
-                    if attr not in props and isinstance(prop, Property):
-                        props[attr] = prop
-                        prop.name = attr
-                    _events = getattr(_cls, '_events_', [])
-                    events |= set(_events)
-            cls._PROPERTIES_ = props
-            cls._EVENTS_ = events
-            Dispatcher._Dispatcher__initialized_subclasses.add(cls)
         obj = super().__new__(cls)
         obj._Dispatcher__init_events()
         return obj
