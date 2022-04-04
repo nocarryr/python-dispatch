@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ gh-actions-ci, master ]
+    branches: [ gh-action-ci, master ]
   pull_request:
     branches: [ master ]
 
