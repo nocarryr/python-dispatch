@@ -22,16 +22,3 @@ EmissionHoldLock class
 .. autoclass:: pydispatch.utils.EmissionHoldLock
     :members:
     :show-inheritance:
-
-EmissionHoldLock\_ class
-------------------------
-
-.. autoclass:: pydispatch.utils.EmissionHoldLock_
-    :members:
-
-AioEmissionHoldLock class
--------------------------
-
-.. autoclass:: pydispatch.aioutils.AioEmissionHoldLock
-    :members:
-    :show-inheritance:
