@@ -1,36 +1,16 @@
-import sys
 import weakref
+from weakref import ref, _remove_dead_weakref
 from _weakref import ref
-try:
-    from _weakref import _remove_dead_weakref
-except ImportError:
-    def _remove_dead_weakref(o, key):
-        del o[key]
 import types
-
-AIO_AVAILABLE = sys.version_info >= (3, 5)
-if AIO_AVAILABLE:
-    import asyncio
-else:
-    asyncio = None
-
-PY2 = sys.version_info.major == 2
-if not PY2:
-    basestring = str
+import asyncio
 
 def get_method_vars(m):
-    if PY2:
-        f = m.im_func
-        obj = m.im_self
-    else:
-        f = m.__func__
-        obj = m.__self__
+    f = m.__func__
+    obj = m.__self__
     return f, obj
 
 def iscoroutinefunction(obj):
-    if AIO_AVAILABLE:
-        return asyncio.iscoroutinefunction(obj)
-    return False
+    return asyncio.iscoroutinefunction(obj)
 
 class WeakMethodContainer(weakref.WeakValueDictionary):
     """Container to store weak references to callbacks
@@ -42,10 +22,6 @@ class WeakMethodContainer(weakref.WeakValueDictionary):
     Functions are stored using the string "function" and the id of the function
     as the key (a two-tuple).
     """
-    def keys(self):
-        if PY2:
-            return self.iterkeys()
-        return super(WeakMethodContainer, self).keys()
     def add_method(self, m, **kwargs):
         """Add an instance method or function
 
@@ -178,9 +154,7 @@ class EmissionHoldLock_(object):
     def __exit__(self, *args):
         self.release()
 
-if AIO_AVAILABLE:
-    from pydispatch.aioutils import AioEmissionHoldLock
-    class EmissionHoldLock(EmissionHoldLock_, AioEmissionHoldLock):
-        pass
-else:
-    EmissionHoldLock = EmissionHoldLock_
+
+from pydispatch.aioutils import AioEmissionHoldLock
+class EmissionHoldLock(EmissionHoldLock_, AioEmissionHoldLock):
+    pass

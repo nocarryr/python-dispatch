@@ -3,13 +3,11 @@ import types
 from pydispatch.utils import (
     WeakMethodContainer,
     EmissionHoldLock,
-    AIO_AVAILABLE,
     iscoroutinefunction,
 )
 from pydispatch.properties import Property
-if AIO_AVAILABLE:
-    import asyncio
-    from pydispatch.aioutils import AioWeakMethodContainer, AioEventWaiters
+import asyncio
+from pydispatch.aioutils import AioWeakMethodContainer, AioEventWaiters
 
 
 
@@ -22,28 +20,24 @@ class Event(object):
     def __init__(self, name):
         self.name = name
         self.listeners = WeakMethodContainer()
-        if AIO_AVAILABLE:
-            self.aio_listeners = AioWeakMethodContainer()
-            self.aio_waiters = AioEventWaiters()
+        self.aio_listeners = AioWeakMethodContainer()
+        self.aio_waiters = AioEventWaiters()
         self.emission_lock = EmissionHoldLock(self)
     def add_listener(self, callback, **kwargs):
-        if AIO_AVAILABLE:
-            if iscoroutinefunction(callback):
-                loop = kwargs.get('__aio_loop__')
-                if loop is None:
-                    raise RuntimeError('Coroutine function given without event loop')
-                self.aio_listeners.add_method(loop, callback)
-                return
-        self.listeners.add_method(callback)
+        if iscoroutinefunction(callback):
+            loop = kwargs.get('__aio_loop__')
+            if loop is None:
+                raise RuntimeError('Coroutine function given without event loop')
+            self.aio_listeners.add_method(loop, callback)
+        else:
+            self.listeners.add_method(callback)
     def remove_listener(self, obj):
         if isinstance(obj, (types.MethodType, types.FunctionType)):
             self.listeners.del_method(obj)
-            if AIO_AVAILABLE:
-                self.aio_listeners.del_method(obj)
+            self.aio_listeners.del_method(obj)
         else:
             self.listeners.del_instance(obj)
-            if AIO_AVAILABLE:
-                self.aio_listeners.del_instance(obj)
+            self.aio_listeners.del_instance(obj)
     def __call__(self, *args, **kwargs):
         """Dispatches the event to listeners
 
@@ -52,16 +46,14 @@ class Event(object):
         if self.emission_lock.held:
             self.emission_lock.last_event = (args, kwargs)
             return
-        if AIO_AVAILABLE:
-            self.aio_waiters(*args, **kwargs)
-            self.aio_listeners(*args, **kwargs)
+        self.aio_waiters(*args, **kwargs)
+        self.aio_listeners(*args, **kwargs)
         for m in self.listeners.iter_methods():
             r = m(*args, **kwargs)
             if r is False:
                 return r
-    if AIO_AVAILABLE:
-        def __await__(self):
-            return self.aio_waiters.__await__()
+    def __await__(self):
+        return self.aio_waiters.__await__()
     def __repr__(self):
         return '<{}: {}>'.format(self.__class__, self)
     def __str__(self):
