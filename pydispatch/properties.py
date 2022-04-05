@@ -64,11 +64,8 @@ class Property(object):
     @property
     def name(self):
         return self._name
-    @name.setter
-    def name(self, value):
-        if self._name != '':
-            return
-        self._name = value
+    def __set_name__(self, owner, name):
+        self._name = name
     def _add_instance(self, obj, default=None):
         if default is None:
             default = self.default

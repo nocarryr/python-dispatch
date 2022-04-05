@@ -77,6 +77,18 @@ def test_new_class_creation():
 
     a, b, c = A(), B(), C()
 
+    # Check the discovered property objects against the class attributes
+    # and the instance containers
+    for obj in [a, b, c]:
+        obj_cls = obj.__class__
+        for prop_name in obj_cls._PROPERTIES_.keys():
+            prop_obj = getattr(obj_cls, prop_name)
+            assert prop_obj is obj_cls._PROPERTIES_[prop_name]
+            assert prop_obj is obj._PROPERTIES_[prop_name]
+
+            # Ensure the name was set through `__set_name__`
+            assert prop_obj.name == prop_name
+
     for attr in ['prop_b', 'prop_c']:
         assert not hasattr(a, attr)
     assert not hasattr(b, 'prop_c')

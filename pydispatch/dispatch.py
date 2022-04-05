@@ -90,7 +90,6 @@ class Dispatcher(object):
                 events |= set(val)
             elif isinstance(val, Property):
                 props[key] = val
-                val.name = key
         cls._PROPERTIES_ = props
         cls._EVENTS_ = events
 
