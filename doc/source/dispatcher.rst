@@ -71,12 +71,19 @@ There are no restrictions on event names. The idea is to keep things as simple
 and non-restrictive as possible. When calling :any:`emit <Dispatcher.emit>`, and
 positional or keyword arguments supplied will be passed along to listeners.
 
-Subclasses and ``__init__``
----------------------------
+Subclasses and :meth:`~object.__init__`
+---------------------------------------
 
-The :any:`Dispatcher` class does not use ``__init__`` for any
+The :any:`Dispatcher` class does not use :meth:`~object.__init__` for any
 of its functionality. This is again to keep things simple and get the
-framework out of your way.
-It uses ``__new__`` to handle instance creation. If your subclasses use
-``__new__`` for something, the call to ``super()`` is required,
-but you should probably check the code to determine how it fits with your own.
+framework out of your way. Direct subclasses do not need to include a call to
+:class:`super() <super>` within their :meth:`~object.__init__` method.
+
+Instead, the :meth:`~object.__init_subclass__` method is used to gather
+the Event and Property definitions from each class.
+If :meth:`~object.__init_subclass__` is defined by your subclasses
+*(which is rare)*, a call to :class:`super() <super>` is required.
+
+Likewise, the :meth:`~object.__new__` method is used to handle instance
+attributes. If :meth:`~object.__new__` is defined by a subclass
+*(again this is rare)*, it must also include a call to :class:`super() <super>`.
