@@ -7,36 +7,26 @@ Subclassing this enables all of the event functionality.
 Usage
 -----
 
-::
+.. doctest:: dispatcher_basic
 
-    from pydispatch import Dispatcher
-
-    class MyEmitter(Dispatcher):
-        _events_ = ['on_state', 'new_data']
-        def do_some_stuff(self):
-            # do stuff that makes new data
-            data = self.get_some_data()
-            self.emit('new_data', data=data)
-
-    # An observer - could inherit from Dispatcher or any other class
-    class MyListener(object):
-        def on_new_data(self, *args, **kwargs):
-            data = kwargs.get('data')
-            print('I got data: {}'.format(data))
-        def on_emitter_state(self, *args, **kwargs):
-            print('emitter state changed')
-
-    emitter = MyEmitter()
-    listener = MyListener()
-
-    emitter.bind(on_state=listener.on_emitter_state)
-    emitter.bind(new_data=listener.on_new_data)
-
-    emitter.do_some_stuff()
-    # >>> I got data: ...
-
-    emitter.emit('on_state')
-    # >>> emitter state changed
+    >>> from pydispatch import Dispatcher
+    >>> class MyEmitter(Dispatcher):
+    ...     _events_ = ['on_state', 'new_data']
+    >>> # An observer - could inherit from Dispatcher or any other class
+    >>> class MyListener(object):
+    ...     def on_new_data(self, *args, **kwargs):
+    ...         data = kwargs.get('data')
+    ...         print('I got data: {}'.format(data))
+    ...     def on_emitter_state(self, *args, **kwargs):
+    ...         print('emitter state changed')
+    >>> emitter = MyEmitter()
+    >>> listener = MyListener()
+    >>> emitter.bind(on_state=listener.on_emitter_state)
+    >>> emitter.bind(new_data=listener.on_new_data)
+    >>> emitter.emit('new_data', data='foo')
+    I got data: foo
+    >>> emitter.emit('on_state')
+    emitter state changed
 
 
 The :any:`bind <Dispatcher.bind>` method above could also be combined::

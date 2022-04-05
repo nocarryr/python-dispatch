@@ -36,6 +36,7 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
+    'sphinx.ext.doctest',
     'm2r2',
 ]
 
