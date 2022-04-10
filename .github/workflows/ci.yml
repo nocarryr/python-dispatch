@@ -27,7 +27,7 @@ jobs:
         pip install -e .
     - name: Test with pytest
       run: |
-        py.test --cov-config=.coveragerc --cov=pydispatch
+        py.test --cov-config=.coveragerc --cov=pydispatch tests pydispatch doc README.md
     - name: Upload to Coveralls
       run: coveralls --service=github
       env:
