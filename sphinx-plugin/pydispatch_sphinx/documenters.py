@@ -45,26 +45,11 @@ class DispatcherPropertyDocumenter(AttributeDocumenter):
             r = self._propcls = f'pydispatch.properties.{self.object.__class__.__name__}'
         return r
 
-    def string_list_repr(self): # pragma: no cover
-        sl = self.directive.result
-        l = []
-        for line in sl.xitems():
-            l.append('{}:{}:{}'.format(*line))
-        return '\n'.join(l)
-
-    def log_string_list(self, log_str: tp.Optional[str] = None): # pragma: no cover
-        return
-        if log_str is None:
-            log_str = ''
-        s = self.string_list_repr()
-        logger.info(f'{log_str}{s}')
-
     def document_members(self, all_members: bool = False) -> None:
         pass
 
     def add_directive_header(self, sig: str) -> None:
         super().add_directive_header(sig)
-        self.log_string_list('Attrib directive_header: \n')
         sourcename = self.get_sourcename()
 
         propcls = self.propcls
@@ -78,26 +63,6 @@ class DispatcherPropertyDocumenter(AttributeDocumenter):
 
         self.add_line(f'   :propcls: {propcls}', sourcename)
         prop_default = self.object.default
-        # self.add_line(f'   :value: {prop_default}', sourcename)
-        # if True:
-        #     pass
-        # elif self.options.annotation:
-        #     self.add_line(f'   :annotation: {self.options.annotation}', sourcename)
-        # else:
-        #     if self.config.autodoc_typehints != 'none':
-        #         annotations = get_type_hints(
-        #             self.parent, None, self.config.autodoc_type_aliases,
-        #         )
-        #         if self.objpath[-1] in annotations:
-        #             objrepr = stringify_typehint(annotations.get(self.objpath[-1]))
-        #             self.add_line(f'   :type: {objrepr}', sourcename)
-        #         elif prop_type is not None:
-        #             self.add_line(f'   :type: {prop_type}', sourcename)
-
-        # if prop_type is not None:
-        #     self.add_line(f'    :type: {prop_type}', sourcename)
-        self.log_string_list('Prop directive_header: \n')
-
 
     def update_content(self, more_content: StringList) -> None:
         super().update_content(more_content)
@@ -112,7 +77,6 @@ class DispatcherPropertyDocumenter(AttributeDocumenter):
             s = f'{s} and defaults to ``{default}``.'
         more_content.append(_(s), '')
         more_content.append('', '')
-        self.log_string_list('update_content:\n')
 
 
 def setup(app: Sphinx) -> None:
