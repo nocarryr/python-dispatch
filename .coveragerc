@@ -1,5 +1,6 @@
 [run]
-source = pydispatch/*
+source = pydispatch
+
 
 [report]
 exclude_lines =
