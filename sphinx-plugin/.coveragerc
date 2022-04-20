@@ -1,0 +1,7 @@
+[run]
+source = pydispatch_sphinx
+
+
+[report]
+exclude_lines =
+    pragma: no cover
