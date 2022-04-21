@@ -5,5 +5,5 @@ try:
 except: # pragma: no cover
     __version__ = 'unknown'
 
-from pydispatch.dispatch import Dispatcher
+from pydispatch.dispatch import Dispatcher, Event
 from pydispatch.properties import *
