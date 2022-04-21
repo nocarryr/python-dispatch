@@ -1,0 +1,24 @@
+**class events_module.TheClass(*args, **kwargs)**
+
+   Docstring for TheClass
+
+   Look at ``on_foo``, ``on_bar`` and
+   ``on_baz``
+
+   ```Event <{url}/reference/dispatch.html#pydispatch.dispatch.Event>`_ on_foo``
+
+      Documentation for on_foo event
+
+      ``on_foo`` is a `pydispatch.Event <{url}/reference/dispatch.html#pydispatch.dispatch.Event>`_ object.
+
+   ```Event <{url}/reference/dispatch.html#pydispatch.dispatch.Event>`_ on_bar``
+
+      Documentation for on_bar event
+
+      ``on_bar`` is a `pydispatch.Event <{url}/reference/dispatch.html#pydispatch.dispatch.Event>`_ object.
+
+   ```Event <{url}/reference/dispatch.html#pydispatch.dispatch.Event>`_ on_baz(name: str, value: int, **kwargs)``
+
+      Documentation for on_baz event
+
+      ``on_baz`` is a `pydispatch.Event <{url}/reference/dispatch.html#pydispatch.dispatch.Event>`_ object.

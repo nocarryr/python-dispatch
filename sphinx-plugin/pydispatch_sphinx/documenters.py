@@ -5,17 +5,98 @@ import sphinx
 from sphinx.application import Sphinx
 from sphinx.locale import _, __
 from sphinx.util import logging
+from sphinx.util import inspect
 from sphinx.util.typing import (
     get_type_hints, restify, stringify as stringify_typehint,
 )
 from sphinx.ext.autodoc import (
-    ClassDocumenter, AttributeDocumenter, annotation_option,
-    PropertyDocumenter as _PropertyDocumenter,
+    ClassDocumenter, ModuleDocumenter, MethodDocumenter, AttributeDocumenter,
+    PropertyDocumenter as _PropertyDocumenter, INSTANCEATTR,
+    annotation_option, bool_option,
 )
 
+from pydispatch import Event
 from pydispatch.properties import Property, DictProperty, ListProperty
+_Event_fullname = '.'.join([Event.__module__, Event.__qualname__])
 
 logger = logging.getLogger(__name__)
+
+def has_event_name(member: tp.Any, membername: str, parent: ClassDocumenter) -> bool:
+    def iter_bases(_cls):
+        if _cls is not object:
+            yield _cls
+            for b in _cls.__bases__:
+                yield from iter_bases(b)
+    objcls = parent.object
+    if not hasattr(objcls, '_EVENTS_'):
+        for _cls in iter_bases(objcls):
+            evts = getattr(_cls, '_events_', [])
+            if membername in evts:
+                return True
+        return False
+
+    events = getattr(parent.object, '_EVENTS_', [])
+    return membername in events
+
+def update_event_content(object_name: str, more_content: StringList) -> None:
+    objref = f':py:class:`pydispatch.Event <{_Event_fullname}>`'
+    more_content.append(_(f'``{object_name}`` is a {objref} object.'), '')
+    more_content.append('', '')
+
+
+class DispatcherEventAttributeDocumenter(AttributeDocumenter):
+    objtype = 'event'
+    directivetype = 'event'
+    member_order = 60
+    priority = AttributeDocumenter.priority + 2
+    option_spec = dict(AttributeDocumenter.option_spec)
+
+    # def should_suppress_directive_header(self):
+    #     return True
+
+    @classmethod
+    def can_document_member(
+        cls, member: tp.Any, membername: str, isattr: bool, parent: tp.Any
+    ) -> bool:
+        if member is INSTANCEATTR and not isinstance(parent, ModuleDocumenter):
+            anno = get_type_hints(parent.object)
+            obj_anno = anno.get(membername)
+            if obj_anno is Event:
+                # logger.info(f'"{member!s}", {member.__class__=}, {membername=}')
+                return True
+        return False
+
+    def update_content(self, more_content: StringList) -> None:
+        super().update_content(more_content)
+        update_event_content(self.objpath[-1], more_content)
+
+
+class DispatcherEventMethodDocumenter(MethodDocumenter):
+    objtype = 'eventmethod'
+    directivetype = 'event'
+    member_order = 60
+    priority = MethodDocumenter.priority + 1
+    option_spec = dict(MethodDocumenter.option_spec)
+    option_spec['hasargs'] = bool_option
+
+    @classmethod
+    def can_document_member(
+        cls, member: tp.Any, membername: str, isattr: bool, parent: tp.Any
+    ) -> bool:
+        if inspect.isroutine(member) and not isinstance(parent, ModuleDocumenter):
+            return has_event_name(member, membername, parent)
+        return False
+
+    def add_directive_header(self, sig: str) -> None:
+        super().add_directive_header(sig)
+        sourcename = self.get_sourcename()
+        self.add_line('   :hasargs:', sourcename)
+
+    def add_content(self, more_content: tp.Optional[StringList]) -> None:
+        if more_content is None:
+            more_content = StringList()
+        update_event_content(self.object_name, more_content)
+        super().add_content(more_content)
 
 
 class DispatcherPropertyDocumenter(AttributeDocumenter):
@@ -82,3 +163,5 @@ class DispatcherPropertyDocumenter(AttributeDocumenter):
 def setup(app: Sphinx) -> None:
     app.setup_extension('sphinx.ext.autodoc')
     app.add_autodocumenter(DispatcherPropertyDocumenter)
+    app.add_autodocumenter(DispatcherEventMethodDocumenter)
+    app.add_autodocumenter(DispatcherEventAttributeDocumenter)
