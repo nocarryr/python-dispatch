@@ -5,6 +5,10 @@
    Look at ``on_foo``, ``on_bar`` and
    ``on_baz``
 
+   ``a_normal_attribute: str``
+
+      Documentation for a_normal_attribute
+
    ```Event <{url}/reference/dispatch.html#pydispatch.dispatch.Event>`_ on_foo``
 
       Documentation for on_foo event
@@ -40,6 +44,10 @@
       Documentation for on_eggs event
 
       ``on_eggs`` is a `pydispatch.Event <{url}/reference/dispatch.html#pydispatch.dispatch.Event>`_ object.
+
+   **a_normal_method(value: int) -> int**
+
+      Documentation for a_normal_method
 
 **class events_module.TheOverridingSubClass(*args, **kwargs)**
 

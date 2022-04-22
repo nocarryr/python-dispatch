@@ -8,6 +8,9 @@ class TheClass(Dispatcher):
     """
     _events_ = ['on_foo', 'on_bar', 'on_baz']
 
+    a_normal_attribute: str
+    """Documentation for a_normal_attribute"""
+
     on_foo: Event
     """Documentation for on_foo event"""
 
@@ -32,6 +35,11 @@ class TheSubClass(TheClass):
     def on_eggs(self, scrambled: bool, **kwargs):
         """Documentation for on_eggs event"""
         pass
+
+    def a_normal_method(self, value: int) -> int:
+        """Documentation for a_normal_method
+        """
+        return value + 1
 
 class TheOverridingSubClass(TheSubClass):
     """Docstring for TheOverridingSubClass
