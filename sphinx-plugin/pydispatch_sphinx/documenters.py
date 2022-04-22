@@ -22,21 +22,24 @@ _Event_fullname = '.'.join([Event.__module__, Event.__qualname__])
 logger = logging.getLogger(__name__)
 
 def has_event_name(member: tp.Any, membername: str, parent: ClassDocumenter) -> bool:
+    # This will be False until #13 is merged
+    # (https://github.com/nocarryr/python-dispatch/pull/13)
+    # Once it's merged, everything below these two lines can be removed
+    if hasattr(objcls, '_EVENTS_'):
+        return membername in objcls._EVENTS_
+
     def iter_bases(_cls):
         if _cls is not object:
             yield _cls
             for b in _cls.__bases__:
                 yield from iter_bases(b)
-    objcls = parent.object
-    if not hasattr(objcls, '_EVENTS_'):
-        for _cls in iter_bases(objcls):
-            evts = getattr(_cls, '_events_', [])
-            if membername in evts:
-                return True
-        return False
 
-    events = getattr(parent.object, '_EVENTS_', [])
-    return membername in events
+    objcls = parent.object
+    for _cls in iter_bases(objcls):
+        evts = getattr(_cls, '_events_', [])
+        if membername in evts:
+            return True
+    return False
 
 def update_event_content(object_name: str, more_content: StringList) -> None:
     objref = f':py:class:`pydispatch.Event <{_Event_fullname}>`'
