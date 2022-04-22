@@ -1,0 +1,92 @@
+
+name: Test Distribution
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+    inputs:
+      allow_deploy:
+        description: 'Deploy with twine'
+        required: true
+        type: boolean
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+      - name: Build dists
+        run: python setup.py sdist bdist_wheel
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: 'dists'
+          path: 'dist/*'
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
+        dist-type: [sdist, wheel]
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip setuptools wheel
+        pip install pytest pytest-asyncio pytest-cov coveralls
+    - name: Download artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: 'dists'
+        path: dist
+    - name: Delete source directory
+      run: rm -Rf pydispatch
+    - name: Install wheel
+      if: ${{ matrix.dist-type == 'wheel' }}
+      run: pip install dist/*.whl
+    - name: Install sdist
+      if: ${{ matrix.dist-type == 'sdist' }}
+      run: pip install dist/*.tar.gz
+    - name: Test distribution
+      run: py.test tests/
+
+  deploy:
+    needs: test
+    if: ${{ success() && github.event.inputs.allow_deploy == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel twine
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: 'dists'
+          path: dist
+      - name: Publish to PyPI
+        env:
+          TWINE_REPOSITORY: ${{ secrets.TWINE_REPOSITORY }}
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: twine upload dist/*
