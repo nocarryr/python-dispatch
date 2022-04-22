@@ -18,3 +18,31 @@ class TheClass(Dispatcher):
         """Documentation for on_baz event
         """
         pass
+
+class TheSubClass(TheClass):
+    """Docstring for TheSubClass
+
+    Look at :event:`on_spam` and :event:`on_eggs`
+    """
+    _events_ = ['on_spam', 'on_eggs']
+
+    on_spam: Event
+    """Documentation for on_spam event"""
+
+    def on_eggs(self, scrambled: bool, **kwargs):
+        """Documentation for on_eggs event"""
+        pass
+
+class TheOverridingSubClass(TheSubClass):
+    """Docstring for TheOverridingSubClass
+
+    I override docstrings for :event:`on_foo` and :event:`on_eggs`
+    """
+
+    def on_foo(self, state: bool, **kwargs):
+        """Overriden documentation for :event:`TheClass.on_foo` event"""
+        pass
+
+    def on_eggs(self, over_easy: bool, **kwargs):
+        """Overriden documentation for :event:`TheSubClass.on_eggs` event"""
+        pass

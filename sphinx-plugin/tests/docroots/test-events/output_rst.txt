@@ -22,3 +22,39 @@
       Documentation for on_baz event
 
       ``on_baz`` is a ``pydispatch.Event`` object.
+
+**class events_module.TheSubClass(*args, **kwargs)**
+
+   Docstring for TheSubClass
+
+   Look at ``on_spam`` and ``on_eggs``
+
+   ``Event on_spam``
+
+      Documentation for on_spam event
+
+      ``on_spam`` is a ``pydispatch.Event`` object.
+
+   ``Event on_eggs(scrambled: bool, **kwargs)``
+
+      Documentation for on_eggs event
+
+      ``on_eggs`` is a ``pydispatch.Event`` object.
+
+**class events_module.TheOverridingSubClass(*args, **kwargs)**
+
+   Docstring for TheOverridingSubClass
+
+   I override docstrings for ``on_foo`` and ``on_eggs``
+
+   ``Event on_foo(state: bool, **kwargs)``
+
+      Overriden documentation for ``TheClass.on_foo`` event
+
+      ``on_foo`` is a ``pydispatch.Event`` object.
+
+   ``Event on_eggs(over_easy: bool, **kwargs)``
+
+      Overriden documentation for ``TheSubClass.on_eggs`` event
+
+      ``on_eggs`` is a ``pydispatch.Event`` object.
