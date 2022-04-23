@@ -91,7 +91,7 @@ jobs:
 
   deploy:
     needs: test
-    if: ${{ success() && (github.event.inputs.allow_deploy == 'true' || sphinx.event.inputs.allow_sphinx_deploy == 'true') }}
+    if: ${{ success() && (github.event.inputs.allow_deploy == 'true' || github.event.inputs.allow_sphinx_deploy == 'true') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
