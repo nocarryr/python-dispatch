@@ -3,13 +3,12 @@ import types
 from pydispatch.utils import (
     WeakMethodContainer,
     EmissionHoldLock,
-    AIO_AVAILABLE,
     iscoroutinefunction,
 )
 from pydispatch.properties import Property
-if AIO_AVAILABLE:
-    import asyncio
-    from pydispatch.aioutils import AioWeakMethodContainer, AioEventWaiters
+import asyncio
+from pydispatch.aioutils import AioWeakMethodContainer, AioEventWaiters
+
 
 
 class Event(object):
@@ -21,28 +20,24 @@ class Event(object):
     def __init__(self, name):
         self.name = name
         self.listeners = WeakMethodContainer()
-        if AIO_AVAILABLE:
-            self.aio_listeners = AioWeakMethodContainer()
-            self.aio_waiters = AioEventWaiters()
+        self.aio_listeners = AioWeakMethodContainer()
+        self.aio_waiters = AioEventWaiters()
         self.emission_lock = EmissionHoldLock(self)
     def add_listener(self, callback, **kwargs):
-        if AIO_AVAILABLE:
-            if iscoroutinefunction(callback):
-                loop = kwargs.get('__aio_loop__')
-                if loop is None:
-                    raise RuntimeError('Coroutine function given without event loop')
-                self.aio_listeners.add_method(loop, callback)
-                return
-        self.listeners.add_method(callback)
+        if iscoroutinefunction(callback):
+            loop = kwargs.get('__aio_loop__')
+            if loop is None:
+                raise RuntimeError('Coroutine function given without event loop')
+            self.aio_listeners.add_method(loop, callback)
+        else:
+            self.listeners.add_method(callback)
     def remove_listener(self, obj):
         if isinstance(obj, (types.MethodType, types.FunctionType)):
             self.listeners.del_method(obj)
-            if AIO_AVAILABLE:
-                self.aio_listeners.del_method(obj)
+            self.aio_listeners.del_method(obj)
         else:
             self.listeners.del_instance(obj)
-            if AIO_AVAILABLE:
-                self.aio_listeners.del_instance(obj)
+            self.aio_listeners.del_instance(obj)
     def __call__(self, *args, **kwargs):
         """Dispatches the event to listeners
 
@@ -51,16 +46,14 @@ class Event(object):
         if self.emission_lock.held:
             self.emission_lock.last_event = (args, kwargs)
             return
-        if AIO_AVAILABLE:
-            self.aio_waiters(*args, **kwargs)
-            self.aio_listeners(*args, **kwargs)
+        self.aio_waiters(*args, **kwargs)
+        self.aio_listeners(*args, **kwargs)
         for m in self.listeners.iter_methods():
             r = m(*args, **kwargs)
             if r is False:
                 return r
-    if AIO_AVAILABLE:
-        def __await__(self):
-            return self.aio_waiters.__await__()
+    def __await__(self):
+        return self.aio_waiters.__await__()
     def __repr__(self):
         return '<{}: {}>'.format(self.__class__, self)
     def __str__(self):
@@ -80,32 +73,20 @@ class Dispatcher(object):
 
     Once defined, an event can be dispatched to listeners by calling :meth:`emit`.
     """
-    __initialized_subclasses = set()
-    __skip_initialized = True
+    def __init_subclass__(cls, *args, **kwargs):
+        super().__init_subclass__()
+        props = getattr(cls, '_PROPERTIES_', {}).copy()
+        events = getattr(cls, '_EVENTS_', set()).copy()
+        for key, val in cls.__dict__.items():
+            if key == '_events_':
+                events |= set(val)
+            elif isinstance(val, Property):
+                props[key] = val
+        cls._PROPERTIES_ = props
+        cls._EVENTS_ = events
+
     def __new__(cls, *args, **kwargs):
-        def iter_bases(_cls):
-            if _cls is not object:
-                yield _cls
-                for b in _cls.__bases__:
-                    for _cls_ in iter_bases(b):
-                        yield _cls_
-        skip_initialized = Dispatcher._Dispatcher__skip_initialized
-        if not skip_initialized or cls not in Dispatcher._Dispatcher__initialized_subclasses:
-            props = {}
-            events = set()
-            for _cls in iter_bases(cls):
-                for attr in dir(_cls):
-                    prop = getattr(_cls, attr)
-                    if attr not in props and isinstance(prop, Property):
-                        props[attr] = prop
-                        prop.name = attr
-                    _events = getattr(_cls, '_events_', [])
-                    events |= set(_events)
-            cls._PROPERTIES_ = props
-            cls._EVENTS_ = events
-            if skip_initialized:
-                Dispatcher._Dispatcher__initialized_subclasses.add(cls)
-        obj = super(Dispatcher, cls).__new__(cls)
+        obj = super().__new__(cls)
         obj._Dispatcher__init_events()
         return obj
     def __init__(self, *args, **kwargs):

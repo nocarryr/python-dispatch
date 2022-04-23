@@ -1,36 +1,16 @@
-import sys
 import weakref
+from weakref import ref, _remove_dead_weakref
 from _weakref import ref
-try:
-    from _weakref import _remove_dead_weakref
-except ImportError:
-    def _remove_dead_weakref(o, key):
-        del o[key]
 import types
-
-AIO_AVAILABLE = sys.version_info >= (3, 5)
-if AIO_AVAILABLE:
-    import asyncio
-else:
-    asyncio = None
-
-PY2 = sys.version_info.major == 2
-if not PY2:
-    basestring = str
+import asyncio
 
 def get_method_vars(m):
-    if PY2:
-        f = m.im_func
-        obj = m.im_self
-    else:
-        f = m.__func__
-        obj = m.__self__
+    f = m.__func__
+    obj = m.__self__
     return f, obj
 
 def iscoroutinefunction(obj):
-    if AIO_AVAILABLE:
-        return asyncio.iscoroutinefunction(obj)
-    return False
+    return asyncio.iscoroutinefunction(obj)
 
 class WeakMethodContainer(weakref.WeakValueDictionary):
     """Container to store weak references to callbacks
@@ -42,10 +22,6 @@ class WeakMethodContainer(weakref.WeakValueDictionary):
     Functions are stored using the string "function" and the id of the function
     as the key (a two-tuple).
     """
-    def keys(self):
-        if PY2:
-            return self.iterkeys()
-        return super(WeakMethodContainer, self).keys()
     def add_method(self, m, **kwargs):
         """Add an instance method or function
 
@@ -140,8 +116,12 @@ class InformativeWVDict(weakref.WeakValueDictionary):
     def _data_del_callback(self, key):
         self.del_callback(key)
 
-class EmissionHoldLock_(object):
+class EmissionHoldLock:
     """Context manager used for :meth:`pydispatch.dispatch.Dispatcher.emission_lock`
+
+    Supports use as a :term:`context manager` used in :keyword:`with` statements
+    and an :term:`asynchronous context manager` when used in
+    :keyword:`async with` statements.
 
     Args:
         event_instance: The :class:`~pydispatch.dispatch.Event` instance
@@ -159,6 +139,13 @@ class EmissionHoldLock_(object):
         self.event_instance = event_instance
         self.last_event = None
         self.held = False
+    @property
+    def aio_locks(self):
+        d = getattr(self, '_aio_locks', None)
+        if d is None:
+            d = self._aio_locks = {}
+        return d
+
     def acquire(self):
         if self.held:
             return
@@ -172,15 +159,35 @@ class EmissionHoldLock_(object):
             self.last_event = None
             self.held = False
             self.event_instance(*args, **kwargs)
+
+    async def acquire_async(self):
+        self.acquire()
+        lock = await self._build_aio_lock()
+        if not lock.locked():
+            await lock.acquire()
+    async def release_async(self):
+        lock = await self._build_aio_lock()
+        if lock.locked:
+            lock.release()
+        self.release()
+
     def __enter__(self):
         self.acquire()
         return self
     def __exit__(self, *args):
         self.release()
 
-if AIO_AVAILABLE:
-    from pydispatch.aioutils import AioEmissionHoldLock
-    class EmissionHoldLock(EmissionHoldLock_, AioEmissionHoldLock):
-        pass
-else:
-    EmissionHoldLock = EmissionHoldLock_
+    async def __aenter__(self):
+        await self.acquire_async()
+        return self
+    async def __aexit__(self, *args):
+        await self.release_async()
+
+    async def _build_aio_lock(self):
+        loop = asyncio.get_event_loop()
+        key = id(loop)
+        lock = self.aio_locks.get(key)
+        if lock is None:
+            lock = asyncio.Lock()
+            self.aio_locks[key] = lock
+        return lock

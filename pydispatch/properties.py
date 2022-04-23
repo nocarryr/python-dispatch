@@ -34,12 +34,10 @@ reason. If custom objects are used as values, they must be able to support
 equality checking. In most cases, this will be handled automatically.
 """
 
-import sys
 import weakref
 
 from pydispatch.utils import InformativeWVDict
 
-PY2 = sys.version_info < (3,)
 
 __all__ = ['Property', 'ListProperty', 'DictProperty']
 
@@ -64,11 +62,8 @@ class Property(object):
     @property
     def name(self):
         return self._name
-    @name.setter
-    def name(self, value):
-        if self._name != '':
-            return
-        self._name = value
+    def __set_name__(self, owner, name):
+        self._name = name
     def _add_instance(self, obj, default=None):
         if default is None:
             default = self.default
@@ -263,23 +258,10 @@ class ObservableList(list, Observable):
         old = self._get_copy_or_none()
         super(ObservableList, self).__delitem__(key)
         self._emit_change(old=old)
-    if PY2:
-        def __setslice__(self, *args):
-            old = self._get_copy_or_none()
-            super(ObservableList, self).__setslice__(*args)
-            self._emit_change(old=old)
-        def __delslice__(self, *args):
-            old = self._get_copy_or_none()
-            super(ObservableList, self).__delslice__(*args)
-            self._emit_change(old=old)
-    if hasattr(list, 'clear'):
-        def clear(self):
-            old = self._get_copy_or_none()
-            super(ObservableList, self).clear()
-            self._emit_change(old=old)
-    if not hasattr(list, 'copy'):
-        def copy(self):
-            return self[:]
+    def clear(self):
+        old = self._get_copy_or_none()
+        super(ObservableList, self).clear()
+        self._emit_change(old=old)
     def __iadd__(self, other):
         other = self._build_observable(other)
         self.extend(other)
