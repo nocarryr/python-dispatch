@@ -5,5 +5,3 @@ source = pydispatch
 [report]
 exclude_lines =
     pragma: no cover
-    if PY2:
-    if not AIO_AVAILABLE:

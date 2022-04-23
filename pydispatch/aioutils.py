@@ -9,40 +9,6 @@ from pydispatch.utils import (
     _remove_dead_weakref,
 )
 
-class AioEmissionHoldLock(object):
-    """Async context manager mixin for :class:`pydispatch.utils.EmissionHoldLock_`
-
-    Supports use in :keyword:`async with` statements
-    """
-    @property
-    def aio_locks(self):
-        d = getattr(self, '_aio_locks', None)
-        if d is None:
-            d = self._aio_locks = {}
-        return d
-    async def _build_aio_lock(self):
-        loop = asyncio.get_event_loop()
-        key = id(loop)
-        lock = self.aio_locks.get(key)
-        if lock is None:
-            lock = asyncio.Lock()
-            self.aio_locks[key] = lock
-        return lock
-    async def acquire_async(self):
-        self.acquire()
-        lock = await self._build_aio_lock()
-        if not lock.locked():
-            await lock.acquire()
-    async def release_async(self):
-        lock = await self._build_aio_lock()
-        if lock.locked:
-            lock.release()
-        self.release()
-    async def __aenter__(self):
-        await self.acquire_async()
-        return self
-    async def __aexit__(self, *args):
-        await self.release_async()
 
 class AioSimpleLock(object):
     """:class:`asyncio.Lock` alternative backed by a :class:`threading.Lock`
