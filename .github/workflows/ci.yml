@@ -28,7 +28,7 @@ jobs:
         pip install -e sphinx-plugin
     - name: Test python-dispatch
       run: |
-        py.test --cov --cov-config=.coveragerc
+        py.test --cov --cov-config=.coveragerc tests pydispatch doc README.md
     - name: Test python-dispatch-sphinx
       run: |
         py.test --cov --cov-append --cov-config=sphinx-plugin/.coveragerc sphinx-plugin/tests
