@@ -10,6 +10,10 @@ on:
         description: 'Deploy with twine'
         required: true
         type: boolean
+      allow_sphinx_deploy:
+        description: 'Deploy Sphinx extension with twine'
+        required: true
+        type: boolean
 
 jobs:
   build:
@@ -23,13 +27,23 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
-      - name: Build dists
+      - name: Build pydispatch dists
         run: python setup.py sdist bdist_wheel
+      - name: Build pydispatch_sphinx dists
+        run: python setup.py sdist bdist_wheel --dist-dir=$DISTDIR
+        working-directory: ${{ github.workspace }}/sphinx-plugin
+        env:
+          DISTDIR: ${{ github.workspace }}/dist-sphinx
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: 'dists'
           path: 'dist/*'
+      - name: Upload sphinx artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: 'dists-sphinx'
+          path: 'dist-sphinx/*'
 
   test:
     needs: build
@@ -49,26 +63,35 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip setuptools wheel
-        pip install pytest pytest-asyncio pytest-cov coveralls
+        pip install -r requirements-dev.txt
     - name: Download artifacts
       uses: actions/download-artifact@v2
       with:
         name: 'dists'
         path: dist
-    - name: Delete source directory
-      run: rm -Rf pydispatch
+    - name: Download sphinx artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: 'dists-sphinx'
+        path: dist
+    - name: Delete source directories
+      run: |
+        rm -Rf pydispatch
+        rm -Rf sphinx-plugin/pydispatch_sphinx
     - name: Install wheel
       if: ${{ matrix.dist-type == 'wheel' }}
       run: pip install dist/*.whl
     - name: Install sdist
       if: ${{ matrix.dist-type == 'sdist' }}
       run: pip install dist/*.tar.gz
-    - name: Test distribution
+    - name: Test pydispatch distribution
       run: py.test tests/
+    - name: Test pydispatch_sphinx distribution
+      run: py.test sphinx-plugin/tests/
 
   deploy:
     needs: test
-    if: ${{ success() && github.event.inputs.allow_deploy == 'true' }}
+    if: ${{ success() && (github.event.inputs.allow_deploy == 'true' || sphinx.event.inputs.allow_sphinx_deploy == 'true') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -84,9 +107,22 @@ jobs:
         with:
           name: 'dists'
           path: dist
+      - name: Download sphinx artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: 'dists-sphinx'
+          path: dist-sphinx
       - name: Publish to PyPI
+        if: ${{ success() && github.event.inputs.allow_deploy == 'true' }}
         env:
           TWINE_REPOSITORY: ${{ secrets.TWINE_REPOSITORY }}
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: twine upload dist/*
+      - name: Publish Sphinx extension to PyPI
+        if: ${{ success() && github.event.inputs.allow_sphinx_deploy == 'true' }}
+        env:
+          TWINE_REPOSITORY: ${{ secrets.TWINE_REPOSITORY }}
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: twine upload dist-sphinx/*
