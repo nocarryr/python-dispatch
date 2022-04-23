@@ -30,7 +30,7 @@ jobs:
       - name: Build pydispatch dists
         run: python setup.py sdist bdist_wheel
       - name: Build pydispatch_sphinx dists
-        run: python setup.py sdist bdist_wheel --dist-dir=$DISTDIR
+        run: python setup.py sdist --dist-dir=$DISTDIR bdist_wheel --dist-dir=$DISTDIR
         working-directory: ${{ github.workspace }}/sphinx-plugin
         env:
           DISTDIR: ${{ github.workspace }}/dist-sphinx
