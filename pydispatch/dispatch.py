@@ -161,6 +161,7 @@ class Dispatcher(object):
 
             >>> class Foo(Dispatcher):
             ...     _events_ = ['test_event']
+
             >>> class Bar(object):
             ...     def __init__(self):
             ...         self.got_foo_event = asyncio.Event()
@@ -169,11 +170,13 @@ class Dispatcher(object):
             ...         print('got foo!')
             ...     async def on_foo_test_event(self, *args, **kwargs):
             ...         self.got_foo_event.set()
+
+            >>> loop = asyncio.get_event_loop()
             >>> foo = Foo()
             >>> bar = Bar()
-            >>> loop = asyncio.get_event_loop()
             >>> foo.bind(test_event=bar.on_foo_test_event, __aio_loop__=loop)
             >>> fut = asyncio.ensure_future(bar.wait_for_foo())
+
             >>> foo.emit('test_event')
             >>> loop.run_until_complete(fut)
             got foo!
@@ -270,8 +273,10 @@ class Dispatcher(object):
 
         >>> class Foo(Dispatcher):
         ...     _events_ = ['my_event']
+
         >>> def on_my_event(value):
         ...     print(value)
+
         >>> foo = Foo()
         >>> foo.bind(my_event=on_my_event)
         >>> with foo.emission_lock('my_event'):

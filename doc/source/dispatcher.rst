@@ -10,8 +10,10 @@ Usage
 .. doctest:: dispatcher_basic
 
     >>> from pydispatch import Dispatcher
+
     >>> class MyEmitter(Dispatcher):
     ...     _events_ = ['on_state', 'new_data']
+
     >>> # An observer - could inherit from Dispatcher or any other class
     >>> class MyListener(object):
     ...     def on_new_data(self, *args, **kwargs):
@@ -19,12 +21,17 @@ Usage
     ...         print('I got data: {}'.format(data))
     ...     def on_emitter_state(self, *args, **kwargs):
     ...         print('emitter state changed')
+
     >>> emitter = MyEmitter()
     >>> listener = MyListener()
+
+    >>> # Bind to the "on_state" and "new_data" events of emitter
     >>> emitter.bind(on_state=listener.on_emitter_state)
     >>> emitter.bind(new_data=listener.on_new_data)
+
     >>> emitter.emit('new_data', data='foo')
     I got data: foo
+
     >>> emitter.emit('on_state')
     emitter state changed
 

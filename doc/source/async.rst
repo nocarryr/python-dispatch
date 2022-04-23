@@ -26,11 +26,13 @@ bind_async method
 
     >>> import asyncio
     >>> from pydispatch import Dispatcher
+
     >>> class MyEmitter(Dispatcher):
     ...     _events_ = ['on_state']
     ...     async def trigger(self):
     ...         await asyncio.sleep(1)
     ...         self.emit('on_state')
+
     >>> class MyAsyncListener(object):
     ...     def __init__(self):
     ...         self.event_received = asyncio.Event()
@@ -39,11 +41,14 @@ bind_async method
     ...         self.event_received.set()
     ...     async def wait_for_event(self):
     ...         await self.event_received.wait()
+
     >>> loop = asyncio.get_event_loop()
     >>> emitter = MyEmitter()
     >>> listener = MyAsyncListener()
+
     >>> # Pass the event loop as first argument to "bind_async"
     >>> emitter.bind_async(loop, on_state=listener.on_emitter_state)
+
     >>> loop.run_until_complete(emitter.trigger())
     >>> loop.run_until_complete(listener.wait_for_event())
     received on_state event
@@ -55,11 +60,13 @@ bind (with keyword argument)
 
     >>> import asyncio
     >>> from pydispatch import Dispatcher
+
     >>> class MyEmitter(Dispatcher):
     ...     _events_ = ['on_state']
     ...     async def trigger(self):
     ...         await asyncio.sleep(1)
     ...         self.emit('on_state')
+
     >>> class MyAsyncListener(object):
     ...     def __init__(self):
     ...         self.event_received = asyncio.Event()
@@ -68,11 +75,14 @@ bind (with keyword argument)
     ...         self.event_received.set()
     ...     async def wait_for_event(self):
     ...         await self.event_received.wait()
+
     >>> loop = asyncio.get_event_loop()
     >>> emitter = MyEmitter()
     >>> listener = MyAsyncListener()
+
     >>> # Pass the event loop using __aio_loop__
     >>> emitter.bind(on_state=listener.on_emitter_state, __aio_loop__=loop)
+
     >>> loop.run_until_complete(emitter.trigger())
     >>> loop.run_until_complete(listener.wait_for_event())
     received on_state event
@@ -99,6 +109,7 @@ This can also be done with :any:`Property` objects
 
     >>> import asyncio
     >>> from pydispatch import Dispatcher, Property
+
     >>> class MyEmitter(Dispatcher):
     ...     value = Property()
     ...     async def change_values(self):
@@ -106,6 +117,7 @@ This can also be done with :any:`Property` objects
     ...             await asyncio.sleep(.1)
     ...             self.value = i
     ...         return 'done'
+
     >>> class MyAsyncListener(object):
     ...     async def wait_for_values(self, emitter):
     ...         # Get the Event object for the Property
@@ -118,6 +130,7 @@ This can also be done with :any:`Property` objects
     ...             if value >= 4:
     ...                 break
     ...         return 'done'
+
     >>> loop = asyncio.get_event_loop()
     >>> emitter = MyEmitter()
     >>> listener = MyAsyncListener()

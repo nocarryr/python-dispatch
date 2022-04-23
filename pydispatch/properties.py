@@ -6,19 +6,23 @@ as events when their values change
 .. doctest:: properties_module
 
     >>> from pydispatch import Dispatcher, Property
+
     >>> class Foo(Dispatcher):
     ...     name = Property()
     ...     value = Property()
     ...     def __str__(self):
     ...         return self.__class__.__name__
+
     >>> class Listener(object):
     ...     def on_foo_name(self, instance, value, **kwargs):
     ...         print("{}'s name is {}".format(instance, value))
     ...     def on_foo_value(self, instance, value, **kwargs):
     ...         print('{} = {}'.format(instance, value))
+
     >>> foo_obj = Foo()
     >>> listener_obj = Listener()
     >>> foo_obj.bind(name=listener_obj.on_foo_name, value=listener_obj.on_foo_value)
+
     >>> foo_obj.name = 'bar'
     Foo's name is bar
     >>> foo_obj.value = 42
