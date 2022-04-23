@@ -1,0 +1,6 @@
+pytest
+pytest-asyncio
+pytest-cov
+pytest-doctestplus
+coveralls
+-r doc/requirements.txt

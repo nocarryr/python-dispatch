@@ -13,36 +13,40 @@ will be:
 Usage
 -----
 
-::
+.. doctest:: property_basic_dt
 
-    from pydispatch import Dispatcher, Property
+    >>> from pydispatch import Dispatcher, Property
 
-    class MyEmitter(Dispatcher):
-        name = Property()
-        value = Property()
+    >>> class MyEmitter(Dispatcher):
+    ...     name = Property()
+    ...     value = Property()
 
-    class MyListener(object):
-        def on_name(self, instance, value, **kwargs):
-            print('emitter name is {}'.format(value))
-        def on_value(self, instance, value, **kwargs):
-            print('emitter value is {}'.format(value))
+    >>> class MyListener(object):
+    ...     def on_name(self, instance, value, **kwargs):
+    ...         print('emitter name is {}'.format(value))
+    ...     def on_value(self, instance, value, **kwargs):
+    ...         print('emitter value is {}'.format(value))
 
-    emitter = MyEmitter()
-    listener = MyListener()
+    >>> emitter = MyEmitter()
+    >>> listener = MyListener()
 
-    emitter.bind(name=listener.on_name, value=listener.on_value)
+    >>> # Bind to the "name" and "value" properties of emitter
+    >>> emitter.bind(name=listener.on_name, value=listener.on_value)
 
-    emitter.name = 'foo'
-    # >>> emitter name is foo
-    emitter.value = 42
-    # >>> emitter value is 42
+    >>> # Set emitter.name property (triggering the on_name callback)
+    >>> emitter.name = 'foo'
+    emitter name is foo
 
-If the attribute is set to the same value, an event is not dispatched::
+    >>> # Set emitter.value (triggering the on_value callback)
+    >>> emitter.value = 42
+    emitter value is 42
 
-    emitter.value = 42
-    # No event
-    emitter.value = 43
-    # >>> emitter value is 43
+    >>> # If the property value assigned equals the current value,
+    >>> # the event isn't triggered.
+    >>> emitter.value = 42
+
+    >>> emitter.value = 43
+    emitter value is 43
 
 
 Container Properties
@@ -56,30 +60,51 @@ They will emit events when their contents change. Nesting is also supported,
 so even the contents of a :class:`list` or :class:`dict` anywhere inside of the
 structure can trigger an event.
 
-::
+.. doctest:: property_containers
 
-    from pydispatch import Dispatcher, ListProperty, DictProperty
+    >>> from pydispatch import Dispatcher, ListProperty, DictProperty
 
-    class MyEmitter(Dispatcher):
-        values = ListProperty()
-        data = DictProperty()
+    >>> class MyEmitter(Dispatcher):
+    ...     values = ListProperty()
+    ...     data = DictProperty()
 
-    emitter = MyEmitter()
+    >>> class MyListener(object):
+    ...     def on_values(self, instance, value, **kwargs):
+    ...         print('emitter.values = {}'.format(value))
+    ...     def on_data(self, instance, value, **kwargs):
+    ...         print('emitter.data = {}'.format(value))
 
-    emitter.values.append('foo')
-    print(emitter.values)
-    # >>> ['foo']
+    >>> emitter = MyEmitter()
+    >>> listener = MyListener()
 
-    emitter.values.extend(['bar', 'baz'])
-    print(emitter.values)
-    # >>> ['foo', 'bar', 'baz']
+    >>> # Bind to the "values" (list) and "data" (dict) properties of emitter
+    >>> emitter.bind(values=listener.on_values, data=listener.on_data)
 
-    emitter.data = {'foo':'bar'}
-    # or
-    emitter.data['foo'] = 'bar'
-    print(emitter.data)
-    # >>> {'foo':'bar'}
+    >>> emitter.values.append('foo')
+    emitter.values = ['foo']
 
-    emitter.data['fruit'] = {'apple':'red'}
-    emitter.data['fruit']['banana'] = 'yellow'
-    # event would be dispatched to listeners
+    >>> emitter.values.extend(['bar', 'baz'])
+    emitter.values = ['foo', 'bar', 'baz']
+
+    >>> # The property can be assigned directly
+    >>> emitter.data = {'foo':'bar'}
+    emitter.data = {'foo': 'bar'}
+
+    >>> # or using item assignment
+    >>> emitter.data['foo'] = 'baz'
+    emitter.data = {'foo': 'baz'}
+
+    >>> # also through the update() method
+    >>> emitter.data.update({'spam':'eggs'})
+    emitter.data = {'foo': 'baz', 'spam': 'eggs'}
+
+    >>> emitter.data.clear()
+    emitter.data = {}
+
+    >>> # Create a nested dict
+    >>> emitter.data['fruit'] = {'apple':'red'}
+    emitter.data = {'fruit': {'apple': 'red'}}
+
+    >>> # changes to the inner dict are propagated and dispatched
+    >>> emitter.data['fruit']['banana'] = 'yellow'
+    emitter.data = {'fruit': {'apple': 'red', 'banana': 'yellow'}}
