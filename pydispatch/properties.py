@@ -1,32 +1,32 @@
 """
 :class:`Property` objects can be defined on subclasses of
 :class:`~pydispatch.dispatch.Dispatcher` to create instance attributes that act
-as events when their values change::
+as events when their values change
 
-    from pydispatch import Dispatcher, Property
+.. doctest:: properties_module
 
-    class Foo(Dispatcher):
-        name = Property()
-        value = Property()
-    def __str__(self):
-        return self.__class__.__name__
+    >>> from pydispatch import Dispatcher, Property
 
-    class Listener(object):
-        def on_foo_name(self, instance, value, **kwargs):
-            print("{}'s name is {}".format(instance, value))
-        def on_foo_value(self, instance, value, **kwargs):
-            print('{} = {}'.format(instance, value))
+    >>> class Foo(Dispatcher):
+    ...     name = Property()
+    ...     value = Property()
+    ...     def __str__(self):
+    ...         return self.__class__.__name__
 
-    foo_obj = Foo()
-    listener_obj = Listener()
+    >>> class Listener(object):
+    ...     def on_foo_name(self, instance, value, **kwargs):
+    ...         print("{}'s name is {}".format(instance, value))
+    ...     def on_foo_value(self, instance, value, **kwargs):
+    ...         print('{} = {}'.format(instance, value))
 
-    foo_obj.bind(name=listener_obj.on_foo_name, value=listener_obj.on_foo_value)
+    >>> foo_obj = Foo()
+    >>> listener_obj = Listener()
+    >>> foo_obj.bind(name=listener_obj.on_foo_name, value=listener_obj.on_foo_value)
 
-    foo_obj.name = 'bar'
-    # Foo's name is bar
-
-    foo_obj.value = 42
-    # Foo = 42
+    >>> foo_obj.name = 'bar'
+    Foo's name is bar
+    >>> foo_obj.value = 42
+    Foo = 42
 
 Type checking is not enforced, so values can be any valid python type.
 Values are however checked for equality to avoid dispatching events for no

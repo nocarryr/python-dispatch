@@ -138,30 +138,29 @@ class Dispatcher(object):
             :func:`@asyncio.coroutine <asyncio.coroutine>`), but an event loop
             must be explicitly provided with the keyword
             argument ``"__aio_loop__"`` (an instance of
-            :class:`asyncio.BaseEventLoop`)::
+            :class:`asyncio.BaseEventLoop`)
 
-                import asyncio
-                from pydispatch import Dispatcher
+            >>> class Foo(Dispatcher):
+            ...     _events_ = ['test_event']
 
-                class Foo(Dispatcher):
-                    _events_ = ['test_event']
+            >>> class Bar(object):
+            ...     def __init__(self):
+            ...         self.got_foo_event = asyncio.Event()
+            ...     async def wait_for_foo(self):
+            ...         await self.got_foo_event.wait()
+            ...         print('got foo!')
+            ...     async def on_foo_test_event(self, *args, **kwargs):
+            ...         self.got_foo_event.set()
 
-                class Bar(object):
-                    def __init__(self):
-                        self.got_foo_event = asyncio.Event()
-                    async def wait_for_foo(self):
-                        await self.got_foo_event.wait()
-                        print('got foo!')
-                    async def on_foo_test_event(self, *args, **kwargs):
-                        self.got_foo_event.set()
+            >>> loop = asyncio.get_event_loop()
+            >>> foo = Foo()
+            >>> bar = Bar()
+            >>> foo.bind(test_event=bar.on_foo_test_event, __aio_loop__=loop)
+            >>> fut = asyncio.ensure_future(bar.wait_for_foo())
 
-                foo = Foo()
-                bar = Bar()
-
-                loop = asyncio.get_event_loop()
-                foo.bind(test_event=bar.on_foo_test_event, __aio_loop__=loop)
-
-                loop.run_until_complete(bar.wait_for_foo())
+            >>> foo.emit('test_event')
+            >>> loop.run_until_complete(fut)
+            got foo!
 
             This can also be done using :meth:`bind_async`.
 
@@ -251,22 +250,20 @@ class Dispatcher(object):
 
         The context manager returned will store the last event data called by
         :meth:`emit` and prevent callbacks until it exits. On exit, it will
-        dispatch the last event captured (if any)::
+        dispatch the last event captured (if any)
 
-            class Foo(Dispatcher):
-                _events_ = ['my_event']
+        >>> class Foo(Dispatcher):
+        ...     _events_ = ['my_event']
 
-            def on_my_event(value):
-                print(value)
+        >>> def on_my_event(value):
+        ...     print(value)
 
-            foo = Foo()
-            foo.bind(my_event=on_my_event)
-
-            with foo.emission_lock('my_event'):
-                foo.emit('my_event', 1)
-                foo.emit('my_event', 2)
-
-            >>> 2
+        >>> foo = Foo()
+        >>> foo.bind(my_event=on_my_event)
+        >>> with foo.emission_lock('my_event'):
+        ...     foo.emit('my_event', 1)
+        ...     foo.emit('my_event', 2)
+        2
 
         Args:
             name (str): The name of the :class:`Event` or
