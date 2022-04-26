@@ -134,19 +134,18 @@ class DispatcherPropertyDocumenter(AttributeDocumenter):
             prop_type = None
 
         self.add_line(f'   :propcls: {propcls}', sourcename)
-        prop_default = self.object.default
+        default = self.object.default
+        if isinstance(self.object, (DictProperty, ListProperty)) and not len(default):
+            pass
+        else:
+            default = inspect.object_description(default)
+            self.add_line(f'   :value: {default}', sourcename)
 
     def update_content(self, more_content: StringList) -> None:
         super().update_content(more_content)
         clsname = self.propcls.split('.')[-1]
         objref = f':py:class:`pydispatch.{clsname} <{self.propcls}>`'
-        default = self.object.default
-        s = f'``{self.object_name}`` is a {objref} object'
-        if isinstance(self.object, (DictProperty, ListProperty)) and not len(default):
-            s = f'{s}.'
-        else:
-            default = restify(self.object.default)
-            s = f'{s} and defaults to ``{default}``.'
+        s = f'``{self.object_name}`` is a {objref} object.'
         more_content.append(_(s), '')
         more_content.append('', '')
 

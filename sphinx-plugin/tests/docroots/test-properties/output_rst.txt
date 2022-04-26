@@ -5,11 +5,11 @@
    Look at ``foo``, ``bar`` and
    ``baz``
 
-   ``Property foo``
+   ``Property foo = False``
 
       Docstring for foo
 
-      ``foo`` is a ``pydispatch.Property`` object and defaults to ``False``.
+      ``foo`` is a ``pydispatch.Property`` object.
 
    ``DictProperty bar``
 
@@ -30,11 +30,11 @@
    Look at ``foo``, ``bar`` and
    ``baz``
 
-   ``Property foo: int``
+   ``Property foo: int = 0``
 
       Docstring for foo
 
-      ``foo`` is a ``pydispatch.Property`` object and defaults to ``0``.
+      ``foo`` is a ``pydispatch.Property`` object.
 
    ``DictProperty bar: Dict[str, the_module.TheClass]``
 
