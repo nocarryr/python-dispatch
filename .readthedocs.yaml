@@ -3,7 +3,7 @@ version: 2
 python:
   version: "3.8"
   install:
-    - doc/requirements.txt
+    - requirements: doc/requirements.txt
     - method: pip
       path: .
     - method: pip
