@@ -10,8 +10,8 @@ Installation
 Dependencies
 ------------
 
-* python-dispatch==|release|
-* Sphinx>=4.5
+* python-dispatch == |release|
+* Sphinx >= 4.5
 
 .. note::
 
