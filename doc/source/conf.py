@@ -17,8 +17,12 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 # import os
-# import sys
+import sys
 # sys.path.insert(0, os.path.abspath('.'))
+from pathlib import Path
+sphinx_plugin_root = Path(__file__).parent.resolve() / 'sphinx-plugin'
+example_root = sphinx_plugin_root / 'sphinx_autodoc_examples'
+sys.path.insert(0, str(example_root))
 
 from pydispatch import __version__
 # -- General configuration ------------------------------------------------
@@ -37,7 +41,9 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.doctest',
+    'sphinx_panels',
     'm2r2',
+    'pydispatch_sphinx',
 ]
 
 
@@ -364,4 +370,7 @@ texinfo_documents = [
 
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/': None}
+intersphinx_mapping = {
+    'python':('https://docs.python.org/', None),
+    'sphinx':('https://www.sphinx-doc.org/en/master/', None),
+}

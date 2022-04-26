@@ -7,10 +7,16 @@
 .. mdinclude:: ../../README.md
 
 .. toctree::
+   :caption: Contents
    :maxdepth: 3
 
    overview
    reference/index
+
+.. toctree::
+   :caption: Extensions
+
+   sphinx-plugin/index
 
 
 .. only:: html
