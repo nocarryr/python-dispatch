@@ -54,3 +54,16 @@ class TheOverridingSubClass(TheSubClass):
     def on_eggs(self, over_easy: bool, **kwargs):
         """Overriden documentation for :event:`TheSubClass.on_eggs` event"""
         pass
+
+class NonDispatcherClass:
+    """Docstring for NonDispatcherClass
+    """
+
+    def __init__(self, *args, **kwargs):
+        pass
+
+    on_foo: Event
+    """I should not be recognized by this extension"""
+
+    def on_bar(self):
+        """I should not be recognized by this extension"""

@@ -15,7 +15,7 @@ from sphinx.ext.autodoc import (
     annotation_option, bool_option,
 )
 
-from pydispatch import Event
+from pydispatch import Dispatcher, Event
 from pydispatch.properties import Property, DictProperty, ListProperty
 _Event_fullname = '.'.join([Event.__module__, Event.__qualname__])
 
@@ -23,7 +23,9 @@ logger = logging.getLogger(__name__)
 
 def has_event_name(member: tp.Any, membername: str, parent: ClassDocumenter) -> bool:
     objcls = parent.object
-    return membername in objcls._EVENTS_
+    if objcls is not Dispatcher and issubclass(objcls, Dispatcher):
+        return membername in objcls._EVENTS_
+    return False
 
 def update_event_content(object_name: str, more_content: StringList) -> None:
     objref = f':py:class:`pydispatch.Event <{_Event_fullname}>`'
@@ -46,6 +48,8 @@ class DispatcherEventAttributeDocumenter(AttributeDocumenter):
         cls, member: tp.Any, membername: str, isattr: bool, parent: tp.Any
     ) -> bool:
         if member is INSTANCEATTR and not isinstance(parent, ModuleDocumenter):
+            if parent.object is Dispatcher or not issubclass(parent.object, Dispatcher):
+                return False
             anno = get_type_hints(parent.object)
             obj_anno = anno.get(membername)
             if obj_anno is Event:

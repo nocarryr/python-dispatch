@@ -66,3 +66,15 @@
       Overriden documentation for ``TheSubClass.on_eggs`` event
 
       ``on_eggs`` is a `pydispatch.Event <{url}/reference/dispatch.html#pydispatch.dispatch.Event>`_ object.
+
+**class events_module.NonDispatcherClass(*args, **kwargs)**
+
+   Docstring for NonDispatcherClass
+
+   ``on_foo: `pydispatch.dispatch.Event <{url}/reference/dispatch.html#pydispatch.dispatch.Event>`_``
+
+      I should not be recognized by this extension
+
+   **on_bar()**
+
+      I should not be recognized by this extension
