@@ -1,10 +1,7 @@
 import typing as tp
-import pkg_resources
+import importlib.metadata
 
-try:
-    __version__ = pkg_resources.require('python-dispatch-sphinx')[0].version
-except: # pragma: no cover
-    __version__ = 'unknown'
+__version__ = importlib.metadata.version('python-dispatch-sphinx')
 
 from sphinx.application import Sphinx
 
