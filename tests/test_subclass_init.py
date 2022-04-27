@@ -1,6 +1,3 @@
-import math
-import time
-import warnings
 
 def test_dispatcher_construction():
     from pydispatch import Dispatcher, Property
@@ -20,15 +17,8 @@ def test_dispatcher_construction():
             'on_even_more_stuff', 'on_one_more_thing'
         ]
 
-    with warnings.catch_warnings(record=True) as w_list:
-        warnings.simplefilter("always")
-        a = A()
-        b = B()
-        for w in w_list:
-            # Check for PEP-0479 (StopIteration) issues
-            assert not issubclass(w.category, DeprecationWarning)
-            assert not issubclass(w.category, PendingDeprecationWarning)
-        assert len(w_list) == 0
+    a = A()
+    b = B()
 
     a_prop_names = {'foo', 'bar', 'baz'}
     a_event_names = {'on_stuff', 'on_more_stuff'}
