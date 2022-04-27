@@ -26,4 +26,4 @@ please see LICENSE file for details.
 
 
 .. _Sphinx: https://www.sphinx-doc.org
-.. _pydispatch: https://python-dispatch.readthedocs.io/en/latest/
+.. _python-dispatch: https://python-dispatch.readthedocs.io/en/latest/
