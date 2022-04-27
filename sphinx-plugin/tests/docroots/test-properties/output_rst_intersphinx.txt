@@ -1,0 +1,49 @@
+**class the_module.TheClass(*args, **kwargs)**
+
+   Docstring for TheClass
+
+   Look at ``foo``, ``bar`` and
+   ``baz``
+
+   ```Property <{url}/reference/properties.html#pydispatch.properties.Property>`_ foo = False``
+
+      Docstring for foo
+
+      ``foo`` is a `pydispatch.Property <{url}/reference/properties.html#pydispatch.properties.Property>`_ object.
+
+   ```DictProperty <{url}/reference/properties.html#pydispatch.properties.DictProperty>`_ bar``
+
+      Docstring for bar
+
+      ``bar`` is a `pydispatch.DictProperty <{url}/reference/properties.html#pydispatch.properties.DictProperty>`_ object.
+
+   ```ListProperty <{url}/reference/properties.html#pydispatch.properties.ListProperty>`_ baz``
+
+      Docstring for baz
+
+      ``baz`` is a `pydispatch.ListProperty <{url}/reference/properties.html#pydispatch.properties.ListProperty>`_ object.
+
+**class the_module.TheOtherClass(*args, **kwargs)**
+
+   Docstring for TheOtherClass
+
+   Look at ``foo``, ``bar`` and
+   ``baz``
+
+   ```Property <{url}/reference/properties.html#pydispatch.properties.Property>`_ foo: int = 0``
+
+      Docstring for foo
+
+      ``foo`` is a `pydispatch.Property <{url}/reference/properties.html#pydispatch.properties.Property>`_ object.
+
+   ```DictProperty <{url}/reference/properties.html#pydispatch.properties.DictProperty>`_ bar: Dict[str, the_module.TheClass]``
+
+      Docstring for bar
+
+      ``bar`` is a `pydispatch.DictProperty <{url}/reference/properties.html#pydispatch.properties.DictProperty>`_ object.
+
+   ```ListProperty <{url}/reference/properties.html#pydispatch.properties.ListProperty>`_ baz: List[str]``
+
+      Docstring for baz
+
+      ``baz`` is a `pydispatch.ListProperty <{url}/reference/properties.html#pydispatch.properties.ListProperty>`_ object.

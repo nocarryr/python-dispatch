@@ -1,0 +1,12 @@
+version: 2
+
+python:
+  version: "3.8"
+  install:
+    - requirements: doc/requirements.txt
+    - method: pip
+      path: .
+    - method: pip
+      path: sphinx-plugin
+sphinx:
+  configuration: doc/source/conf.py

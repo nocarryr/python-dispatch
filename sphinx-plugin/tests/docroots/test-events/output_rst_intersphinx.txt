@@ -1,0 +1,80 @@
+**class events_module.TheClass(*args, **kwargs)**
+
+   Docstring for TheClass
+
+   Look at ``on_foo``, ``on_bar`` and
+   ``on_baz``
+
+   ``a_normal_attribute: str``
+
+      Documentation for a_normal_attribute
+
+   ```Event <{url}/reference/dispatch.html#pydispatch.dispatch.Event>`_ on_foo``
+
+      Documentation for on_foo event
+
+      ``on_foo`` is a `pydispatch.Event <{url}/reference/dispatch.html#pydispatch.dispatch.Event>`_ object.
+
+   ```Event <{url}/reference/dispatch.html#pydispatch.dispatch.Event>`_ on_bar``
+
+      Documentation for on_bar event
+
+      ``on_bar`` is a `pydispatch.Event <{url}/reference/dispatch.html#pydispatch.dispatch.Event>`_ object.
+
+   ```Event <{url}/reference/dispatch.html#pydispatch.dispatch.Event>`_ on_baz(name: str, value: int, **kwargs)``
+
+      Documentation for on_baz event
+
+      ``on_baz`` is a `pydispatch.Event <{url}/reference/dispatch.html#pydispatch.dispatch.Event>`_ object.
+
+**class events_module.TheSubClass(*args, **kwargs)**
+
+   Docstring for TheSubClass
+
+   Look at ``on_spam`` and ``on_eggs``
+
+   ```Event <{url}/reference/dispatch.html#pydispatch.dispatch.Event>`_ on_spam``
+
+      Documentation for on_spam event
+
+      ``on_spam`` is a `pydispatch.Event <{url}/reference/dispatch.html#pydispatch.dispatch.Event>`_ object.
+
+   ```Event <{url}/reference/dispatch.html#pydispatch.dispatch.Event>`_ on_eggs(scrambled: bool, **kwargs)``
+
+      Documentation for on_eggs event
+
+      ``on_eggs`` is a `pydispatch.Event <{url}/reference/dispatch.html#pydispatch.dispatch.Event>`_ object.
+
+   **a_normal_method(value: int) -> int**
+
+      Documentation for a_normal_method
+
+**class events_module.TheOverridingSubClass(*args, **kwargs)**
+
+   Docstring for TheOverridingSubClass
+
+   I override docstrings for ``on_foo`` and ``on_eggs``
+
+   ```Event <{url}/reference/dispatch.html#pydispatch.dispatch.Event>`_ on_foo(state: bool, **kwargs)``
+
+      Overriden documentation for ``TheClass.on_foo`` event
+
+      ``on_foo`` is a `pydispatch.Event <{url}/reference/dispatch.html#pydispatch.dispatch.Event>`_ object.
+
+   ```Event <{url}/reference/dispatch.html#pydispatch.dispatch.Event>`_ on_eggs(over_easy: bool, **kwargs)``
+
+      Overriden documentation for ``TheSubClass.on_eggs`` event
+
+      ``on_eggs`` is a `pydispatch.Event <{url}/reference/dispatch.html#pydispatch.dispatch.Event>`_ object.
+
+**class events_module.NonDispatcherClass(*args, **kwargs)**
+
+   Docstring for NonDispatcherClass
+
+   ``on_foo: `pydispatch.dispatch.Event <{url}/reference/dispatch.html#pydispatch.dispatch.Event>`_``
+
+      I should not be recognized by this extension
+
+   **on_bar()**
+
+      I should not be recognized by this extension

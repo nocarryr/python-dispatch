@@ -17,8 +17,12 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 # import os
-# import sys
+import sys
 # sys.path.insert(0, os.path.abspath('.'))
+from pathlib import Path
+sphinx_plugin_root = Path(__file__).parent.resolve() / 'sphinx-plugin'
+example_root = sphinx_plugin_root / 'sphinx_autodoc_examples'
+sys.path.insert(0, str(example_root))
 
 from pydispatch import __version__
 # -- General configuration ------------------------------------------------
@@ -37,7 +41,9 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.doctest',
+    'sphinx_panels',
     'm2r2',
+    'pydispatch_sphinx',
 ]
 
 
@@ -125,7 +131,7 @@ add_module_names = False
 # show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+# pygments_style = 'sphinx'
 
 # A list of ignored prefixes for module index sorting.
 # modindex_common_prefix = []
@@ -142,15 +148,12 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'furo'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-html_theme_options = {
-    'collapse_navigation':False,
-}
 
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
@@ -179,6 +182,7 @@ html_theme_options = {
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+html_css_files = ['custom.css']
 
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied
@@ -364,4 +368,7 @@ texinfo_documents = [
 
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/': None}
+intersphinx_mapping = {
+    'python':('https://docs.python.org/', None),
+    'sphinx':('https://www.sphinx-doc.org/en/master/', None),
+}

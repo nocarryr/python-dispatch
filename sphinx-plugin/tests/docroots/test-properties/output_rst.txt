@@ -1,0 +1,49 @@
+**class the_module.TheClass(*args, **kwargs)**
+
+   Docstring for TheClass
+
+   Look at ``foo``, ``bar`` and
+   ``baz``
+
+   ``Property foo = False``
+
+      Docstring for foo
+
+      ``foo`` is a ``pydispatch.Property`` object.
+
+   ``DictProperty bar``
+
+      Docstring for bar
+
+      ``bar`` is a ``pydispatch.DictProperty`` object.
+
+   ``ListProperty baz``
+
+      Docstring for baz
+
+      ``baz`` is a ``pydispatch.ListProperty`` object.
+
+**class the_module.TheOtherClass(*args, **kwargs)**
+
+   Docstring for TheOtherClass
+
+   Look at ``foo``, ``bar`` and
+   ``baz``
+
+   ``Property foo: int = 0``
+
+      Docstring for foo
+
+      ``foo`` is a ``pydispatch.Property`` object.
+
+   ``DictProperty bar: Dict[str, the_module.TheClass]``
+
+      Docstring for bar
+
+      ``bar`` is a ``pydispatch.DictProperty`` object.
+
+   ``ListProperty baz: List[str]``
+
+      Docstring for baz
+
+      ``baz`` is a ``pydispatch.ListProperty`` object.

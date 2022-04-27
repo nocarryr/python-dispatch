@@ -12,5 +12,5 @@ if sys.version_info < (3, 6): # pragma: no cover
                   'After version 0.1.x, `python-dispatch` will only support Python 3.6 or greater.',
                   UserWarning)
 
-from pydispatch.dispatch import Dispatcher
+from pydispatch.dispatch import Dispatcher, Event
 from pydispatch.properties import *

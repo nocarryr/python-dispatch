@@ -25,9 +25,13 @@ jobs:
         python -m pip install --upgrade pip setuptools wheel
         pip install -r requirements-dev.txt
         pip install -e .
-    - name: Test with pytest
+        pip install -e sphinx-plugin
+    - name: Test python-dispatch
       run: |
-        py.test --cov-config=.coveragerc --cov=pydispatch tests pydispatch doc README.md
+        py.test --cov --cov-config=.coveragerc tests pydispatch doc README.md
+    - name: Test python-dispatch-sphinx
+      run: |
+        py.test --cov --cov-append --cov-config=sphinx-plugin/.coveragerc sphinx-plugin/tests
     - name: Upload to Coveralls
       run: coveralls --service=github
       env:
