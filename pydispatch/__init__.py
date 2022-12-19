@@ -1,9 +1,12 @@
 import sys
 import warnings
-import pkg_resources
+try:
+    import importlib.metadata as importlib_metadata
+except ImportError:
+    import importlib_metadata
 
 try:
-    __version__ = pkg_resources.require('python-dispatch')[0].version
+    __version__ = importlib_metadata.version('python-dispatch')
 except: # pragma: no cover
     __version__ = 'unknown'
 
