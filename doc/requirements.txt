@@ -1,4 +1,4 @@
-Sphinx==4.5.0
+sphinx>=4.5,<5
 sphinx_rtd_theme
 m2r2
 furo
