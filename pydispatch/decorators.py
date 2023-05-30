@@ -72,17 +72,14 @@ def receiver(
 
         Receiving multiple events
 
-        >>> @pydispatch.receiver(['foo', 'bar', 'baz'])
-        ... def on_foobarbaz(value, **kwargs):
-        ...     print(f'on_foobarbaz: "{value}"')
+        >>> @pydispatch.receiver(['event_one', 'event_two'], auto_register=True)
+        ... def on_event_one_or_two(value, **kwargs):
+        ...     print(value)
 
-        >>> pydispatch.emit('foo', 1)
-        on_foo: "1"
-        on_foobarbaz: "1"
-
-        >>> pydispatch.emit('bar', 2)
-        on_bar: "2"
-        on_foobarbaz: "2"
+        >>> pydispatch.emit('event_one', 1)
+        1
+        >>> pydispatch.emit('event_two', 2)
+        2
 
 
     Arguments:
