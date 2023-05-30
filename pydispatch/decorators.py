@@ -1,5 +1,4 @@
-from __future__ import annotations
-from typing import Iterable, Iterator, Callable
+from typing import Union, Iterable, Iterator, Callable
 import asyncio
 
 from .dispatch import DoesNotExistError, _GLOBAL_DISPATCHER
@@ -33,7 +32,7 @@ _CACHED_CALLBACKS = CallbackCache()
 
 
 def receiver(
-    event_name: str|Iterable[str],
+    event_name: Union[str, Iterable[str]],
     cache: bool = False,
     auto_register: bool = False
 ):
