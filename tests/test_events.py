@@ -200,6 +200,14 @@ def test_bind_and_emit_unregistered():
         sender.emit('foo')
     assert '"foo"' in str(excinfo.value)
 
+    with pytest.raises(DoesNotExistError) as excinfo:
+        e = sender.get_dispatcher_event('foo')
+    assert '"foo"' in str(excinfo.value)
+
+    with pytest.raises(DoesNotExistError) as excinfo:
+        lock = sender.emission_lock('foo')
+    assert '"foo"' in str(excinfo.value)
+
 def test_register_existing_event():
     from pydispatch import Dispatcher, EventExistsError
 

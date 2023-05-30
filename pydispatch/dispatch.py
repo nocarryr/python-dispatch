@@ -316,11 +316,21 @@ class Dispatcher(object):
         Returns:
             The :class:`Event` instance for the event or property definition
 
+        Raises:
+            DoesNotExistError: If no event or property with the given name exists
+
+        .. versionchanged:: 0.2.2
+            :class:`DoesNotExistError` is now raised if the event or property
+            does not exist
+
         .. versionadded:: 0.1.0
         """
         e = self.__property_events.get(name)
         if e is None:
-            e = self.__events[name]
+            try:
+                e = self.__events[name]
+            except KeyError:
+                raise DoesNotExistError(name)
         return e
     def emission_lock(self, name):
         """Holds emission of events and dispatches the last event on release
@@ -356,9 +366,14 @@ class Dispatcher(object):
             The context manager is re-entrant, meaning that multiple calls to
             this method within nested context scopes are possible.
 
+        Raises:
+            DoesNotExistError: If no event or property with the given name exists
+
+        .. versionchanged:: 0.2.2
+            :class:`DoesNotExistError` is now raised if the event or property
+            does not exist
+
         .. _PEP 492: https://www.python.org/dev/peps/pep-0492/#asynchronous-context-managers-and-async-with
         """
-        e = self.__property_events.get(name)
-        if e is None:
-            e = self.__events[name]
+        e = self.get_dispatcher_event(name)
         return e.emission_lock
