@@ -11,6 +11,47 @@ from pydispatch.aioutils import AioWeakMethodContainer, AioEventWaiters
 
 
 
+class DoesNotExistError(KeyError):
+    """Raised when binding to an :class:`Event` or :class:`~.properties.Property`
+    that does not exist
+
+    .. versionadded:: 0.2.2
+    """
+    def __init__(self, name):
+        self.name = name
+
+    def __str__(self):
+        return f'Event "{self.name}" not registered'
+
+
+class ExistsError(RuntimeError):
+    """Raised when registering an event name that already exists
+    as either a normal :class:`Event` or :class:`~.properies.Property`
+
+    .. versionadded:: 0.2.2
+    """
+    def __init__(self, name):
+        self.name = name
+
+    def __str__(self):
+        return f'"{self.name}" already exists'
+
+class EventExistsError(ExistsError):
+    """Raised when registering an event name that already exists
+    as an :class:`Event`
+
+    .. versionadded:: 0.2.2
+    """
+
+
+class PropertyExistsError(ExistsError):
+    """Raised when registering an event name that already exists
+    as a :class:`~.properies.Property`
+
+    .. versionadded:: 0.2.2
+    """
+
+
 class Event(object):
     """Holds references to event names and subscribed listeners
 
@@ -108,10 +149,20 @@ class Dispatcher(object):
 
         Args:
             *names (str): Name or names of the events to register
+
+        Raises:
+            EventExistsError: If an event with the given name already exists
+            PropertyExistsError: If a property with the given name already exists
+
+        .. versionchanged:: 0.2.2
+            :class:`ExistsError` exceptions are raised when attempting to
+            register an event or property that already exists
         """
         for name in names:
             if name in self.__events:
-                continue
+                raise EventExistsError(name)
+            elif name in self.__property_events:
+                raise PropertyExistsError(name)
             self.__events[name] = Event(name)
     def bind(self, **kwargs):
         """Subscribes to events or to :class:`~pydispatch.properties.Property` updates
@@ -164,6 +215,14 @@ class Dispatcher(object):
 
             This can also be done using :meth:`bind_async`.
 
+            Raises:
+                DoesNotExistError: If attempting to bind to an event or
+                    property that has not been registered
+
+            .. versionchanged:: 0.2.2
+                :class:`DoesNotExistError` is now raised when binding to
+                non-existent events or properties
+
             .. versionadded:: 0.1.0
 
         """
@@ -174,7 +233,10 @@ class Dispatcher(object):
             if name in props:
                 e = props[name]
             else:
-                e = events[name]
+                try:
+                    e = events[name]
+                except KeyError:
+                    raise DoesNotExistError(name)
             e.add_listener(cb, __aio_loop__=aio_loop)
     def unbind(self, *args):
         """Unsubscribes from events or :class:`~pydispatch.properties.Property` updates
@@ -224,10 +286,21 @@ class Dispatcher(object):
             name (str): The name of the :class:`Event` to dispatch
             *args (Optional): Positional arguments to be sent to listeners
             **kwargs (Optional): Keyword arguments to be sent to listeners
+
+        Raises:
+            DoesNotExistError: If attempting to emit an event or
+                property that has not been registered
+
+        .. versionchanged:: 0.2.2
+            :class:`DoesNotExistError` is now raised if the event or property
+            does not exist
         """
         e = self.__property_events.get(name)
         if e is None:
-            e = self.__events[name]
+            try:
+                e = self.__events[name]
+            except KeyError:
+                raise DoesNotExistError(name)
         return e(*args, **kwargs)
     def get_dispatcher_event(self, name):
         """Retrieves an Event object by name
