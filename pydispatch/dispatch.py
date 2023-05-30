@@ -9,6 +9,10 @@ from pydispatch.properties import Property
 import asyncio
 from pydispatch.aioutils import AioWeakMethodContainer, AioEventWaiters
 
+__all__ = (
+    'DoesNotExistError', 'ExistsError', 'EventExistsError',
+    'PropertyExistsError', 'Event', 'Dispatcher',
+)
 
 
 class DoesNotExistError(KeyError):
