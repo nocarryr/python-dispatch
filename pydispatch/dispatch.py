@@ -377,3 +377,9 @@ class Dispatcher(object):
         """
         e = self.get_dispatcher_event(name)
         return e.emission_lock
+
+
+class _GlobalDispatcher(Dispatcher):
+    pass
+
+_GLOBAL_DISPATCHER = _GlobalDispatcher()

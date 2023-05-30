@@ -8,3 +8,6 @@ Reference
     properties
     utils
     aioutils
+
+.. automodule:: pydispatch
+    :members:

@@ -16,4 +16,31 @@ if sys.version_info < (3, 6): # pragma: no cover
                   UserWarning)
 
 from pydispatch.dispatch import *
+from pydispatch.dispatch import _GLOBAL_DISPATCHER
 from pydispatch.properties import *
+
+
+def register_event(*names):
+    _GLOBAL_DISPATCHER.register_event(*names)
+
+register_event.__doc__ = Dispatcher.register_event.__doc__
+
+def bind(**kwargs):
+    _GLOBAL_DISPATCHER.bind(**kwargs)
+bind.__doc__ = Dispatcher.bind.__doc__
+
+def unbind(*args):
+    _GLOBAL_DISPATCHER.unbind(*args)
+unbind.__doc__ = Dispatcher.unbind.__doc__
+
+def bind_async(loop, **kwargs):
+    _GLOBAL_DISPATCHER.bind_async(loop, **kwargs)
+bind_async.__doc__ = Dispatcher.bind_async.__doc__
+
+def emit(name, *args, **kwargs):
+    return _GLOBAL_DISPATCHER.emit(name, *args, **kwargs)
+emit.__doc__ = Dispatcher.emit.__doc__
+
+def get_dispatcher_event(name):
+    return _GLOBAL_DISPATCHER.get_dispatcher_event(name)
+get_dispatcher_event.__doc__ = Dispatcher.get_dispatcher_event.__doc__
