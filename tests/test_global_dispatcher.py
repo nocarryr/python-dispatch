@@ -14,7 +14,6 @@ def dispatcher_cleanup():
 def test_receiver_decorator(dispatcher_cleanup):
 
     pydispatch.register_event('foo', 'bar')
-    print(f'{pydispatch._GLOBAL_DISPATCHER._Dispatcher__events=}')
 
     results = {'foo':[], 'bar':[], 'foo_bar':[]}
     expected = {'foo':[], 'bar':[], 'foo_bar':[]}
