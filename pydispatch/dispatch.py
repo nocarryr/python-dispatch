@@ -195,6 +195,8 @@ class Dispatcher(object):
             argument ``"__aio_loop__"`` (an instance of
             :class:`asyncio.BaseEventLoop`)
 
+            >>> import asyncio
+
             >>> class Foo(Dispatcher):
             ...     _events_ = ['test_event']
 
