@@ -9,6 +9,12 @@ def get_method_vars(m):
     obj = m.__self__
     return f, obj
 
+def isfunction(m):
+    return isinstance(m, types.FunctionType)
+
+def ismethod(m):
+    return isinstance(m, types.MethodType)
+
 def iscoroutinefunction(obj):
     return asyncio.iscoroutinefunction(obj)
 
@@ -28,7 +34,7 @@ class WeakMethodContainer(weakref.WeakValueDictionary):
         Args:
             m: The instance method or function to store
         """
-        if isinstance(m, types.FunctionType):
+        if isfunction(m):
             self['function', id(m)] = m
         else:
             f, obj = get_method_vars(m)
@@ -40,7 +46,7 @@ class WeakMethodContainer(weakref.WeakValueDictionary):
         Args:
             m: The instance method or function to remove
         """
-        if isinstance(m, types.FunctionType) and not iscoroutinefunction(m):
+        if isfunction(m):
             wrkey = ('function', id(m))
         else:
             f, obj = get_method_vars(m)
