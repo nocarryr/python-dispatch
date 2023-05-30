@@ -1,3 +1,4 @@
+import pytest
 
 def test_basic(listener, sender):
     sender.register_event('on_test_a')
@@ -179,3 +180,52 @@ def test_emission_lock(listener, sender):
             sender.emit('on_test', 'inner')
     assert len(listener.received_event_data) == 1
     assert listener.received_event_data[0]['args'] == ('inner', )
+
+
+def test_bind_and_emit_unregistered():
+    from pydispatch import Dispatcher, DoesNotExistError
+
+    class Sender(Dispatcher):
+        pass
+
+    def callback(*args, **kwargs):
+        pass
+
+    sender = Sender()
+    with pytest.raises(DoesNotExistError) as excinfo:
+        sender.bind(foo=callback)
+    assert '"foo"' in str(excinfo.value)
+
+    with pytest.raises(DoesNotExistError) as excinfo:
+        sender.emit('foo')
+    assert '"foo"' in str(excinfo.value)
+
+    with pytest.raises(DoesNotExistError) as excinfo:
+        e = sender.get_dispatcher_event('foo')
+    assert '"foo"' in str(excinfo.value)
+
+    with pytest.raises(DoesNotExistError) as excinfo:
+        lock = sender.emission_lock('foo')
+    assert '"foo"' in str(excinfo.value)
+
+def test_register_existing_event():
+    from pydispatch import Dispatcher, EventExistsError
+
+    class Sender(Dispatcher):
+        _events_ = ['on_foo']
+
+    sender = Sender()
+    with pytest.raises(EventExistsError) as excinfo:
+        sender.register_event('on_foo')
+    assert '"on_foo"' in str(excinfo.value)
+
+def test_register_existing_property():
+    from pydispatch import Dispatcher, Property, PropertyExistsError
+
+    class Sender(Dispatcher):
+        foo = Property()
+
+    sender = Sender()
+    with pytest.raises(PropertyExistsError) as excinfo:
+        sender.register_event('foo')
+    assert '"foo"' in str(excinfo.value)
