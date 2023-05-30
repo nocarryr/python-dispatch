@@ -50,7 +50,7 @@ class EventExistsError(ExistsError):
 
 class PropertyExistsError(ExistsError):
     """Raised when registering an event name that already exists
-    as a :class:`~.properies.Property`
+    as a :class:`~.properties.Property`
 
     .. versionadded:: 0.2.2
     """
