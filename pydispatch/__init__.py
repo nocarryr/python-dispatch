@@ -18,10 +18,13 @@ if sys.version_info < (3, 6): # pragma: no cover
 from pydispatch.dispatch import *
 from pydispatch.dispatch import _GLOBAL_DISPATCHER
 from pydispatch.properties import *
+from pydispatch import decorators
+from pydispatch.decorators import *
 
 
 def register_event(*names):
     _GLOBAL_DISPATCHER.register_event(*names)
+    decorators._post_register_hook(*names)
 
 register_event.__doc__ = Dispatcher.register_event.__doc__
 

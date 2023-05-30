@@ -6,6 +6,7 @@ Reference
 
     dispatch
     properties
+    decorators
     utils
     aioutils
 

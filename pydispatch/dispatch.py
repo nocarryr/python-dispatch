@@ -380,6 +380,12 @@ class Dispatcher(object):
 
 
 class _GlobalDispatcher(Dispatcher):
-    pass
+    def _has_event(self, name):
+        try:
+            self.get_dispatcher_event(name)
+        except KeyError:
+            return False
+        return True
+
 
 _GLOBAL_DISPATCHER = _GlobalDispatcher()
