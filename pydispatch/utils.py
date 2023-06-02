@@ -12,9 +12,6 @@ def get_method_vars(m):
 def isfunction(m):
     return isinstance(m, types.FunctionType)
 
-def ismethod(m):
-    return isinstance(m, types.MethodType)
-
 def iscoroutinefunction(obj):
     return asyncio.iscoroutinefunction(obj)
 
