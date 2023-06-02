@@ -77,6 +77,42 @@ def test_receiver_decorator_unregistered_auto_register(dispatcher_cleanup):
 
     assert results == [((1,), {})]
 
+def test_receiver_decorator_registered_auto_register(dispatcher_cleanup):
+
+    with pytest.raises(pydispatch.DoesNotExistError):
+        pydispatch.get_dispatcher_event('foo')
+
+    pydispatch.register_event('foo')
+
+    assert pydispatch.get_dispatcher_event('foo') is not None
+
+    results = []
+
+    @receiver('foo', auto_register=True)
+    def on_foo(*args, **kwargs):
+        results.append((args, kwargs))
+
+    pydispatch.emit('foo', 2)
+
+    assert results == [((2,), {})]
+
+def test_receiver_decorator_registered_cache(dispatcher_cleanup):
+    with pytest.raises(pydispatch.DoesNotExistError):
+        pydispatch.get_dispatcher_event('foo')
+
+    pydispatch.register_event('foo')
+    assert pydispatch.get_dispatcher_event('foo') is not None
+
+    results = []
+
+    @receiver('foo', cache=True)
+    def on_foo(*args, **kwargs):
+        results.append((args, kwargs))
+
+    pydispatch.emit('foo', 3)
+
+    assert results == [((3,), {})]
+
 @pytest.mark.asyncio
 async def test_decorator_async_cache(dispatcher_cleanup):
     results = []
