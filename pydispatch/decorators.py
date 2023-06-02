@@ -1,6 +1,7 @@
 from typing import Union, Iterable, Iterator, Callable
 import asyncio
 
+import pydispatch
 from .dispatch import DoesNotExistError, _GLOBAL_DISPATCHER
 from .utils import iscoroutinefunction, WeakMethodContainer
 
@@ -103,21 +104,18 @@ def receiver(
         else:
             event_names = event_name
         bind_kwargs = {ev:func for ev in event_names}
-        try:
-            if is_async:
-                bind_kwargs['__aio_loop__'] = asyncio.get_event_loop()
-            _GLOBAL_DISPATCHER.bind(**bind_kwargs)
-        except DoesNotExistError:
-            if not any([cache, auto_register]):
-                raise
+        if auto_register or cache:
             for name in event_names:
                 if not _GLOBAL_DISPATCHER._has_event(name):
                     if auto_register:
-                        _GLOBAL_DISPATCHER.register_event(name)
+                        pydispatch.register_event(name)
                     elif cache:
                         _CACHED_CALLBACKS.add(name, func)
-            if auto_register:
-                _GLOBAL_DISPATCHER.bind(**bind_kwargs)
+                        del bind_kwargs[name]
+        if len(bind_kwargs):
+            if is_async:
+                bind_kwargs['__aio_loop__'] = asyncio.get_event_loop()
+            pydispatch.bind(**bind_kwargs)
         return func
     return _decorator
 
@@ -131,5 +129,7 @@ def _post_register_hook(*names):
         bind_kwargs = {name:cb for cb in _CACHED_CALLBACKS.get(name)}
         is_async = any((iscoroutinefunction(cb) for cb in bind_kwargs.values()))
         if is_async:
-            bind_kwargs['__aio_loop__'] = asyncio.get_event_loop()
-        _GLOBAL_DISPATCHER.bind(**bind_kwargs)
+            loop = asyncio.get_event_loop()
+            pydispatch.bind_async(loop, **bind_kwargs)
+        else:
+            pydispatch.bind(**bind_kwargs)
