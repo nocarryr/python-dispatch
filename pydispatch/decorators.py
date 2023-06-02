@@ -93,6 +93,7 @@ def receiver(
             it will be registered on the :ref:`global-dispatcher`.
             (Default is ``False``)
 
+    .. versionadded:: 0.2.2
     """
     def _decorator(func: Callable):
         is_async = iscoroutinefunction(func)
