@@ -1,4 +1,4 @@
-pydispatch.utils module
+:mod:`pydispatch.utils`
 =======================
 
 .. automodule:: pydispatch.utils

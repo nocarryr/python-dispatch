@@ -1,4 +1,4 @@
-pydispatch.aioutils module
+:mod:`pydispatch.aioutils`
 ==========================
 
 .. automodule:: pydispatch.aioutils

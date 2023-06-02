@@ -1,4 +1,4 @@
-pydispatch.decorators module
+:mod:`pydispatch.decorators`
 ============================
 
 .. automodule:: pydispatch.decorators

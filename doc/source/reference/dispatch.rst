@@ -1,4 +1,4 @@
-pydispatch.dispatch module
+:mod:`pydispatch.dispatch`
 ==========================
 
 .. automodule:: pydispatch.dispatch
