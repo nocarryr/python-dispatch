@@ -23,27 +23,51 @@ from pydispatch.decorators import *
 
 
 def register_event(*names):
+    """Register event (or events) on the :ref:`global-dispatcher`
+
+    .. seealso:: :meth:`.dispatcher.Dispatcher.register_event`
+    .. versionadded:: 0.2.2
+    """
     _GLOBAL_DISPATCHER.register_event(*names)
     decorators._post_register_hook(*names)
 
-register_event.__doc__ = Dispatcher.register_event.__doc__
-
 def bind(**kwargs):
+    """Subscribe callbacks to events on the :ref:`global-dispatcher`
+
+    .. seealso:: :meth:`.dispatcher.Dispatcher.bind`
+    .. versionadded:: 0.2.2
+    """
     _GLOBAL_DISPATCHER.bind(**kwargs)
-bind.__doc__ = Dispatcher.bind.__doc__
 
 def unbind(*args):
+    """Unbind callbacks from events on the :ref:`global-dispatcher`
+
+    .. seealso:: :meth:`.dispatcher.Dispatcher.unbind`
+    .. versionadded:: 0.2.2
+    """
     _GLOBAL_DISPATCHER.unbind(*args)
-unbind.__doc__ = Dispatcher.unbind.__doc__
 
 def bind_async(loop, **kwargs):
+    """Bind async callbacks to events on the :ref:`global-dispatcher`
+
+    .. seealso:: :meth:`.dispatcher.Dispatcher.bind_async`
+    .. versionadded:: 0.2.2
+    """
     _GLOBAL_DISPATCHER.bind_async(loop, **kwargs)
-bind_async.__doc__ = Dispatcher.bind_async.__doc__
 
 def emit(name, *args, **kwargs):
+    """Dispatch the event with the given *name* on the :ref:`global-dispatcher`
+
+    .. seealso:: :meth:`.dispatcher.Dispatcher.emit`
+    .. versionadded:: 0.2.2
+    """
     return _GLOBAL_DISPATCHER.emit(name, *args, **kwargs)
-emit.__doc__ = Dispatcher.emit.__doc__
 
 def get_dispatcher_event(name):
+    """Retrieve the :class:`~.dispatch.Event` object by the given name
+    from the :ref:`global-dispatcher`
+
+    .. seealso:: :meth:`.dispatcher.Dispatcher.get_dispatcher_event`
+    .. versionadded:: 0.2.2
+    """
     return _GLOBAL_DISPATCHER.get_dispatcher_event(name)
-get_dispatcher_event.__doc__ = Dispatcher.get_dispatcher_event.__doc__
