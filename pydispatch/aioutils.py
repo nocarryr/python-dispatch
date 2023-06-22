@@ -5,6 +5,7 @@ from _weakrefset import _IterationGuard
 
 from pydispatch.utils import (
     WeakMethodContainer,
+    isfunction,
     get_method_vars,
     _remove_dead_weakref,
 )
@@ -200,9 +201,13 @@ class AioWeakMethodContainer(WeakMethodContainer):
                 on which to schedule callbacks
             callback: The :term:`coroutine function` to add
         """
-        f, obj = get_method_vars(callback)
-        wrkey = (f, id(obj))
-        self[wrkey] = obj
+        if isfunction(callback):
+            wrkey = ('function', id(callback))
+            self[wrkey] = callback
+        else:
+            f, obj = get_method_vars(callback)
+            wrkey = (f, id(obj))
+            self[wrkey] = obj
         self.event_loop_map[wrkey] = loop
     def iter_instances(self):
         """Iterate over the stored objects
@@ -221,8 +226,11 @@ class AioWeakMethodContainer(WeakMethodContainer):
         """
         for wrkey, obj in self.iter_instances():
             f, obj_id = wrkey
+            if f == 'function':
+                m = self[wrkey]
+            else:
+                m = getattr(obj, f.__name__)
             loop = self.event_loop_map[wrkey]
-            m = getattr(obj, f.__name__)
             yield loop, m
     def _on_weakref_fin(self, key):
         if key in self.event_loop_map:

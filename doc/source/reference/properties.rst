@@ -1,4 +1,4 @@
-pydispatch.properties module
+:mod:`pydispatch.properties`
 ============================
 
 .. automodule:: pydispatch.properties

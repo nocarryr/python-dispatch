@@ -7,3 +7,4 @@ Overview
     dispatcher
     properties
     async
+    global-dispatcher

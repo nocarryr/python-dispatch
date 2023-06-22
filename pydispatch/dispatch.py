@@ -195,6 +195,8 @@ class Dispatcher(object):
             argument ``"__aio_loop__"`` (an instance of
             :class:`asyncio.BaseEventLoop`)
 
+            >>> import asyncio
+
             >>> class Foo(Dispatcher):
             ...     _events_ = ['test_event']
 
@@ -377,3 +379,15 @@ class Dispatcher(object):
         """
         e = self.get_dispatcher_event(name)
         return e.emission_lock
+
+
+class _GlobalDispatcher(Dispatcher):
+    def _has_event(self, name):
+        try:
+            self.get_dispatcher_event(name)
+        except KeyError:
+            return False
+        return True
+
+
+_GLOBAL_DISPATCHER = _GlobalDispatcher()
