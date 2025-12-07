@@ -1,7 +1,7 @@
 # python-dispatch
 Lightweight event handling for Python
 
-[![Build Status](https://travis-ci.org/nocarryr/python-dispatch.svg?branch=master)](https://travis-ci.org/nocarryr/python-dispatch)[![Coverage Status](https://coveralls.io/repos/github/nocarryr/python-dispatch/badge.svg?branch=master)](https://coveralls.io/github/nocarryr/python-dispatch?branch=master)[![PyPI version](https://badge.fury.io/py/python-dispatch.svg)](https://badge.fury.io/py/python-dispatch)[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/nocarryr/python-dispatch/master/LICENSE.txt)
+[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/nocarryr/python-dispatch/ci.yml)[![Coverage Status](https://coveralls.io/repos/github/nocarryr/python-dispatch/badge.svg?branch=master)](https://coveralls.io/github/nocarryr/python-dispatch?branch=master)[![PyPI version](https://badge.fury.io/py/python-dispatch.svg)](https://badge.fury.io/py/python-dispatch)[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/nocarryr/python-dispatch/master/LICENSE.txt)
 
 ## Description
 This is an implementation of the "Observer Pattern" with inspiration from the

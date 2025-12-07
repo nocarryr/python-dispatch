@@ -1,14 +1,20 @@
 
+import sys
 from pathlib import Path
-from setuptools.config import read_configuration
+if sys.version_info < (3, 11):
+    import tomli as tomllib
+else:
+    import tomllib
 
 
 PROJECT_ROOT = Path(__file__).parent.parent.resolve()
-SETUP_CFG = PROJECT_ROOT / 'setup.cfg'
+SETUP_CFG = PROJECT_ROOT / 'pyproject.toml'
 
 def get_expected_version(config_file: Path = SETUP_CFG) -> str:
-    conf_dict = read_configuration(str(config_file))
-    return conf_dict['metadata']['version']
+    with config_file.open('rb') as f:
+        config_dict = tomllib.load(f)
+    return config_dict['project']['version']
+
 
 EXPECTED_VERSION = get_expected_version()
 
