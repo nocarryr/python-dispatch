@@ -19,35 +19,46 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+      - uses: actions/checkout@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Set up Python
+        uses: actions/setup-python@v6
         with:
-          python-version: 3.8
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip setuptools wheel
+          python-version: 3.11
       - name: Build pydispatch dists
-        run: python setup.py sdist bdist_wheel
+        run: uv build
       - name: Build pydispatch_sphinx dists
-        run: python setup.py sdist --dist-dir=$DISTDIR bdist_wheel --dist-dir=$DISTDIR
+        run: uv build --out-dir $DISTDIR
         working-directory: ${{ github.workspace }}/sphinx-plugin
         env:
           DISTDIR: ${{ github.workspace }}/dist-sphinx
+      - name: Export pydispatch lockfile
+        run: uv export --frozen --no-emit-project --only-group test -o pylock.toml
+      - name: Export pydispatch_sphinx lockfile
+        run: uv export --frozen --no-emit-project --only-group test -o pylock.toml
+        working-directory: ${{ github.workspace }}/sphinx-plugin
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v5
         with:
           name: 'dists'
           path: 'dist/*'
       - name: Upload sphinx artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v5
         with:
           name: 'dists-sphinx'
           path: 'dist-sphinx/*'
+      - name: Upload lockfiles
+        uses: actions/upload-artifact@v5
+        with:
+          name: 'lockfiles'
+          path: |
+            pylock.toml
+            sphinx-plugin/pylock.toml
 
   test:
     needs: build
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.6, 3.7, 3.8, 3.9, "3.10", "3.11"]
@@ -55,22 +66,27 @@ jobs:
       fail-fast: false
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v5
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Download lockfiles
+      uses: actions/download-artifact@v5
+      with:
+        name: 'lockfiles'
+        path: .
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip setuptools wheel
-        pip install -r requirements-dev.txt
+        pip install -r pylock.toml
+        pip install -r sphinx-plugin/pylock.toml
     - name: Download artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v5
       with:
         name: 'dists'
         path: dist
     - name: Download sphinx artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v5
       with:
         name: 'dists-sphinx'
         path: dist
@@ -94,21 +110,21 @@ jobs:
     if: ${{ success() && (github.event.inputs.allow_deploy == 'true' || github.event.inputs.allow_sphinx_deploy == 'true') }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+      - uses: actions/checkout@v5
+      - name: Set up Python
+        uses: actions/setup-python@v6
         with:
-          python-version: 3.8
+          python-version: 3.11
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel twine
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v5
         with:
           name: 'dists'
           path: dist
       - name: Download sphinx artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v5
         with:
           name: 'dists-sphinx'
           path: dist-sphinx
