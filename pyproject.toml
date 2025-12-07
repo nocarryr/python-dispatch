@@ -46,6 +46,9 @@ build-backend = "uv_build"
 module-root = ""
 module-name = "pydispatch"
 
+[tool.uv.sources]
+python-dispatch-sphinx = { path = "sphinx-plugin", package = false }
+
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "doc", "pydispatch"]
@@ -74,4 +77,5 @@ test = [
 
 dev = [
     {include-group = "test"},
+    "python-dispatch-sphinx",
 ]
