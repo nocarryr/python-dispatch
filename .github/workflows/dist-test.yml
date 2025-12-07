@@ -34,9 +34,9 @@ jobs:
         env:
           DISTDIR: ${{ github.workspace }}/dist-sphinx
       - name: Export pydispatch lockfile
-        run: uv export --frozen --no-emit-project --only-group test -o pylock.toml
+        run: uv export --frozen --no-emit-project --only-group test -o requirements.txt
       - name: Export pydispatch_sphinx lockfile
-        run: uv export --frozen --no-emit-project --only-group test -o pylock.toml
+        run: uv export --frozen --no-emit-project --only-group test -o requirements.txt
         working-directory: ${{ github.workspace }}/sphinx-plugin
       - name: Upload artifacts
         uses: actions/upload-artifact@v5
@@ -53,8 +53,8 @@ jobs:
         with:
           name: 'lockfiles'
           path: |
-            pylock.toml
-            sphinx-plugin/pylock.toml
+            requirements.txt
+            sphinx-plugin/requirements.txt
 
   test:
     needs: build
@@ -78,8 +78,8 @@ jobs:
         path: .
     - name: Install dependencies
       run: |
-        pip install -r pylock.toml
-        pip install -r sphinx-plugin/pylock.toml
+        pip install -r requirements.txt
+        pip install -r sphinx-plugin/requirements.txt
     - name: Download artifacts
       uses: actions/download-artifact@v5
       with:
