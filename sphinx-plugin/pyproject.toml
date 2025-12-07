@@ -35,6 +35,7 @@ dependencies = [
     "sphinxcontrib-htmlhelp<=2.0.1",
     "sphinxcontrib-serializinghtml<=1.1.6",
     "sphinxcontrib-qthelp<=1.0.3",
+    "standard-imghdr; python_version >= '3.13'",
     "python-dispatch>=0.2.2",
     "importlib-metadata; python_version < '3.8'"
 ]
