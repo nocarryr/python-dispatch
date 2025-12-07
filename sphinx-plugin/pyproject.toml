@@ -1,0 +1,72 @@
+[project]
+name = "python-dispatch-sphinx"
+version = "0.2.2"
+description = "Sphinx extension for python-dispatch"
+readme = "README.rst"
+license = "MIT"
+authors = [
+    { name = "Matthew Reid", email = "matt@nomadic-recording.com" }
+]
+requires-python = ">=3.6"
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Intended Audience :: Developers",
+    "Framework :: Sphinx",
+    "Framework :: Sphinx :: Extension",
+    "Topic :: Documentation",
+    "Topic :: Documentation :: Sphinx",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Documentation"
+]
+dependencies = [
+    "sphinx<5.0.0",
+    "python-dispatch>=0.2.2",
+    "importlib-metadata; python_version < '3.8'"
+]
+
+
+[project.urls]
+Documentation = "https://python-dispatch.readthedocs.io/"
+Source = "https://github.com/nocarryr/python-dispatch"
+Download = "https://pypi.org/project/python-dispatch-sphinx/"
+Tracker = "https://github.com/nocarryr/python-dispatch/issues"
+
+
+
+[build-system]
+requires = ["uv_build>=0.9.16,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-root = ""
+module-name = "pydispatch_sphinx"
+
+[tool.uv.sources]
+python-dispatch-sphinx = { workspace = true }
+
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+
+[dependency-groups]
+test = [
+    "coveralls>=3.3.1",
+    "pytest>=7.0.1",
+    "pytest-cov>=4.0.0",
+    "sphinx-rst-builder>=0.0.3",
+]
+
+dev = [
+    {include-group = "test"},
+]

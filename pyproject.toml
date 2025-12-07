@@ -1,0 +1,76 @@
+
+[project]
+name = "python-dispatch"
+version = "0.2.2"
+description = "Lightweight Event Handling Library for Python"
+authors = [
+    { name = "Matthew Reid", email = "matt@nomadic-recording.com" }
+]
+readme = "README.md"
+license = "MIT"
+keywords = ["event", "properties", "dispatch"]
+requires-python = ">=3.6"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Topic :: Software Development",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Python Modules"
+]
+dependencies = [
+    "importlib-metadata; python_version < '3.8'"
+]
+
+
+[project.urls]
+Documentation = "https://python-dispatch.readthedocs.io/"
+Source = "https://github.com/nocarryr/python-dispatch"
+Download = "https://pypi.org/project/python-dispatch/"
+Tracker = "https://github.com/nocarryr/python-dispatch/issues"
+
+
+[build-system]
+requires = ["uv_build>=0.9.16,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-root = ""
+module-name = "pydispatch"
+
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "doc", "pydispatch"]
+addopts = "--doctest-modules --doctest-glob='*.rst' --doctest-glob='*.md'"
+doctest_plus = "enabled"
+asyncio_mode = "auto"
+
+
+[dependency-groups]
+doc = [
+    "furo>=2022.4.7",
+    "m2r2>=0.3.2",
+    "sphinx<5.0.0",
+    "sphinx-panels>=0.6.0",
+    "sphinx-rtd-theme>=1.3.0",
+]
+test = [
+    {include-group = "doc"},
+    "coveralls>=3.3.1",
+    "pytest>=7.0.1",
+    "pytest-asyncio>=0.16.0",
+    "pytest-cov>=4.0.0",
+    "pytest-doctestplus>=0.9.0",
+]
+
+dev = [
+    {include-group = "test"},
+]
