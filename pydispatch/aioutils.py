@@ -1,13 +1,25 @@
+import sys
 import asyncio
 import threading
-from _weakref import ref
-from _weakrefset import _IterationGuard
+from weakref import ref
+from _weakref import _remove_dead_weakref # type: ignore[import]
+if sys.version_info < (3, 14):
+    from _weakrefset import _IterationGuard
+else:
+    # _IterationGuard was removed in Python 3.14. We define a no-op version here
+    class _IterationGuard:
+        def __init__(self, obj):
+            pass
+        def __enter__(self):
+            pass
+        def __exit__(self, *args):
+            pass
+
 
 from pydispatch.utils import (
     WeakMethodContainer,
     isfunction,
     get_method_vars,
-    _remove_dead_weakref,
 )
 
 
@@ -192,6 +204,12 @@ class AioWeakMethodContainer(WeakMethodContainer):
                     _remove_dead_weakref(self.data, wr.key)
                     self._on_weakref_fin(wr.key)
         self._remove = remove
+
+        # `_pending_removals` and `_iterating` were removed in Python 3.14.
+        # To maintain compatibility with earlier versions, we reintroduce them here.
+        self._pending_removals = []
+        self._iterating = set()
+
         self.event_loop_map = {}
     def add_method(self, loop, callback):
         """Add a coroutine function
