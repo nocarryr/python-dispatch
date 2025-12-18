@@ -42,15 +42,18 @@ bind_async method
     ...     async def wait_for_event(self):
     ...         await self.event_received.wait()
 
-    >>> loop = asyncio.get_event_loop()
-    >>> emitter = MyEmitter()
-    >>> listener = MyAsyncListener()
+    >>> async def main():
+    ...     loop = asyncio.get_running_loop()
+    ...     emitter = MyEmitter()
+    ...     listener = MyAsyncListener()
+    ...
+    ...     # Pass the event loop as first argument to "bind_async"
+    ...     emitter.bind_async(loop, on_state=listener.on_emitter_state)
+    ...
+    ...     await emitter.trigger()
+    ...     await listener.wait_for_event()
 
-    >>> # Pass the event loop as first argument to "bind_async"
-    >>> emitter.bind_async(loop, on_state=listener.on_emitter_state)
-
-    >>> loop.run_until_complete(emitter.trigger())
-    >>> loop.run_until_complete(listener.wait_for_event())
+    >>> asyncio.run(main())
     received on_state event
 
 bind (with keyword argument)
@@ -76,15 +79,17 @@ bind (with keyword argument)
     ...     async def wait_for_event(self):
     ...         await self.event_received.wait()
 
-    >>> loop = asyncio.get_event_loop()
-    >>> emitter = MyEmitter()
-    >>> listener = MyAsyncListener()
+    >>> async def main():
+    ...     loop = asyncio.get_running_loop()
+    ...     emitter = MyEmitter()
+    ...     listener = MyAsyncListener()
+    ...
+    ...     # Pass the event loop using __aio_loop__
+    ...     emitter.bind(on_state=listener.on_emitter_state, __aio_loop__=loop)
+    ...     await emitter.trigger()
+    ...     await listener.wait_for_event()
 
-    >>> # Pass the event loop using __aio_loop__
-    >>> emitter.bind(on_state=listener.on_emitter_state, __aio_loop__=loop)
-
-    >>> loop.run_until_complete(emitter.trigger())
-    >>> loop.run_until_complete(listener.wait_for_event())
+    >>> asyncio.run(main())
     received on_state event
 
 Async (awaitable) Events
@@ -131,11 +136,14 @@ This can also be done with :any:`Property` objects
     ...                 break
     ...         return 'done'
 
-    >>> loop = asyncio.get_event_loop()
-    >>> emitter = MyEmitter()
-    >>> listener = MyAsyncListener()
-    >>> coros = [emitter.change_values(), listener.wait_for_values(emitter)]
-    >>> loop.run_until_complete(asyncio.gather(*coros))
+    >>> async def main():
+    ...     loop = asyncio.get_running_loop()
+    ...     emitter = MyEmitter()
+    ...     listener = MyAsyncListener()
+    ...     coros = [emitter.change_values(), listener.wait_for_values(emitter)]
+    ...     return await asyncio.gather(*coros)
+
+    >>> asyncio.run(main())
     0
     1
     2
