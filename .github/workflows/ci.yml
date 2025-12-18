@@ -31,6 +31,8 @@ jobs:
       run: |
         uv run pytest --cov --cov-config=.coveragerc tests pydispatch doc README.md
     - name: Test python-dispatch-sphinx
+      # TODO: Remove 3.14 exclusion when 3.14 support is added to sphinx-plugin
+      if: ${{ matrix.python-version != '3.14' }}
       run: |
         uv run pytest --cov --cov-append --cov-config=sphinx-plugin/.coveragerc sphinx-plugin/tests
     - name: Upload to Coveralls

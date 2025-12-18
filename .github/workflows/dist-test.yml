@@ -103,6 +103,8 @@ jobs:
     - name: Test pydispatch distribution
       run: py.test tests/
     - name: Test pydispatch_sphinx distribution
+      # TODO: Remove 3.14 exclusion when 3.14 support is added to sphinx-plugin
+      if: ${{ matrix.python-version != '3.14' }}
       run: py.test sphinx-plugin/tests/
 
   deploy:
