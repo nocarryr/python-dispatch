@@ -1,6 +1,6 @@
 import weakref
-from weakref import ref, _remove_dead_weakref
-from _weakref import ref
+from weakref import ref
+from _weakref import _remove_dead_weakref # type: ignore[import]
 import types
 import asyncio
 
@@ -114,6 +114,12 @@ class InformativeWVDict(weakref.WeakValueDictionary):
                     _remove_dead_weakref(self.data, wr.key)
                     self._data_del_callback(wr.key)
         self._remove = remove
+
+        # `_pending_removals` and `_iterating` were removed in Python 3.14.
+        # To maintain compatibility with earlier versions, we reintroduce them here.
+        self._pending_removals = []
+        self._iterating = set()
+
         self.data = InformativeDict()
         self.data.del_callback = self._data_del_callback
     def _data_del_callback(self, key):

@@ -209,14 +209,16 @@ class Dispatcher(object):
             ...     async def on_foo_test_event(self, *args, **kwargs):
             ...         self.got_foo_event.set()
 
-            >>> loop = asyncio.get_event_loop()
-            >>> foo = Foo()
-            >>> bar = Bar()
-            >>> foo.bind(test_event=bar.on_foo_test_event, __aio_loop__=loop)
-            >>> fut = asyncio.ensure_future(bar.wait_for_foo())
+            >>> async def main():
+            ...     loop = asyncio.get_running_loop()
+            ...     foo = Foo()
+            ...     bar = Bar()
+            ...     foo.bind(test_event=bar.on_foo_test_event, __aio_loop__=loop)
+            ...     fut = asyncio.create_task(bar.wait_for_foo())
+            ...     foo.emit('test_event')
+            ...     await fut
 
-            >>> foo.emit('test_event')
-            >>> loop.run_until_complete(fut)
+            >>> asyncio.run(main())
             got foo!
 
             This can also be done using :meth:`bind_async`.
