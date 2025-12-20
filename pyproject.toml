@@ -1,7 +1,7 @@
 
 [project]
 name = "python-dispatch"
-version = "0.2.2"
+version = "0.2.3"
 description = "Lightweight Event Handling Library for Python"
 authors = [
     { name = "Matthew Reid", email = "matt@nomadic-recording.com" }
