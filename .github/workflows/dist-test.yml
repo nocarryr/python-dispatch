@@ -111,36 +111,14 @@ jobs:
     needs: test
     if: ${{ success() && (github.event.inputs.allow_deploy == 'true' || github.event.inputs.allow_sphinx_deploy == 'true') }}
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
-      - uses: actions/checkout@v5
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: 3.11
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip setuptools wheel twine
-      - name: Download artifacts
-        uses: actions/download-artifact@v5
-        with:
-          name: 'dists'
-          path: dist
-      - name: Download sphinx artifacts
-        uses: actions/download-artifact@v5
-        with:
-          name: 'dists-sphinx'
-          path: dist-sphinx
-      - name: Publish to PyPI
-        if: ${{ success() && github.event.inputs.allow_deploy == 'true' }}
-        env:
-          TWINE_REPOSITORY: ${{ secrets.TWINE_REPOSITORY }}
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-        run: twine upload dist/*
-      - name: Publish Sphinx extension to PyPI
-        if: ${{ success() && github.event.inputs.allow_sphinx_deploy == 'true' }}
-        env:
-          TWINE_REPOSITORY: ${{ secrets.TWINE_REPOSITORY }}
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-        run: twine upload dist-sphinx/*
+    - name: Download artifacts
+      uses: actions/download-artifact@v5
+      with:
+        name: 'dists*'
+        path: dist
+        merge-multiple: true
+    - name: Publish distributions
+      uses: pypa/gh-action-pypi-publish@release/v1
