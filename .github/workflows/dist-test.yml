@@ -45,17 +45,17 @@ jobs:
         run: uv export --frozen --no-emit-project --only-group test -o requirements.txt
         working-directory: ${{ github.workspace }}/sphinx-plugin
       - name: Upload artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: 'dists'
           path: 'dist/*'
       - name: Upload sphinx artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: 'dists-sphinx'
           path: 'dist-sphinx/*'
       - name: Upload lockfiles
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: 'lockfiles'
           path: |
@@ -78,7 +78,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Download lockfiles
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v8
       with:
         name: 'lockfiles'
         path: .
@@ -87,12 +87,12 @@ jobs:
         pip install -r requirements.txt
         pip install -r sphinx-plugin/requirements.txt
     - name: Download artifacts
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v8
       with:
         name: 'dists'
         path: dist
     - name: Download sphinx artifacts
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v8
       with:
         name: 'dists-sphinx'
         path: dist
@@ -121,7 +121,7 @@ jobs:
       id-token: write
     steps:
     - name: Download artifacts
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v8
       with:
         pattern: 'dists*'
         path: dist
