@@ -32,7 +32,7 @@ dependencies = [
     "sphinx<5.0.0",
     "sphinxcontrib-applehelp<=1.0.8",
     "sphinxcontrib-devhelp<=1.0.6",
-    "sphinxcontrib-htmlhelp<=2.0.1",
+    "sphinxcontrib-htmlhelp<=2.1.0",
     "sphinxcontrib-serializinghtml<=1.1.10",
     "sphinxcontrib-qthelp<=1.0.8",
     "standard-imghdr; python_version >= '3.13'",
