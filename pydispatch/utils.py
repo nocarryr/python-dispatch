@@ -3,6 +3,7 @@ from weakref import ref
 from _weakref import _remove_dead_weakref # type: ignore[import]
 import types
 import asyncio
+import inspect
 
 def get_method_vars(m):
     f = m.__func__
@@ -13,7 +14,7 @@ def isfunction(m):
     return isinstance(m, types.FunctionType)
 
 def iscoroutinefunction(obj):
-    return asyncio.iscoroutinefunction(obj)
+    return inspect.iscoroutinefunction(obj)
 
 class WeakMethodContainer(weakref.WeakValueDictionary):
     """Container to store weak references to callbacks
