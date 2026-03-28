@@ -4,6 +4,32 @@
     "config:recommended"
   ],
   "labels": ["dependencies"],
+  "packageRules": [
+    {
+      "matchPackageNames": ["sphinx"],
+      "allowedVersions": "<5.0.0"
+    },
+    {
+      "matchPackageNames": ["sphinxcontrib-applehelp"],
+      "allowedVersions": "<=1.0.3"
+    },
+    {
+      "matchPackageNames": ["sphinxcontrib-devhelp"],
+      "allowedVersions": "<=1.0.3"
+    },
+    {
+      "matchPackageNames": ["sphinxcontrib-htmlhelp"],
+      "allowedVersions": "<=2.0.1"
+    },
+    {
+      "matchPackageNames": ["sphinxcontrib-serializinghtml"],
+      "allowedVersions": "<=1.1.6"
+    },
+    {
+      "matchPackageNames": ["sphinxcontrib-qthelp"],
+      "allowedVersions": "<=1.0.3"
+    }
+  ],
   "lockFileMaintenance": {
     "enabled": true
   }
