@@ -4,6 +4,12 @@ name: Test Distribution
 on:
   push:
     branches: [ master ]
+  pull_request:
+    branches: [ master ]
+    paths:
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".github/workflows/dist-test.yml"
   workflow_dispatch:
     inputs:
       allow_deploy:
