@@ -980,7 +980,7 @@ dependencies = [
     { name = "sphinxcontrib-htmlhelp", version = "2.0.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
     { name = "sphinxcontrib-htmlhelp", version = "2.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
     { name = "sphinxcontrib-qthelp", version = "1.0.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
-    { name = "sphinxcontrib-qthelp", version = "1.0.8", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
+    { name = "sphinxcontrib-qthelp", version = "2.0.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
     { name = "sphinxcontrib-serializinghtml", version = "1.1.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
     { name = "sphinxcontrib-serializinghtml", version = "2.0.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
     { name = "standard-imghdr", marker = "python_full_version >= '3.13'" },
@@ -1016,7 +1016,7 @@ requires-dist = [
     { name = "sphinxcontrib-applehelp", specifier = "<=2.0.0" },
     { name = "sphinxcontrib-devhelp", specifier = "<=2.0.0" },
     { name = "sphinxcontrib-htmlhelp", specifier = "<=2.1.0" },
-    { name = "sphinxcontrib-qthelp", specifier = "<=1.0.8" },
+    { name = "sphinxcontrib-qthelp", specifier = "<=2.0.0" },
     { name = "sphinxcontrib-serializinghtml", specifier = "<=2.0.0" },
     { name = "standard-imghdr", marker = "python_full_version >= '3.13'" },
 ]
@@ -1118,7 +1118,7 @@ dependencies = [
     { name = "sphinxcontrib-htmlhelp", version = "2.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
     { name = "sphinxcontrib-jsmath" },
     { name = "sphinxcontrib-qthelp", version = "1.0.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
-    { name = "sphinxcontrib-qthelp", version = "1.0.8", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
+    { name = "sphinxcontrib-qthelp", version = "2.0.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
     { name = "sphinxcontrib-serializinghtml", version = "1.1.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
     { name = "sphinxcontrib-serializinghtml", version = "2.0.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
 ]
@@ -1240,16 +1240,16 @@ wheels = [
 
 [[package]]
 name = "sphinxcontrib-qthelp"
-version = "1.0.8"
+version = "2.0.0"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.13'",
     "python_full_version >= '3.10' and python_full_version < '3.13'",
     "python_full_version == '3.9.*'",
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a6/67/f5c7df6457315877202f370450acb28626d033822eec1e8163600612b4ef/sphinxcontrib_qthelp-1.0.8.tar.gz", hash = "sha256:db3f8fa10789c7a8e76d173c23364bdf0ebcd9449969a9e6a3dd31b8b7469f03", size = 16778, upload-time = "2024-07-20T12:11:48.779Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/68/bc/9104308fc285eb3e0b31b67688235db556cd5b0ef31d96f30e45f2e51cae/sphinxcontrib_qthelp-2.0.0.tar.gz", hash = "sha256:4fe7d0ac8fc171045be623aba3e2a8f613f8682731f9153bb2e40ece16b9bbab", size = 17165, upload-time = "2024-07-29T01:09:56.435Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/cf/91/cec9416d27ebe9b8aa83f014a1ac8402c729aed791da67704e10bb2c8f33/sphinxcontrib_qthelp-1.0.8-py3-none-any.whl", hash = "sha256:323d6acc4189af76dfe94edd2a27d458902319b60fcca2aeef3b2180c106a75f", size = 89456, upload-time = "2024-07-20T12:11:47.478Z" },
+    { url = "https://files.pythonhosted.org/packages/27/83/859ecdd180cacc13b1f7e857abf8582a64552ea7a061057a6c716e790fce/sphinxcontrib_qthelp-2.0.0-py3-none-any.whl", hash = "sha256:b18a828cdba941ccd6ee8445dbe72ffa3ef8cbe7505d8cd1fa0d42d3f2d5f3eb", size = 88743, upload-time = "2024-07-29T01:09:54.885Z" },
 ]
 
 [[package]]
