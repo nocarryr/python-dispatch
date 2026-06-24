@@ -46,7 +46,7 @@ jobs:
     name: Indicate completion to coveralls.io
     needs: test
     runs-on: ubuntu-latest
-    container: python:3-slim@sha256:ca33aed9f056862efa6f39d8a8727c3dde9d41394d6f2bc1bd515651470ff1f8
+    container: python:3-slim@sha256:63a4c7f612a00f92042cbdcc7cdc6a306f38485af0a200b9c89de7d9b1607d15
     steps:
     - name: Finished
       run: |
