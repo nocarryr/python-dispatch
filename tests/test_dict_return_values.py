@@ -5,6 +5,7 @@ from pydispatch import Dispatcher, DictProperty
 
 @pytest.mark.parametrize('copy_on_change', [False, True])
 def test_pop_returns_removed_value_and_default(listener, copy_on_change):
+    """Preserve dict return identity, exceptions and change notifications."""
     class Sender(Dispatcher):
         data = DictProperty(copy_on_change=copy_on_change)
 
@@ -34,6 +35,7 @@ def test_pop_returns_removed_value_and_default(listener, copy_on_change):
 
 @pytest.mark.parametrize('copy_on_change', [False, True])
 def test_setdefault_returns_inserted_or_existing_value(listener, copy_on_change):
+    """Preserve inserted/existing return values and existing event behavior."""
     class Sender(Dispatcher):
         data = DictProperty(copy_on_change=copy_on_change)
 
