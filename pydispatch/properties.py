@@ -332,9 +332,11 @@ class ObservableDict(dict, Observable):
         self._emit_change(old=old)
     def pop(self, *args):
         old = self._get_copy_or_none()
-        super(ObservableDict, self).pop(*args)
+        value = super(ObservableDict, self).pop(*args)
         self._emit_change(old=old)
+        return value
     def setdefault(self, *args):
         old = self._get_copy_or_none()
-        super(ObservableDict, self).setdefault(*args)
+        value = super(ObservableDict, self).setdefault(*args)
         self._emit_change(old=old)
+        return value
