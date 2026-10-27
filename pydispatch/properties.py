@@ -331,10 +331,14 @@ class ObservableDict(dict, Observable):
         super(ObservableDict, self).clear()
         self._emit_change(old=old)
     def pop(self, *args):
+        """Return the removed value or default after emitting a change event."""
         old = self._get_copy_or_none()
-        super(ObservableDict, self).pop(*args)
+        value = super(ObservableDict, self).pop(*args)
         self._emit_change(old=old)
+        return value
     def setdefault(self, *args):
+        """Return the existing or inserted value and notify on successful calls."""
         old = self._get_copy_or_none()
-        super(ObservableDict, self).setdefault(*args)
+        value = super(ObservableDict, self).setdefault(*args)
         self._emit_change(old=old)
+        return value
