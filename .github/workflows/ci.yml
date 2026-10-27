@@ -6,10 +6,14 @@ on:
   pull_request:
     branches: [ master ]
 
+permissions: {}
+
 jobs:
   test:
 
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -17,6 +21,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      with:
+        persist-credentials: false
     - name: Install uv
       uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
     - name: Set up Python ${{ matrix.python-version }}
@@ -46,11 +52,13 @@ jobs:
     name: Indicate completion to coveralls.io
     needs: test
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     container: python:3-slim@sha256:533b0b2f9b5d46fd097091cf826f27902f1d6c3bca714b6dc74551356aa97a51
     steps:
+    - name: Install Coveralls
+      run: pip3 install --upgrade coveralls
     - name: Finished
-      run: |
-        pip3 install --upgrade coveralls
-        coveralls --finish
+      run: coveralls --finish
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
