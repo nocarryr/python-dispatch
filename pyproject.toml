@@ -9,7 +9,7 @@ authors = [
 readme = "README.md"
 license = "MIT"
 keywords = ["event", "properties", "dispatch"]
-requires-python = ">=3.8"
+requires-python = ">=3.11"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -17,9 +17,6 @@ classifiers = [
     "Programming Language :: Python",
     "Topic :: Software Development",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -27,11 +24,6 @@ classifiers = [
     "Topic :: Software Development :: Libraries",
     "Topic :: Software Development :: Libraries :: Python Modules"
 ]
-dependencies = [
-    "importlib-metadata; python_version < '3.8'"
-]
-
-
 [project.urls]
 Documentation = "https://python-dispatch.readthedocs.io/"
 Source = "https://github.com/nocarryr/python-dispatch"
@@ -75,7 +67,6 @@ test = [
     "pytest-asyncio>=0.16.0",
     "pytest-cov>=4.0.0",
     "pytest-doctestplus>=0.9.0",
-    "tomli; python_version < '3.11'",
 ]
 
 dev = [
