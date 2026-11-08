@@ -4,7 +4,8 @@
    contain the root `toctree` directive.
 
 
-.. mdinclude:: ../../README.md
+.. include:: ../../README.md
+   :parser: myst_parser.sphinx_
 
 .. toctree::
    :caption: Contents

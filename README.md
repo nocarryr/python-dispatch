@@ -5,7 +5,7 @@ Lightweight event handling for Python
 
 ## Description
 This is an implementation of the "Observer Pattern" with inspiration from the
-[Kivy](kivy.org) framework. Many of the features though are intentionally
+[Kivy](https://kivy.org) framework. Many of the features though are intentionally
 stripped down and more generalized. The goal is to have a simple drop-in
 library with no dependencies that stays out of the programmer's way.
 
@@ -37,9 +37,9 @@ pip install python-dispatch<0.2
 
 |               |                                              |
 | -------------:|:-------------------------------------------- |
-| Project Home  | https://github.com/nocarryr/python-dispatch  |
-| PyPI          | https://pypi.python.org/pypi/python-dispatch |
-| Documentation | https://python-dispatch.readthedocs.io       |
+| Project Home  | [https://github.com/nocarryr/python-dispatch](https://github.com/nocarryr/python-dispatch) |
+| PyPI          | [https://pypi.python.org/pypi/python-dispatch](https://pypi.python.org/pypi/python-dispatch) |
+| Documentation | [https://python-dispatch.readthedocs.io](https://python-dispatch.readthedocs.io) |
 
 
 ## Usage
@@ -118,9 +118,9 @@ emitter value is 42
 Contributions are welcome!
 
 If you want to contribute through code or documentation, please see the
-[Contributing Guide](CONTRIBUTING.md) for information.
+[Contributing Guide](https://github.com/nocarryr/python-dispatch/blob/master/CONTRIBUTING.md) for information.
 
 ## License
 
-This project is released under the MIT License. See the [LICENSE](LICENSE.txt) file
+This project is released under the MIT License. See the [LICENSE](https://github.com/nocarryr/python-dispatch/blob/master/LICENSE.txt) file
 for more information.
