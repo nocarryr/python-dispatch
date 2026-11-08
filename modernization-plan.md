@@ -94,10 +94,10 @@ failures are not silently folded into later snapshot updates.
 This is the priority change and should be a small standalone PR targeted at
 `master`.
 
-**Status:** Implemented on `docs/replace-m2r2`; awaiting review and merge. The
-README include uses MyST's parser, and the documentation build has been
-verified on Python 3.13 without `pkg_resources`. The plugin tests pass on
-Python 3.13, and the core tests and doctests pass on Python 3.13 and 3.14.
+**Status:** Merged in #139. The README include uses MyST's parser, and the
+documentation build has been verified on Python 3.13 without `pkg_resources`.
+The plugin tests pass on Python 3.13, and the core tests and doctests pass on
+Python 3.13 and 3.14.
 
 1. Replace `m2r2` with `myst-parser` in the root documentation dependency group
    and replace the `m2r2` entry in `doc/source/conf.py` with `myst_parser`.
@@ -123,6 +123,10 @@ The workspace migration itself is complete in #138. Root workspace
 configuration, source mappings, and the single lockfile are in place. The
 remaining work is to verify the synced environments and then remove the
 duplicate editable-install commands from CI and Read the Docs.
+
+**Status:** Cleanup is in progress on `chore/workspace-install-cleanup`. Clean
+Python 3.13 syncs install the plugin without the extra command; the docs build,
+core and plugin tests, and installed wheel and sdist tests pass.
 
 1. Verify `uv sync --frozen --group doc` installs the plugin in a clean
    Read the Docs-like environment and that the full docs build can import the
