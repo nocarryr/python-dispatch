@@ -63,6 +63,9 @@ napoleon_use_ivar = False
 napoleon_use_param = True
 napoleon_use_rtype = True
 
+# Keep tables of contents focused on page and section headings.
+toc_object_entries = False
+
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
