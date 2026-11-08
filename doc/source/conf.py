@@ -42,7 +42,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.doctest',
     'sphinx_panels',
-    'm2r2',
+    'myst_parser',
     'pydispatch_sphinx',
 ]
 

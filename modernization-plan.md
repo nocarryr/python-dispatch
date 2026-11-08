@@ -21,7 +21,7 @@ upgrade.
 - Make the declared Python floor, classifiers, CI matrix, and contributor/user
   documentation consistent. The project currently declares Python `>=3.11`.
 
-## Current state found in the repository
+## Baseline before the Markdown-parser change
 
 - The root `pyproject.toml` and `uv.lock` define a workspace containing
   `sphinx-plugin`; the separate `sphinx-plugin/uv.lock` was removed in #138.
@@ -93,6 +93,11 @@ failures are not silently folded into later snapshot updates.
 
 This is the priority change and should be a small standalone PR targeted at
 `master`.
+
+**Status:** Implemented on `docs/replace-m2r2`; awaiting review and merge. The
+README include uses MyST's parser, and the documentation build has been
+verified on Python 3.13 without `pkg_resources`. The plugin tests pass on
+Python 3.13, and the core tests and doctests pass on Python 3.13 and 3.14.
 
 1. Replace `m2r2` with `myst-parser` in the root documentation dependency group
    and replace the `m2r2` entry in `doc/source/conf.py` with `myst_parser`.
