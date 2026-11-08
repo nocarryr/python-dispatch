@@ -156,6 +156,13 @@ remain independently buildable and testable.
 Do this after the workspace migration, in a separate reviewable change from the
 typing/generics work.
 
+**Status:** In progress on `modernize/sphinx-compatibility`. Sphinx 8.2 is the
+selected baseline and support is bounded to `<9` pending a separate Sphinx 9
+compatibility assessment. `sphinx-design` replaces the Sphinx-4-only panels
+extension. `sphinxcontrib-restbuilder` replaces the old RST builder; it
+formats external links as bare URLs, so HTML tests also check rendered labels,
+signatures, and links. Python 3.14 plugin tests are enabled again.
+
 1. Raise the plugin's Sphinx lower bound to a selected modern baseline (start
    with Sphinx 7.4 or newer, subject to API compatibility testing) and remove
    the `<5.0.0` ceiling. Keep the project-wide Sphinx policy explicit: test the
