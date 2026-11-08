@@ -1,9 +1,12 @@
+.. _module-events_module:
+
 **class events_module.TheClass(*args, **kwargs)**
 
    Docstring for TheClass
 
-   Look at ``on_foo``, ``on_bar`` and
-   ``on_baz``
+   Look at `on_foo <#events_module.TheClass.on_foo>`_, `on_bar
+   <#events_module.TheClass.on_bar>`_ and `on_baz
+   <#events_module.TheClass.on_baz>`_
 
    ``a_normal_attribute: str``
 
@@ -31,7 +34,8 @@
 
    Docstring for TheSubClass
 
-   Look at ``on_spam`` and ``on_eggs``
+   Look at `on_spam <#events_module.TheSubClass.on_spam>`_ and
+   `on_eggs <#events_module.TheSubClass.on_eggs>`_
 
    ``Event on_spam``
 
@@ -53,17 +57,21 @@
 
    Docstring for TheOverridingSubClass
 
-   I override docstrings for ``on_foo`` and ``on_eggs``
+   I override docstrings for `on_foo
+   <#events_module.TheOverridingSubClass.on_foo>`_ and `on_eggs
+   <#events_module.TheOverridingSubClass.on_eggs>`_
 
    ``Event on_foo(state: bool, **kwargs)``
 
-      Overriden documentation for ``TheClass.on_foo`` event
+      Overriden documentation for `TheClass.on_foo
+      <#events_module.TheClass.on_foo>`_ event
 
       ``on_foo`` is a ``pydispatch.Event`` object.
 
    ``Event on_eggs(over_easy: bool, **kwargs)``
 
-      Overriden documentation for ``TheSubClass.on_eggs`` event
+      Overriden documentation for `TheSubClass.on_eggs
+      <#events_module.TheSubClass.on_eggs>`_ event
 
       ``on_eggs`` is a ``pydispatch.Event`` object.
 
@@ -71,7 +79,7 @@
 
    Docstring for NonDispatcherClass
 
-   ``on_foo: pydispatch.dispatch.Event``
+   ``on_foo: Event``
 
       I should not be recognized by this extension
 

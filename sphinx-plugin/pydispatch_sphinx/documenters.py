@@ -1,14 +1,11 @@
 import typing as tp
 
 from docutils.statemachine import StringList
-import sphinx
 from sphinx.application import Sphinx
-from sphinx.locale import _, __
+from sphinx.locale import _
 from sphinx.util import logging
 from sphinx.util import inspect
-from sphinx.util.typing import (
-    get_type_hints, restify, stringify as stringify_typehint,
-)
+from sphinx.util.typing import get_type_hints
 from sphinx.ext.autodoc import (
     ClassDocumenter, ModuleDocumenter, MethodDocumenter, AttributeDocumenter,
     PropertyDocumenter as _PropertyDocumenter, INSTANCEATTR,

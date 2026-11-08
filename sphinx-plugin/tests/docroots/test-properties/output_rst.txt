@@ -1,9 +1,11 @@
+.. _module-the_module:
+
 **class the_module.TheClass(*args, **kwargs)**
 
    Docstring for TheClass
 
-   Look at ``foo``, ``bar`` and
-   ``baz``
+   Look at `foo <#the_module.TheClass.foo>`_, `bar
+   <#the_module.TheClass.bar>`_ and `baz <#the_module.TheClass.baz>`_
 
    ``Property foo = False``
 
@@ -27,8 +29,9 @@
 
    Docstring for TheOtherClass
 
-   Look at ``foo``, ``bar`` and
-   ``baz``
+   Look at `foo <#the_module.TheOtherClass.foo>`_, `bar
+   <#the_module.TheOtherClass.bar>`_ and `baz
+   <#the_module.TheOtherClass.baz>`_
 
    ``Property foo: int = 0``
 
@@ -36,7 +39,7 @@
 
       ``foo`` is a ``pydispatch.Property`` object.
 
-   ``DictProperty bar: Dict[str, the_module.TheClass]``
+   ``DictProperty bar: Dict[str, `TheClass <#the_module.TheClass>`_]``
 
       Docstring for bar
 
