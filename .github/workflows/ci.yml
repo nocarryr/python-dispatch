@@ -32,7 +32,6 @@ jobs:
     - name: Install Project
       run: |
         uv sync --frozen --group test --group doc
-        uv pip install -e sphinx-plugin
     - name: Test python-dispatch
       run: |
         uv run pytest --cov --cov-config=.coveragerc tests pydispatch doc README.md

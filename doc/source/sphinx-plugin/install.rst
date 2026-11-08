@@ -10,10 +10,10 @@ Installation
 Dependencies
 ------------
 
-* python-dispatch == |release|
-* Sphinx >= 4.5
+* python-dispatch >= 0.2.2
+* Sphinx < 5.0.0
 
 .. note::
 
-    The "python-dispatch" and "python-dispatch-sphinx" versions should always
-    match each other.
+    The packages have independent versions. Installing the extension also
+    installs a compatible version of "python-dispatch" if needed.
