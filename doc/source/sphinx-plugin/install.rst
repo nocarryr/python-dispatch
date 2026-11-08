@@ -11,7 +11,7 @@ Dependencies
 ------------
 
 * python-dispatch >= 0.2.2
-* Sphinx < 5.0.0
+* Sphinx >= 8.2, < 9
 
 .. note::
 
