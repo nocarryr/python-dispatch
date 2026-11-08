@@ -38,6 +38,15 @@ jobs:
     - name: Test python-dispatch-sphinx
       run: |
         uv run pytest --cov --cov-append --cov-config=sphinx-plugin/.coveragerc sphinx-plugin/tests
+    - name: Build documentation
+      if: ${{ matrix.python-version == '3.13' }}
+      run: uv run sphinx-build -b html -W --keep-going doc/source "$RUNNER_TEMP/python-dispatch-docs"
+    - name: Test minimum supported Sphinx
+      if: ${{ matrix.python-version == '3.13' }}
+      run: |
+        uv pip install "sphinx==8.2.0"
+        uv run --no-sync pytest sphinx-plugin/tests
+        uv run --no-sync pytest tests/test_docs_build.py
     - name: Upload to Coveralls
       run: uv run coveralls --service=github
       env:
