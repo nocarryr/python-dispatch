@@ -6,6 +6,12 @@ resolution-markers = [
     "python_full_version < '3.13'",
 ]
 
+[manifest]
+members = [
+    "python-dispatch",
+    "python-dispatch-sphinx",
+]
+
 [[package]]
 name = "alabaster"
 version = "0.7.16"
@@ -538,7 +544,7 @@ dev = [
     { name = "pytest-asyncio", specifier = ">=0.16.0" },
     { name = "pytest-cov", specifier = ">=4.0.0" },
     { name = "pytest-doctestplus", specifier = ">=0.9.0" },
-    { name = "python-dispatch-sphinx", virtual = "sphinx-plugin" },
+    { name = "python-dispatch-sphinx", editable = "sphinx-plugin" },
     { name = "setuptools", specifier = ">=60.2.0" },
     { name = "sphinx", specifier = "<5.0.0" },
     { name = "sphinx-panels", specifier = ">=0.6.0" },
@@ -572,7 +578,7 @@ test = [
 [[package]]
 name = "python-dispatch-sphinx"
 version = "0.2.2"
-source = { virtual = "sphinx-plugin" }
+source = { editable = "sphinx-plugin" }
 dependencies = [
     { name = "python-dispatch" },
     { name = "sphinx" },
@@ -584,9 +590,23 @@ dependencies = [
     { name = "standard-imghdr", marker = "python_full_version >= '3.13'" },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "coveralls" },
+    { name = "pytest" },
+    { name = "pytest-cov" },
+    { name = "sphinx-rst-builder" },
+]
+test = [
+    { name = "coveralls" },
+    { name = "pytest" },
+    { name = "pytest-cov" },
+    { name = "sphinx-rst-builder" },
+]
+
 [package.metadata]
 requires-dist = [
-    { name = "python-dispatch", specifier = ">=0.2.2" },
+    { name = "python-dispatch", editable = "." },
     { name = "sphinx", specifier = "<5.0.0" },
     { name = "sphinxcontrib-applehelp", specifier = "<=1.0.3" },
     { name = "sphinxcontrib-devhelp", specifier = "<=1.0.3" },

@@ -40,7 +40,13 @@ module-root = ""
 module-name = "pydispatch"
 
 [tool.uv.sources]
-python-dispatch-sphinx = { path = "sphinx-plugin", package = false }
+python-dispatch = { workspace = true }
+python-dispatch-sphinx = { workspace = true }
+
+[tool.uv.workspace]
+members = [
+    "sphinx-plugin",
+]
 
 
 [tool.pytest.ini_options]
