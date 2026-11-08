@@ -58,39 +58,33 @@ See the docstring examples below with their corresponding reStructuredText outpu
 Property Objects
 ^^^^^^^^^^^^^^^^
 
-.. panels::
+.. grid:: 1 1 2 2
+    :gutter: 3
 
-    Python Docstring
-    ^^^^^^^^^^^^^^^^
+    .. grid-item-card:: Python Docstring
 
-    .. literalinclude:: sphinx_autodoc_examples/prop_foo.py
+        .. literalinclude:: sphinx_autodoc_examples/prop_foo.py
 
-    ---
+    .. grid-item-card:: HTML Output
 
-    HTML Output
-    ^^^^^^^^^^^
-
-    .. autoclass:: prop_foo.Foo
-        :members:
+        .. autoclass:: prop_foo.Foo
+            :members:
 
 
 Container Properties
 ^^^^^^^^^^^^^^^^^^^^
 
-.. panels::
+.. grid:: 1 1 2 2
+    :gutter: 3
 
-    Python Docstring
-    ^^^^^^^^^^^^^^^^
+    .. grid-item-card:: Python Docstring
 
-    .. literalinclude:: sphinx_autodoc_examples/prop_bar.py
+        .. literalinclude:: sphinx_autodoc_examples/prop_bar.py
 
-    ---
+    .. grid-item-card:: HTML Output
 
-    HTML Ouput
-    ^^^^^^^^^^
-
-    .. autoclass:: prop_bar.Bar
-        :members:
+        .. autoclass:: prop_bar.Bar
+            :members:
 
 
 .. _documenting-events:
@@ -115,20 +109,17 @@ body with the event name to document as the attribute and
 :class:`~pydispatch.dispatch.Event` as its type.
 
 
-.. panels::
+.. grid:: 1 1 2 2
+    :gutter: 3
 
-    Python Docstring
-    ^^^^^^^^^^^^^^^^
+    .. grid-item-card:: Python Docstring
 
-    .. literalinclude:: sphinx_autodoc_examples/event_baz.py
+        .. literalinclude:: sphinx_autodoc_examples/event_baz.py
 
-    ---
+    .. grid-item-card:: HTML Output
 
-    HTML Ouput
-    ^^^^^^^^^^
-
-    .. autoclass:: event_baz.Baz
-        :members:
+        .. autoclass:: event_baz.Baz
+            :members:
 
 
 Method Annotation
@@ -138,21 +129,17 @@ Another method of documenting events is to define a method with the same name
 as the event. This also allows you add type hints for the event.
 
 
-.. panels::
+.. grid:: 1 1 2 2
+    :gutter: 3
 
-    Python Docstring
-    ^^^^^^^^^^^^^^^^
+    .. grid-item-card:: Python Docstring
 
-    .. literalinclude:: sphinx_autodoc_examples/event_spam.py
+        .. literalinclude:: sphinx_autodoc_examples/event_spam.py
 
+    .. grid-item-card:: HTML Output
 
-    ---
-
-    HTML Ouput
-    ^^^^^^^^^^
-
-    .. autoclass:: event_spam.Spam
-        :members:
+        .. autoclass:: event_spam.Spam
+            :members:
 
 
 .. _cross-referencing:

@@ -1,4 +1,7 @@
 import json
+import re
+from html import unescape
+
 import pytest
 
 from conftest import PYDISPATCH_RTD, reset_intersphinx
@@ -21,6 +24,28 @@ def test_events_html(app, rootdir):
     reset_intersphinx(app)
 
     app.builder.build_all()
+
+    content = (app.outdir / 'index.html').read_text()
+    assert 'id="events_module.TheClass.on_foo"' in content
+    assert 'id="events_module.TheClass.on_baz"' in content
+    assert 'id="events_module.TheOverridingSubClass.on_foo"' in content
+    assert 'href="#events_module.TheClass.on_foo"' in content
+    assert f'href="{PYDISPATCH_RTD}/reference/dispatch.html#pydispatch.dispatch.Event"' in content
+    assert 'Documentation for on_baz event' in content
+    assert '<dl class="py event">' in content
+    assert '<dl class="py attribute">' in content
+    signature = re.search(
+        r'<dt[^>]*id="events_module.TheClass.on_baz"[^>]*>(.*?)</dt>',
+        content, re.DOTALL,
+    )
+    assert signature is not None
+    text = unescape(re.sub(r'<[^>]+>', '', signature.group(1)))
+    assert 'Event' in text
+    assert 'on_baz' in text
+    assert 'name: str' in text
+    assert 'value: int' in text
+    non_dispatcher = content.split('id="events_module.NonDispatcherClass"', 1)[1]
+    assert '<dl class="py event">' not in non_dispatcher
 
 
 @pytest.mark.with_intersphinx(True)

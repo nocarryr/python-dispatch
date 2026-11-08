@@ -1,4 +1,7 @@
 import json
+import re
+from html import unescape
+
 import pytest
 
 from conftest import PYDISPATCH_RTD, reset_intersphinx
@@ -22,7 +25,24 @@ def test_properties_html(app, rootdir):
     app.builder.build_all()
 
     content = (app.outdir / 'index.html').read_text()
-
+    assert 'id="the_module.TheClass.foo"' in content
+    assert 'id="the_module.TheOtherClass.bar"' in content
+    assert 'href="#the_module.TheClass.foo"' in content
+    for name in ('Property', 'DictProperty', 'ListProperty'):
+        assert f'href="{PYDISPATCH_RTD}/reference/properties.html#pydispatch.properties.{name}"' in content
+    assert 'Docstring for foo' in content
+    assert 'Docstring for bar' in content
+    assert 'Docstring for baz' in content
+    signature = re.search(
+        r'<dt[^>]*id="the_module.TheOtherClass.foo"[^>]*>(.*?)</dt>',
+        content, re.DOTALL,
+    )
+    assert signature is not None
+    text = unescape(re.sub(r'<[^>]+>', '', signature.group(1)))
+    assert 'Property' in text
+    assert 'foo' in text
+    assert 'int' in text
+    assert '= 0' in text
 
 
 @pytest.mark.with_intersphinx(True)

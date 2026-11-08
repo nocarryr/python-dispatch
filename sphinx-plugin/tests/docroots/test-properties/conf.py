@@ -6,9 +6,10 @@ sys.path.insert(0, os.path.abspath('.'))
 extensions = [
     'sphinx.ext.autodoc',
     'pydispatch_sphinx',
-    'sphinx_rst_builder',
+    'sphinxcontrib.restbuilder',
 ]
 
 source_suffix = '.rst'
+exclude_patterns = ['_build']
 
 autodoc_member_order = 'bysource'
