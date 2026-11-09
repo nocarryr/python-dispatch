@@ -126,10 +126,12 @@ def _post_register_hook(*names):
     for name in names:
         if name not in _CACHED_CALLBACKS:
             continue
-        bind_kwargs = {name:cb for cb in _CACHED_CALLBACKS.get(name)}
-        is_async = any((iscoroutinefunction(cb) for cb in bind_kwargs.values()))
-        if is_async:
+        callbacks = list(_CACHED_CALLBACKS.get(name))
+        sync_callbacks = [cb for cb in callbacks if not iscoroutinefunction(cb)]
+        async_callbacks = [cb for cb in callbacks if iscoroutinefunction(cb)]
+        for cb in sync_callbacks:
+            pydispatch.bind(**{name: cb})
+        if async_callbacks:
             loop = asyncio.get_event_loop()
-            pydispatch.bind_async(loop, **bind_kwargs)
-        else:
-            pydispatch.bind(**bind_kwargs)
+            for cb in async_callbacks:
+                pydispatch.bind_async(loop, **{name: cb})
