@@ -66,6 +66,23 @@ def test_receiver_decorator_unregistered_cache(dispatcher_cleanup):
     assert results == [((1,), {})]
 
 
+def test_receiver_decorator_multiple_cached_callbacks(dispatcher_cleanup):
+    results = []
+
+    @receiver('foo', cache=True)
+    def on_foo_first():
+        results.append('first')
+
+    @receiver('foo', cache=True)
+    def on_foo_second():
+        results.append('second')
+
+    pydispatch.register_event('foo')
+    pydispatch.emit('foo')
+
+    assert set(results) == {'first', 'second'}
+
+
 def test_receiver_decorator_unregistered_auto_register(dispatcher_cleanup):
     results = []
 
@@ -132,6 +149,30 @@ async def test_decorator_async_cache(dispatcher_cleanup):
     await result_ev.wait()
 
     assert results == [((1,), {})]
+
+
+@pytest.mark.asyncio
+async def test_decorator_multiple_async_cached_callbacks(dispatcher_cleanup):
+    results = []
+    result_ev = asyncio.Event()
+
+    @receiver('foo', cache=True)
+    async def on_foo_first():
+        results.append('first')
+        if len(results) == 2:
+            result_ev.set()
+
+    @receiver('foo', cache=True)
+    async def on_foo_second():
+        results.append('second')
+        if len(results) == 2:
+            result_ev.set()
+
+    pydispatch.register_event('foo')
+    pydispatch.emit('foo')
+    await asyncio.wait_for(result_ev.wait(), timeout=1)
+
+    assert set(results) == {'first', 'second'}
 
 
 @pytest.mark.asyncio
