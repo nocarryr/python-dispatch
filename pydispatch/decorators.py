@@ -124,14 +124,11 @@ def _post_register_hook(*names):
     """Called in :func:`pydispatch.register_event` to search for cached callbacks
     """
     for name in names:
-        if name not in _CACHED_CALLBACKS:
-            continue
-        callbacks = list(_CACHED_CALLBACKS.get(name))
-        sync_callbacks = [cb for cb in callbacks if not iscoroutinefunction(cb)]
-        async_callbacks = [cb for cb in callbacks if iscoroutinefunction(cb)]
-        for cb in sync_callbacks:
-            pydispatch.bind(**{name: cb})
-        if async_callbacks:
-            loop = asyncio.get_event_loop()
-            for cb in async_callbacks:
-                pydispatch.bind_async(loop, **{name: cb})
+        loop = None
+        for callback in _CACHED_CALLBACKS.get(name):
+            if iscoroutinefunction(callback):
+                if loop is None:
+                    loop = asyncio.get_event_loop()
+                pydispatch.bind_async(loop, **{name: callback})
+            else:
+                pydispatch.bind(**{name: callback})
