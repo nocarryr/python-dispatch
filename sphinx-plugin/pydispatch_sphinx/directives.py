@@ -1,18 +1,21 @@
-import typing as tp
 
-from sphinx.application import Sphinx
-from sphinx.util import logging
-from sphinx import addnodes
 from docutils import nodes
 from docutils.parsers.rst import directives
-from sphinx.locale import _, __
+from sphinx import addnodes
+from sphinx.application import Sphinx
 from sphinx.domains import ObjType
 from sphinx.domains.python import (
-    PyXRefRole, PyAttribute, PyMethod, PyObject, type_to_xref,
+    PyAttribute,
+    PyMethod,
+    PyXRefRole,
+    type_to_xref,
 )
+from sphinx.locale import _
+from sphinx.util import logging
 
 from pydispatch.dispatch import Event
-_Event_fullname = '.'.join([Event.__module__, Event.__qualname__])
+
+_Event_fullname = f'{Event.__module__}.{Event.__qualname__}'
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +25,7 @@ class DispatcherPropertyDirective(PyAttribute):
         'propcls':directives.unchanged,
     })
 
-    def get_signature_prefix(self, sig: str) -> tp.List[nodes.Node]:
+    def get_signature_prefix(self, sig: str) -> list[nodes.Node]:
         propcls = self.options.get('propcls')
         return [
             addnodes.desc_type(propcls, '',
@@ -39,7 +42,7 @@ class DispatcherEventMethodDirective(PyMethod):
     def needs_arglist(self) -> bool:
         return 'hasargs' in self.options
 
-    def get_signature_prefix(self, sig: str) -> tp.List[nodes.Node]:
+    def get_signature_prefix(self, sig: str) -> list[nodes.Node]:
         return [
             type_to_xref(_Event_fullname, self.env, suppress_prefix=True),
             addnodes.desc_sig_space(),

@@ -1,8 +1,9 @@
-import sys
 import asyncio
+import sys
 import threading
+from _weakref import _remove_dead_weakref  # type: ignore[import]
 from weakref import ref
-from _weakref import _remove_dead_weakref # type: ignore[import]
+
 if sys.version_info < (3, 14):
     from _weakrefset import _IterationGuard
 else:
@@ -18,12 +19,12 @@ else:
 
 from pydispatch.utils import (
     WeakMethodContainer,
-    isfunction,
     get_method_vars,
+    isfunction,
 )
 
 
-class AioSimpleLock(object):
+class AioSimpleLock:
     """:class:`asyncio.Lock` alternative backed by a :class:`threading.Lock`
 
     This is a context manager that supports use in both :keyword:`with` and
@@ -34,7 +35,7 @@ class AioSimpleLock(object):
 
     .. versionadded:: 0.1.0
     """
-    __slots__ = ('lock')
+    __slots__ = ('lock',)
     def __init__(self):
         self.lock = threading.Lock()
     def acquire(self, blocking=True, timeout=-1):
@@ -73,7 +74,7 @@ class AioSimpleLock(object):
     async def __aexit__(self, *args):
         self.release()
 
-class AioEventWaiter(object):
+class AioEventWaiter:
     """Stores necessary information for a single "waiter"
 
     Used by :class:`AioEventWaiters` to handle :keyword:`awaiting <await>`
@@ -88,7 +89,7 @@ class AioEventWaiter(object):
 
     .. versionadded:: 0.1.0
     """
-    __slots__ = ('loop', 'aio_event', 'args', 'kwargs')
+    __slots__ = ('aio_event', 'args', 'kwargs', 'loop')
     def __init__(self, loop):
         self.loop = loop
         self.aio_event = asyncio.Event()
@@ -120,7 +121,7 @@ class AioEventWaiter(object):
         task = asyncio.ensure_future(self.wait())
         return task.__await__()
 
-class AioEventWaiters(object):
+class AioEventWaiters:
     """Container used to manage :keyword:`await` use with events
 
     Used by :class:`pydispatch.dispatch.Event` when it is
@@ -134,7 +135,7 @@ class AioEventWaiters(object):
 
     .. versionadded:: 0.1.0
     """
-    __slots__ = ('waiters', 'lock')
+    __slots__ = ('lock', 'waiters')
     def __init__(self):
         self.waiters = set()
         self.lock = AioSimpleLock()
@@ -193,7 +194,8 @@ class AioWeakMethodContainer(WeakMethodContainer):
     """
     def __init__(self):
         super().__init__()
-        def remove(wr, selfref=ref(self)):
+        # Capture a weak reference without retaining this container.
+        def remove(wr, selfref=ref(self)):  # noqa: B008
             self = selfref()
             if self is not None:
                 if self._iterating:
@@ -243,7 +245,7 @@ class AioWeakMethodContainer(WeakMethodContainer):
         .. seealso:: :meth:`pydispatch.utils.WeakMethodContainer.iter_instances`
         """
         for wrkey, obj in self.iter_instances():
-            f, obj_id = wrkey
+            f, _ = wrkey
             if f == 'function':
                 m = self[wrkey]
             else:

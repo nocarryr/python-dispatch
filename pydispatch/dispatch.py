@@ -1,17 +1,20 @@
 import types
 
+from pydispatch.aioutils import AioEventWaiters, AioWeakMethodContainer
+from pydispatch.properties import Property
 from pydispatch.utils import (
-    WeakMethodContainer,
     EmissionHoldLock,
+    WeakMethodContainer,
     iscoroutinefunction,
 )
-from pydispatch.properties import Property
-import asyncio
-from pydispatch.aioutils import AioWeakMethodContainer, AioEventWaiters
 
 __all__ = (
-    'DoesNotExistError', 'ExistsError', 'EventExistsError',
-    'PropertyExistsError', 'Event', 'Dispatcher',
+    'Dispatcher',
+    'DoesNotExistError',
+    'Event',
+    'EventExistsError',
+    'ExistsError',
+    'PropertyExistsError',
 )
 
 
@@ -56,12 +59,12 @@ class PropertyExistsError(ExistsError):
     """
 
 
-class Event(object):
+class Event:
     """Holds references to event names and subscribed listeners
 
     This is used internally by :class:`Dispatcher`.
     """
-    __slots__ = ('name', 'listeners', 'aio_waiters', 'aio_listeners', 'emission_lock')
+    __slots__ = ('aio_listeners', 'aio_waiters', 'emission_lock', 'listeners', 'name')
     def __init__(self, name):
         self.name = name
         self.listeners = WeakMethodContainer()
@@ -100,11 +103,11 @@ class Event(object):
     def __await__(self):
         return self.aio_waiters.__await__()
     def __repr__(self):
-        return '<{}: {}>'.format(self.__class__, self)
+        return f'<{self.__class__}: {self}>'
     def __str__(self):
         return self.name
 
-class Dispatcher(object):
+class Dispatcher:
     """Core class used to enable all functionality in the library
 
     Interfaces with :class:`Event` and :class:`~pydispatch.properties.Property`

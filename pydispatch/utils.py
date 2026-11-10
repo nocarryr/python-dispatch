@@ -1,9 +1,10 @@
-import weakref
-from weakref import ref
-from _weakref import _remove_dead_weakref # type: ignore[import]
-import types
 import asyncio
 import inspect
+import types
+import weakref
+from _weakref import _remove_dead_weakref  # type: ignore[import]
+from weakref import ref
+
 
 def get_method_vars(m):
     f = m.__func__
@@ -82,7 +83,7 @@ class WeakMethodContainer(weakref.WeakValueDictionary):
             Instance methods or function objects
         """
         for wrkey, obj in self.iter_instances():
-            f, obj_id = wrkey
+            f, _ = wrkey
             if f == 'function':
                 yield self[wrkey]
             else:
@@ -90,7 +91,7 @@ class WeakMethodContainer(weakref.WeakValueDictionary):
 
 class InformativeDict(dict):
     def __delitem__(self, key):
-        super(InformativeDict, self).__delitem__(key)
+        super().__delitem__(key)
         self.del_callback(key)
 
 class InformativeWVDict(weakref.WeakValueDictionary):
@@ -104,7 +105,8 @@ class InformativeWVDict(weakref.WeakValueDictionary):
     def __init__(self, **kwargs):
         self.del_callback = kwargs.get('del_callback')
         weakref.WeakValueDictionary.__init__(self)
-        def remove(wr, selfref=ref(self)):
+        # Capture a weak reference without retaining this container.
+        def remove(wr, selfref=ref(self)):  # noqa: B008
             self = selfref()
             if self is not None:
                 if self._iterating:

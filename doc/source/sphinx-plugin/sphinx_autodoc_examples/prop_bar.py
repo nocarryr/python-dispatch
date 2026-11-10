@@ -1,5 +1,5 @@
 from typing import List, Dict, Any
-from pydispatch import Dispatcher, Property, ListProperty, DictProperty
+from pydispatch import Dispatcher, ListProperty, DictProperty
 
 class Bar(Dispatcher):
     """Summary line.
