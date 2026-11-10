@@ -1,10 +1,9 @@
 # Modernization Plan for `python-dispatch`
 
 This plan expands the original modernization outline into implementation-ready
-work. The workspace migration is already merged in #138
-(`4f9231fc4e5fa64d6fbba54ed178532f472f7c83`). The next priority is the
-Read the Docs `m2r2` dependency fix; keep that separate from the broader Sphinx
-upgrade.
+work. The workspace migration (#138), Markdown parser replacement (#139),
+workspace cleanup (#142), and Sphinx upgrade (#143) are merged. The next work
+establishes a lint baseline before the separate typing pass.
 
 ## Goals and compatibility constraints
 
@@ -124,7 +123,7 @@ configuration, source mappings, and the single lockfile are in place. The
 remaining work is to verify the synced environments and then remove the
 duplicate editable-install commands from CI and Read the Docs.
 
-**Status:** Cleanup is in progress on `chore/workspace-install-cleanup`. Clean
+**Status:** Merged in #142. Clean
 Python 3.13 syncs install the plugin without the extra command; the docs build,
 core and plugin tests, and installed wheel and sdist tests pass.
 
@@ -156,12 +155,14 @@ remain independently buildable and testable.
 Do this after the workspace migration, in a separate reviewable change from the
 typing/generics work.
 
-**Status:** In progress on `modernize/sphinx-compatibility`. Sphinx 8.2 is the
+**Status:** Merged in #143. Sphinx 8.2 is the
 selected baseline and support is bounded to `<9` pending a separate Sphinx 9
 compatibility assessment. `sphinx-design` replaces the Sphinx-4-only panels
 extension. `sphinxcontrib-restbuilder` replaces the old RST builder; it
 formats external links as bare URLs, so HTML tests also check rendered labels,
-signatures, and links. Python 3.14 plugin tests are enabled again.
+signatures, and links. Its generated RST can also contain internal links without
+matching targets; it is used for snapshot tests, not the published HTML build.
+Python 3.14 plugin tests are enabled again.
 
 1. Raise the plugin's Sphinx lower bound to a selected modern baseline (start
    with Sphinx 7.4 or newer, subject to API compatibility testing) and remove
@@ -199,6 +200,16 @@ pass, and the plugin is no longer excluded from Python 3.14.
 
 Make annotation corrections before introducing generic public types, so
 ordinary type issues are distinguishable from generic inference issues.
+
+**Staging:** Start with a separate Ruff PR covering the core and plugin using
+focused correctness rules. Follow it with one or more annotation and mypy PRs;
+do not treat the lint gate as completion of the typing work. An initial mypy
+run with untyped function bodies checked reported 38 errors across the two
+packages, including dynamic descriptors, weak-reference internals, and
+incompatible overrides. Investigate these without blanket suppressions or
+unreviewed runtime changes.
+
+The cached-receiver bug in `_post_register_hook` was fixed separately in #144.
 
 1. Select and configure a static type checker and linter in the root
    development tooling. Recommended: mypy for type checking and Ruff for
