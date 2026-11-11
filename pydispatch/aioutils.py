@@ -114,9 +114,11 @@ class AioEventWaiter:
         """Waits for event emission and returns the event parameters
 
         Returns:
-            args: Positional arguments as a tuple, or the initial empty list
-                if :attr:`aio_event` was set without calling :meth:`trigger`
-            kwargs (dict): Keyword arguments attached to the event
+            A two-tuple ``(args, kwargs)`` containing the positional and
+            keyword arguments from the dispatched :class:`~pydispatch.dispatch.Event`.
+            ``args`` is a tuple, and ``kwargs`` is a dictionary. If
+            :attr:`aio_event` is set without calling :meth:`trigger`, ``args``
+            remains the initial empty list and ``kwargs`` remains empty.
 
         """
         await self.aio_event.wait()
@@ -168,9 +170,11 @@ class AioEventWaiters:
         :class:`AioEventWaiters` and :class:`AioEventWaiter`.
 
         Returns:
-            args: Positional arguments as a tuple, or the initial empty list
-                if the waiter's event was set without triggering it
-            kwargs (dict): Keyword arguments attached to the event
+            A two-tuple ``(args, kwargs)`` containing the positional and
+            keyword arguments from the dispatched :class:`~pydispatch.dispatch.Event`.
+            ``args`` is a tuple, and ``kwargs`` is a dictionary. If the
+            waiter's event is set without triggering it, ``args`` remains the
+            initial empty list and ``kwargs`` remains empty.
 
         """
         waiter = await self.add_waiter()
