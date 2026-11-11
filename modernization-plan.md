@@ -215,8 +215,10 @@ The cached-receiver bug in `_post_register_hook` was fixed separately in #144.
 test dependency group and runs on the core package as a non-blocking CI step
 (#146), checking untyped bodies against Python 3.11. The core baseline initially
 reported 32 errors; the initial fixes and dispatcher and property typing
-reduced it to 9, including narrow ignores for existing accesses to private
-name-mangled storage rather than exposing mangled names to type checkers.
+reduced it to 9 (#147), including narrow ignores for existing accesses to private
+name-mangled storage rather than exposing mangled names to type checkers. Async
+waiter annotations and a narrow ignore for an unstubbed private helper bring
+the current baseline to 8.
 Continue addressing the remaining diagnostics incrementally before making the
 check blocking or expanding it to the plugin.
 
