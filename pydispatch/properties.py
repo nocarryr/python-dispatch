@@ -34,6 +34,8 @@ reason. If custom objects are used as values, they must be able to support
 equality checking. In most cases, this will be handled automatically.
 """
 
+from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 from pydispatch.utils import InformativeWVDict
 
@@ -145,7 +147,7 @@ class ListProperty(Property):
         value = super().__get__(obj, objcls)
         if not isinstance(value, ObservableList):
             value = ObservableList(value, obj=obj, property=self)
-            self._Property__storage[id(obj)] = value
+            self._Property__storage[id(obj)] = value  # type: ignore[attr-defined]
         return value
 
 class DictProperty(Property):
@@ -181,7 +183,7 @@ class DictProperty(Property):
         value = super().__get__(obj, objcls)
         if not isinstance(value, ObservableDict):
             value = ObservableDict(value, obj=obj, property=self)
-            self._Property__storage[id(obj)] = value
+            self._Property__storage[id(obj)] = value  # type: ignore[attr-defined]
         return value
 
 class Observable:
@@ -195,6 +197,14 @@ class Observable:
     copied and replaced by another :class:`ObservableDict`. This allows nested
     containers to be observed and their changes to be tracked.
     """
+    # Concrete containers initialize these fields; the mixin has no values of its own.
+    if TYPE_CHECKING:
+        parent_observable: 'Observable | None'
+        property: 'ListProperty | DictProperty | None'
+        obj: object
+        copy_on_change: bool
+        _init_complete: bool
+
     def _build_observable(self, item):
         if isinstance(item, list):
             item = ObservableList(item, parent=self)
@@ -210,6 +220,7 @@ class Observable:
         return self._deepcopy()
     def _deepcopy(self):
         o = self.copy()
+        item_iter: Iterable[tuple[object, object]]
         if isinstance(self, list):
             item_iter = enumerate(self)
         elif isinstance(self, dict):
