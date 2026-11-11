@@ -1,7 +1,7 @@
 import asyncio
 import sys
 import threading
-from _weakref import _remove_dead_weakref  # type: ignore[import]
+from _weakref import _remove_dead_weakref  # type: ignore[attr-defined]
 from weakref import ref
 
 if sys.version_info < (3, 14):
@@ -93,7 +93,7 @@ class AioEventWaiter:
     def __init__(self, loop):
         self.loop = loop
         self.aio_event = asyncio.Event()
-        self.args = []
+        self.args: list[object] | tuple[object, ...] = []
         self.kwargs = {}
     def trigger(self, *args, **kwargs):
         """Called on event emission and notifies the :meth:`wait` method
