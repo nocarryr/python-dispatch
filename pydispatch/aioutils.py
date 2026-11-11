@@ -2,10 +2,11 @@ import asyncio
 import sys
 import threading
 from _weakref import _remove_dead_weakref  # type: ignore[attr-defined]
+from collections.abc import Generator
 from weakref import ref
 
 if sys.version_info < (3, 14):
-    from _weakrefset import _IterationGuard
+    from _weakrefset import _IterationGuard  # type: ignore[attr-defined]
 else:
     # _IterationGuard was removed in Python 3.14. We define a no-op version here
     class _IterationGuard:
@@ -17,6 +18,7 @@ else:
             pass
 
 
+from pydispatch.types import EventWaitResult
 from pydispatch.utils import (
     WeakMethodContainer,
     get_method_vars,
@@ -84,18 +86,19 @@ class AioEventWaiter:
     Attributes:
         loop: The :class:`EventLoop <asyncio.BaseEventLoop>` instance
         aio_event: An :class:`asyncio.Event` used to track event emission
-        args (list): The positional arguments attached to the event
+        args: The positional arguments attached to the event. Initially an
+            empty list; after a trigger, a tuple of arguments.
         kwargs (dict): The keyword arguments attached to the event
 
     .. versionadded:: 0.1.0
     """
     __slots__ = ('aio_event', 'args', 'kwargs', 'loop')
-    def __init__(self, loop):
+    def __init__(self, loop: asyncio.AbstractEventLoop) -> None:
         self.loop = loop
         self.aio_event = asyncio.Event()
         self.args: list[object] | tuple[object, ...] = []
-        self.kwargs = {}
-    def trigger(self, *args, **kwargs):
+        self.kwargs: dict[str, object] = {}
+    def trigger(self, *args: object, **kwargs: object) -> None:
         """Called on event emission and notifies the :meth:`wait` method
 
         Called by :class:`AioEventWaiters` when the
@@ -107,17 +110,22 @@ class AioEventWaiter:
         self.args = args
         self.kwargs = kwargs
         self.aio_event.set()
-    async def wait(self):
+    async def wait(self) -> EventWaitResult:
         """Waits for event emission and returns the event parameters
 
         Returns:
-            args (list): Positional arguments attached to the event
-            kwargs (dict): Keyword arguments attached to the event
+            A two-tuple ``(args, kwargs)`` containing the positional and
+            keyword arguments from the dispatched :class:`~pydispatch.dispatch.Event`.
+            ``args`` is a tuple, and ``kwargs`` is a dictionary. If
+            :attr:`aio_event` is set without calling :meth:`trigger`, ``args``
+            remains the initial empty list and ``kwargs`` remains empty.
 
         """
         await self.aio_event.wait()
         return self.args, self.kwargs
-    def __await__(self):
+    def __await__(
+        self,
+    ) -> Generator[object, None, EventWaitResult]:
         task = asyncio.ensure_future(self.wait())
         return task.__await__()
 
@@ -136,10 +144,10 @@ class AioEventWaiters:
     .. versionadded:: 0.1.0
     """
     __slots__ = ('lock', 'waiters')
-    def __init__(self):
-        self.waiters = set()
+    def __init__(self) -> None:
+        self.waiters: set[AioEventWaiter] = set()
         self.lock = AioSimpleLock()
-    async def add_waiter(self):
+    async def add_waiter(self) -> AioEventWaiter:
         """Add a :class:`AioEventWaiter` to the :attr:`waiters` container
 
         The event loop to use for :attr:`AioEventWaiter.loop` is found in the
@@ -154,7 +162,7 @@ class AioEventWaiters:
             waiter = AioEventWaiter(loop)
             self.waiters.add(waiter)
         return waiter
-    async def wait(self):
+    async def wait(self) -> EventWaitResult:
         """Creates a :class:`waiter <AioEventWaiter>` and "awaits" its result
 
         This method is used by :class:`pydispatch.dispatch.Event` instances when
@@ -162,16 +170,21 @@ class AioEventWaiters:
         :class:`AioEventWaiters` and :class:`AioEventWaiter`.
 
         Returns:
-            args (list): Positional arguments attached to the event
-            kwargs (dict): Keyword arguments attached to the event
+            A two-tuple ``(args, kwargs)`` containing the positional and
+            keyword arguments from the dispatched :class:`~pydispatch.dispatch.Event`.
+            ``args`` is a tuple, and ``kwargs`` is a dictionary. If the
+            waiter's event is set without triggering it, ``args`` remains the
+            initial empty list and ``kwargs`` remains empty.
 
         """
         waiter = await self.add_waiter()
         return await waiter
-    def __await__(self):
+    def __await__(
+        self,
+    ) -> Generator[object, None, EventWaitResult]:
         task = asyncio.ensure_future(self.wait())
         return task.__await__()
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args: object, **kwargs: object) -> None:
         """Triggers any stored :class:`waiters <AioEventWaiter>`
 
         Calls :meth:`AioEventWaiter.trigger` method on all instances stored in
