@@ -212,11 +212,11 @@ unreviewed runtime changes.
 The cached-receiver bug in `_post_register_hook` was fixed separately in #144.
 
 **Progress:** Ruff is enforced in CI for both packages (#145). Mypy is in the
-test dependency group and runs on the core package as a non-blocking CI step,
-checking untyped bodies against Python 3.11. The core baseline initially
-reported 32 errors; the initial fixes reduced it to 23. Continue
-addressing the remaining diagnostics incrementally before making the check
-blocking or expanding it to the plugin.
+test dependency group and runs on the core package as a non-blocking CI step
+(#146), checking untyped bodies against Python 3.11. The core baseline initially
+reported 32 errors; the initial fixes and dispatcher typing reduced it to 17.
+Continue addressing the remaining diagnostics incrementally before making the
+check blocking or expanding it to the plugin.
 
 1. Select and configure a static type checker and linter in the root
    development tooling. Recommended: mypy for type checking and Ruff for
