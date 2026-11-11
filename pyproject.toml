@@ -55,6 +55,17 @@ addopts = "--doctest-modules --doctest-glob='*.rst' --doctest-glob='*.md'"
 doctest_plus = "enabled"
 asyncio_mode = "auto"
 
+[tool.ruff]
+target-version = "py311"
+
+
+[tool.ruff.lint.per-file-ignores]
+# The package intentionally re-exports its public API through star imports;
+# preserve the existing version fallback and legacy compatibility warning.
+"pydispatch/__init__.py" = ["E722", "F403", "UP036"]
+# Sphinx expects option_spec dictionaries to be shared class attributes.
+"sphinx-plugin/pydispatch_sphinx/documenters.py" = ["RUF012"]
+
 
 [dependency-groups]
 doc = [
@@ -73,6 +84,7 @@ test = [
     "pytest-asyncio>=0.16.0",
     "pytest-cov>=4.0.0",
     "pytest-doctestplus>=0.9.0",
+    "ruff>=0.17.4",
 ]
 
 dev = [

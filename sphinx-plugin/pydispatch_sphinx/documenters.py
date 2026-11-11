@@ -2,19 +2,26 @@ import typing as tp
 
 from docutils.statemachine import StringList
 from sphinx.application import Sphinx
-from sphinx.locale import _
-from sphinx.util import logging
-from sphinx.util import inspect
-from sphinx.util.typing import get_type_hints
 from sphinx.ext.autodoc import (
-    ClassDocumenter, ModuleDocumenter, MethodDocumenter, AttributeDocumenter,
-    PropertyDocumenter as _PropertyDocumenter, INSTANCEATTR,
-    annotation_option, bool_option,
+    INSTANCEATTR,
+    AttributeDocumenter,
+    ClassDocumenter,
+    MethodDocumenter,
+    ModuleDocumenter,
+    annotation_option,
+    bool_option,
 )
+from sphinx.ext.autodoc import (
+    PropertyDocumenter as _PropertyDocumenter,
+)
+from sphinx.locale import _
+from sphinx.util import inspect, logging
+from sphinx.util.typing import get_type_hints
 
 from pydispatch import Dispatcher, Event
-from pydispatch.properties import Property, DictProperty, ListProperty
-_Event_fullname = '.'.join([Event.__module__, Event.__qualname__])
+from pydispatch.properties import DictProperty, ListProperty, Property
+
+_Event_fullname = f'{Event.__module__}.{Event.__qualname__}'
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +33,8 @@ def has_event_name(member: tp.Any, membername: str, parent: ClassDocumenter) -> 
 
 def update_event_content(object_name: str, more_content: StringList) -> None:
     objref = f':py:class:`pydispatch.Event <{_Event_fullname}>`'
-    more_content.append(_(f'``{object_name}`` is a {objref} object.'), '')
+    message = _('``%(object_name)s`` is a %(objref)s object.')
+    more_content.append(message % {'object_name': object_name, 'objref': objref}, '')
     more_content.append('', '')
 
 
@@ -80,7 +88,7 @@ class DispatcherEventMethodDocumenter(MethodDocumenter):
         sourcename = self.get_sourcename()
         self.add_line('   :hasargs:', sourcename)
 
-    def add_content(self, more_content: tp.Optional[StringList]) -> None:
+    def add_content(self, more_content: StringList | None) -> None:
         if more_content is None:
             more_content = StringList()
         update_event_content(self.object_name, more_content)
@@ -102,10 +110,9 @@ class DispatcherPropertyDocumenter(AttributeDocumenter):
         cls, member: tp.Any, membername: str, isattr: bool, parent: tp.Any
     ) -> bool:
 
-        if isinstance(parent, ClassDocumenter):
-            if isinstance(member, Property):
-                return True
-        return False
+        return (
+            isinstance(parent, ClassDocumenter) and isinstance(member, Property)
+        )
 
     @property
     def propcls(self) -> str:
@@ -123,12 +130,6 @@ class DispatcherPropertyDocumenter(AttributeDocumenter):
 
         propcls = self.propcls
         assert propcls.endswith('Property')
-        if propcls.endswith('DictProperty'):
-            prop_type = 'dict'
-        elif propcls.endswith('ListProperty'):
-            prop_type = 'list'
-        else:
-            prop_type = None
 
         self.add_line(f'   :propcls: {propcls}', sourcename)
         default = self.object.default

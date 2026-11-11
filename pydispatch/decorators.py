@@ -1,9 +1,10 @@
-from typing import Union, Iterable, Iterator, Callable
 import asyncio
+from collections.abc import Callable, Iterable, Iterator
 
 import pydispatch
-from .dispatch import DoesNotExistError, _GLOBAL_DISPATCHER
-from .utils import iscoroutinefunction, WeakMethodContainer
+
+from .dispatch import _GLOBAL_DISPATCHER
+from .utils import WeakMethodContainer, iscoroutinefunction
 
 __all__ = ('receiver',)
 
@@ -33,7 +34,7 @@ _CACHED_CALLBACKS = CallbackCache()
 
 
 def receiver(
-    event_name: Union[str, Iterable[str]],
+    event_name: str | Iterable[str],
     cache: bool = False,
     auto_register: bool = False
 ):

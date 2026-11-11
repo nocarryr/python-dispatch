@@ -1,5 +1,6 @@
 import sys
 import warnings
+
 try:
     import importlib.metadata as importlib_metadata
 except ImportError:
@@ -15,11 +16,11 @@ if sys.version_info < (3, 6): # pragma: no cover
                   'After version 0.1.x, `python-dispatch` will only support Python 3.6 or greater.',
                   UserWarning)
 
+from pydispatch import decorators
+from pydispatch.decorators import *
 from pydispatch.dispatch import *
 from pydispatch.dispatch import _GLOBAL_DISPATCHER
 from pydispatch.properties import *
-from pydispatch import decorators
-from pydispatch.decorators import *
 
 
 def register_event(*names):

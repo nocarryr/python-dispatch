@@ -34,14 +34,12 @@ reason. If custom objects are used as values, they must be able to support
 equality checking. In most cases, this will be handled automatically.
 """
 
-import weakref
 
 from pydispatch.utils import InformativeWVDict
 
+__all__ = ['DictProperty', 'ListProperty', 'Property']
 
-__all__ = ['Property', 'ListProperty', 'DictProperty']
-
-class Property(object):
+class Property:
     """Defined on the class level to create an observable attribute
 
     Args:
@@ -110,7 +108,7 @@ class Property(object):
         kwargs['property'] = self
         obj.emit(self.name, obj, value, old=old, **kwargs)
     def __repr__(self):
-        return '<{}: {}>'.format(self.__class__, self)
+        return f'<{self.__class__}: {self}>'
     def __str__(self):
         return self.name
 
@@ -133,18 +131,18 @@ class ListProperty(Property):
         if default is None:
             default = []
         self.copy_on_change = copy_on_change
-        super(ListProperty, self).__init__(default)
+        super().__init__(default)
     def _add_instance(self, obj):
         default = self.default[:]
         default = ObservableList(default, obj=obj, property=self)
-        super(ListProperty, self)._add_instance(obj, default)
+        super()._add_instance(obj, default)
     def __set__(self, obj, value):
         value = ObservableList(value, obj=obj, property=self)
-        super(ListProperty, self).__set__(obj, value)
+        super().__set__(obj, value)
     def __get__(self, obj, objcls=None):
         if obj is None:
             return self
-        value = super(ListProperty, self).__get__(obj, objcls)
+        value = super().__get__(obj, objcls)
         if not isinstance(value, ObservableList):
             value = ObservableList(value, obj=obj, property=self)
             self._Property__storage[id(obj)] = value
@@ -169,24 +167,24 @@ class DictProperty(Property):
         if default is None:
             default = {}
         self.copy_on_change = copy_on_change
-        super(DictProperty, self).__init__(default)
+        super().__init__(default)
     def _add_instance(self, obj):
         default = self.default.copy()
         default = ObservableDict(default, obj=obj, property=self)
-        super(DictProperty, self)._add_instance(obj, default)
+        super()._add_instance(obj, default)
     def __set__(self, obj, value):
         value = ObservableDict(value, obj=obj, property=self)
-        super(DictProperty, self).__set__(obj, value)
+        super().__set__(obj, value)
     def __get__(self, obj, objcls=None):
         if obj is None:
             return self
-        value = super(DictProperty, self).__get__(obj, objcls)
+        value = super().__get__(obj, objcls)
         if not isinstance(value, ObservableDict):
             value = ObservableDict(value, obj=obj, property=self)
             self._Property__storage[id(obj)] = value
         return value
 
-class Observable(object):
+class Observable:
     """Mixin used by :class:`ObservableList` and :class:`ObservableDict`
     to emit changes and build other observables
 
@@ -238,7 +236,7 @@ class ObservableList(list, Observable):
     """
     def __init__(self, initlist=None, **kwargs):
         self._init_complete = False
-        super(ObservableList, self).__init__()
+        super().__init__()
         self.property = kwargs.get('property')
         self.obj = kwargs.get('obj')
         self.parent_observable = kwargs.get('parent')
@@ -252,15 +250,15 @@ class ObservableList(list, Observable):
     def __setitem__(self, key, item):
         old = self._get_copy_or_none()
         item = self._build_observable(item)
-        super(ObservableList, self).__setitem__(key, item)
+        super().__setitem__(key, item)
         self._emit_change(keys=[key], old=old)
     def __delitem__(self, key):
         old = self._get_copy_or_none()
-        super(ObservableList, self).__delitem__(key)
+        super().__delitem__(key)
         self._emit_change(old=old)
     def clear(self):
         old = self._get_copy_or_none()
-        super(ObservableList, self).clear()
+        super().clear()
         self._emit_change(old=old)
     def __iadd__(self, other):
         other = self._build_observable(other)
@@ -269,7 +267,7 @@ class ObservableList(list, Observable):
     def append(self, item):
         old = self._get_copy_or_none()
         item = self._build_observable(item)
-        super(ObservableList, self).append(item)
+        super().append(item)
         self._emit_change(old=old)
     def extend(self, other):
         old = self._get_copy_or_none()
@@ -282,7 +280,7 @@ class ObservableList(list, Observable):
         self._emit_change(old=old)
     def remove(self, *args):
         old = self._get_copy_or_none()
-        super(ObservableList, self).remove(*args)
+        super().remove(*args)
         self._emit_change(old=old)
 
 class ObservableDict(dict, Observable):
@@ -293,7 +291,7 @@ class ObservableDict(dict, Observable):
     """
     def __init__(self, initdict=None, **kwargs):
         self._init_complete = False
-        super(ObservableDict, self).__init__()
+        super().__init__()
         self.property = kwargs.get('property')
         self.obj = kwargs.get('obj')
         self.parent_observable = kwargs.get('parent')
@@ -307,11 +305,11 @@ class ObservableDict(dict, Observable):
     def __setitem__(self, key, item):
         old = self._get_copy_or_none()
         item = self._build_observable(item)
-        super(ObservableDict, self).__setitem__(key, item)
+        super().__setitem__(key, item)
         self._emit_change(keys=[key], old=old)
     def __delitem__(self, key):
         old = self._get_copy_or_none()
-        super(ObservableDict, self).__delitem__(key)
+        super().__delitem__(key)
         self._emit_change(old=old)
     def update(self, other):
         old = self._get_copy_or_none()
@@ -328,17 +326,17 @@ class ObservableDict(dict, Observable):
         self._emit_change(keys=list(keys), old=old)
     def clear(self):
         old = self._get_copy_or_none()
-        super(ObservableDict, self).clear()
+        super().clear()
         self._emit_change(old=old)
     def pop(self, *args):
         """Return the removed value or default after emitting a change event."""
         old = self._get_copy_or_none()
-        value = super(ObservableDict, self).pop(*args)
+        value = super().pop(*args)
         self._emit_change(old=old)
         return value
     def setdefault(self, *args):
         """Return the existing or inserted value and notify on successful calls."""
         old = self._get_copy_or_none()
-        value = super(ObservableDict, self).setdefault(*args)
+        value = super().setdefault(*args)
         self._emit_change(old=old)
         return value

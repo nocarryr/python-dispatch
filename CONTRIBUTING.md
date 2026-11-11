@@ -42,8 +42,8 @@ Working on your first Pull Request? Here are a couple of resources to get you st
 
 While this project does not fully (probably not even partially) adhere to [PEP8](https://www.python.org/dev/peps/pep-0008/),
 the existing code-base does maintain a certain level of consistency.  Please try
-to follow the style if possible.  Don't worry about it too much though, there's no
-[flakes](https://pypi.org/project/pyflakes/) or [lint](https://www.pylint.org/) here.
+to follow the style if possible. Ruff checks a focused set of correctness rules
+for the core package and Sphinx plugin without enforcing a formatting rewrite.
 
 ### Basic Guidelines
 
@@ -93,6 +93,16 @@ pip install pytest pytest-xdist
 ```
 
 ### Running Tests
+
+Install the workspace test dependencies and run the lint check with
+[uv](https://docs.astral.sh/uv/):
+
+```bash
+uv sync --group test
+uv run ruff check pydispatch sphinx-plugin/pydispatch_sphinx
+```
+
+CI runs the same Ruff check on Python 3.13.
 
 To run the entire test suite:
 ```bash
