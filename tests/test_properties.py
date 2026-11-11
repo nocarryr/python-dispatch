@@ -176,6 +176,35 @@ def test_empty_defaults(listener):
 
     assert len(listener.property_events) == 2
 
+
+def test_observable_storage_and_nested_ownership():
+    from pydispatch import DictProperty, Dispatcher, ListProperty, Property
+    from pydispatch.properties import Observable, ObservableDict, ObservableList
+
+    assert '_Property__storage' not in Property.__dict__
+    assert 'parent_observable' not in Observable.__dict__
+    assert 'property' not in Observable.__dict__
+
+    class A(Dispatcher):
+        test_list = ListProperty([{'nested': [1]}], copy_on_change=True)
+        test_dict = DictProperty({'nested': [1]}, copy_on_change=True)
+
+    first = A()
+    second = A()
+
+    assert isinstance(first.test_list, ObservableList)
+    assert isinstance(first.test_list[0], ObservableDict)
+    assert first.test_list[0].parent_observable is first.test_list
+    assert first.test_list[0]['nested'].parent_observable is first.test_list[0]
+    assert first.test_dict['nested'].parent_observable is first.test_dict
+    assert first.test_list is first.test_list
+    assert first.test_dict is first.test_dict
+
+    first.test_list[0]['nested'].append(2)
+    first.test_dict['nested'].append(2)
+    assert second.test_list == [{'nested': [1]}]
+    assert second.test_dict == {'nested': [1]}
+
 def test_unbind(listener):
     from pydispatch import Dispatcher, Property
     class A(Dispatcher):

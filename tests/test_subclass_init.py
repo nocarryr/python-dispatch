@@ -38,6 +38,9 @@ def test_new_class_creation():
     from pydispatch import Dispatcher
     from pydispatch.properties import Property, DictProperty
 
+    assert '_PROPERTIES_' not in Dispatcher.__dict__
+    assert '_EVENTS_' not in Dispatcher.__dict__
+
     class A(Dispatcher):
         prop_a = Property()
         _events_ = ['a_event']
@@ -60,6 +63,11 @@ def test_new_class_creation():
     assert B._EVENTS_ == {'a_event', 'b_event'}
     assert C._PROPERTIES_ == c_props
     assert C._EVENTS_ == {'a_event', 'b_event', 'c_event'}
+
+    assert A._PROPERTIES_ is not B._PROPERTIES_
+    assert B._PROPERTIES_ is not C._PROPERTIES_
+    assert A._EVENTS_ is not B._EVENTS_
+    assert B._EVENTS_ is not C._EVENTS_
 
     assert C.prop_a is not A.prop_a
     assert C.prop_b is B.prop_b
@@ -96,3 +104,21 @@ def test_new_class_creation():
     c.prop_c = 'cc'
     assert a.prop_a != b.prop_a != c.prop_a
     assert b.prop_b != c.prop_b
+
+
+def test_dispatcher_init_events_name_mangling():
+    from pydispatch import Dispatcher
+
+    calls = []
+
+    class A(Dispatcher):
+        _events_ = ('ready',)
+
+        def _Dispatcher__init_events(self):
+            calls.append(self)
+            super()._Dispatcher__init_events()
+
+    instance = A()
+
+    assert calls == [instance]
+    assert instance.get_dispatcher_event('ready').name == 'ready'

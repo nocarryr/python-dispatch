@@ -1,4 +1,5 @@
 import types
+from typing import TYPE_CHECKING, ClassVar
 
 from pydispatch.aioutils import AioEventWaiters, AioWeakMethodContainer
 from pydispatch.properties import Property
@@ -121,10 +122,15 @@ class Dispatcher:
 
     Once defined, an event can be dispatched to listeners by calling :meth:`emit`.
     """
+    # Subclasses create these registries; the base class has no runtime values.
+    if TYPE_CHECKING:
+        _PROPERTIES_: ClassVar[dict[str, Property]]
+        _EVENTS_: ClassVar[set[str]]
+
     def __init_subclass__(cls, *args, **kwargs):
         super().__init_subclass__()
-        props = getattr(cls, '_PROPERTIES_', {}).copy()
-        events = getattr(cls, '_EVENTS_', set()).copy()
+        props: dict[str, Property] = getattr(cls, '_PROPERTIES_', {}).copy()
+        events: set[str] = getattr(cls, '_EVENTS_', set()).copy()
         for key, val in cls.__dict__.items():
             if key == '_events_':
                 events |= set(val)
@@ -135,7 +141,7 @@ class Dispatcher:
 
     def __new__(cls, *args, **kwargs):
         obj = super().__new__(cls)
-        obj._Dispatcher__init_events()
+        obj.__init_events()
         return obj
     def __init__(self, *args, **kwargs):
         # Everything is handled by __new__
