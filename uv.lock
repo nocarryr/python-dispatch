@@ -697,7 +697,7 @@ wheels = [
 
 [[package]]
 name = "python-dispatch"
-version = "0.2.4"
+version = "0.2.41"
 source = { editable = "." }
 
 [package.dev-dependencies]
@@ -784,7 +784,7 @@ test = [
 
 [[package]]
 name = "python-dispatch-sphinx"
-version = "0.2.2"
+version = "0.2.41"
 source = { editable = "sphinx-plugin" }
 dependencies = [
     { name = "python-dispatch" },

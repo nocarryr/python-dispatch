@@ -1,6 +1,6 @@
 [project]
 name = "python-dispatch-sphinx"
-version = "0.2.2"
+version = "0.2.41"
 description = "Sphinx extension for python-dispatch"
 readme = "README.rst"
 license = "MIT"
