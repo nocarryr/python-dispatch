@@ -1,10 +1,6 @@
+import importlib.metadata as importlib_metadata
 import sys
 import warnings
-
-try:
-    import importlib.metadata as importlib_metadata
-except ImportError:
-    import importlib_metadata
 
 try:
     __version__ = importlib_metadata.version('python-dispatch')

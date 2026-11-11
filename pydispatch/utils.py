@@ -2,7 +2,8 @@ import asyncio
 import inspect
 import types
 import weakref
-from _weakref import _remove_dead_weakref  # type: ignore[import]
+from _weakref import _remove_dead_weakref  # type: ignore[attr-defined]
+from collections.abc import Callable
 from weakref import ref
 
 
@@ -90,6 +91,8 @@ class WeakMethodContainer(weakref.WeakValueDictionary):
                 yield getattr(obj, f.__name__)
 
 class InformativeDict(dict):
+    del_callback: Callable[[object], None]
+
     def __delitem__(self, key):
         super().__delitem__(key)
         self.del_callback(key)
@@ -103,7 +106,7 @@ class InformativeWVDict(weakref.WeakValueDictionary):
             the only argument.
     """
     def __init__(self, **kwargs):
-        self.del_callback = kwargs.get('del_callback')
+        self.del_callback: Callable[[object], None] | None = kwargs.get('del_callback')
         weakref.WeakValueDictionary.__init__(self)
         # Capture a weak reference without retaining this container.
         def remove(wr, selfref=ref(self)):  # noqa: B008

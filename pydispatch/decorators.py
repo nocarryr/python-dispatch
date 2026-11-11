@@ -100,11 +100,14 @@ def receiver(
     def _decorator(func: Callable):
         is_async = iscoroutinefunction(func)
 
+        event_names: Iterable[str]
         if isinstance(event_name, str):
             event_names = [event_name]
         else:
             event_names = event_name
-        bind_kwargs = {ev:func for ev in event_names}
+        bind_kwargs: dict[str, Callable | asyncio.AbstractEventLoop] = {
+            ev: func for ev in event_names
+        }
         if auto_register or cache:
             for name in event_names:
                 if not _GLOBAL_DISPATCHER._has_event(name):
