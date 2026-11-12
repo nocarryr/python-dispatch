@@ -34,8 +34,10 @@ reason. If custom objects are used as values, they must be able to support
 equality checking. In most cases, this will be handled automatically.
 """
 
+import builtins
 from collections.abc import Iterable
 from typing import TYPE_CHECKING
+from weakref import ReferenceType, ref
 
 from pydispatch.utils import InformativeWVDict
 
@@ -64,11 +66,11 @@ class Property:
         return self._name
     def __set_name__(self, owner, name):
         self._name = name
-    def _add_instance(self, obj, default=None):
-        if default is None:
-            default = self.default
-        self.__storage[id(obj)] = self.default
+    def _add_instance(self, obj):
+        self.__storage[id(obj)] = self._build_default(obj)
         self.__weakrefs[id(obj)] = obj
+    def _build_default(self, obj):
+        return self.default
     def _del_instance(self, obj):
         del self.__storage[id(obj)]
     def _on_weakref_fin(self, obj_id):
@@ -128,25 +130,28 @@ class ListProperty(Property):
 
     Changes to the contents of the list are able to be observed through
     :class:`ObservableList`.
+
+    .. versionchanged:: 0.3.0
+        Each instance's observable default is initialized when the property
+        is registered, and no longer retains the instance.
     """
     def __init__(self, default=None, copy_on_change=False):
         if default is None:
             default = []
         self.copy_on_change = copy_on_change
         super().__init__(default)
-    def _add_instance(self, obj):
+    def _build_default(self, obj):
         default = self.default[:]
-        default = ObservableList(default, obj=obj, property=self)
-        super()._add_instance(obj, default)
+        return ObservableList(default, _owner_ref=ref(obj), property=self)
     def __set__(self, obj, value):
-        value = ObservableList(value, obj=obj, property=self)
+        value = ObservableList(value, _owner_ref=ref(obj), property=self)
         super().__set__(obj, value)
     def __get__(self, obj, objcls=None):
         if obj is None:
             return self
         value = super().__get__(obj, objcls)
         if not isinstance(value, ObservableList):
-            value = ObservableList(value, obj=obj, property=self)
+            value = ObservableList(value, _owner_ref=ref(obj), property=self)
             self._Property__storage[id(obj)] = value  # type: ignore[attr-defined]
         return value
 
@@ -164,25 +169,28 @@ class DictProperty(Property):
 
     Changes to the contents of the dict are able to be observed through
     :class:`ObservableDict`.
+
+    .. versionchanged:: 0.3.0
+        Each instance's observable default is initialized when the property
+        is registered, and no longer retains the instance.
     """
     def __init__(self, default=None, copy_on_change=False):
         if default is None:
             default = {}
         self.copy_on_change = copy_on_change
         super().__init__(default)
-    def _add_instance(self, obj):
+    def _build_default(self, obj):
         default = self.default.copy()
-        default = ObservableDict(default, obj=obj, property=self)
-        super()._add_instance(obj, default)
+        return ObservableDict(default, _owner_ref=ref(obj), property=self)
     def __set__(self, obj, value):
-        value = ObservableDict(value, obj=obj, property=self)
+        value = ObservableDict(value, _owner_ref=ref(obj), property=self)
         super().__set__(obj, value)
     def __get__(self, obj, objcls=None):
         if obj is None:
             return self
         value = super().__get__(obj, objcls)
         if not isinstance(value, ObservableDict):
-            value = ObservableDict(value, obj=obj, property=self)
+            value = ObservableDict(value, _owner_ref=ref(obj), property=self)
             self._Property__storage[id(obj)] = value  # type: ignore[attr-defined]
         return value
 
@@ -196,14 +204,31 @@ class Observable:
     In other words, if a dict is added to a :class:`ObservableDict`, it is
     copied and replaced by another :class:`ObservableDict`. This allows nested
     containers to be observed and their changes to be tracked.
+
+    .. versionchanged:: 0.3.0
+        Property-owned observables hold their owner weakly. After the owner is
+        collected, ``obj`` is :obj:`None` and a mutation that would notify the
+        owner raises :class:`ReferenceError`.
     """
     # Concrete containers initialize these fields; the mixin has no values of its own.
     if TYPE_CHECKING:
         parent_observable: 'Observable | None'
         property: 'ListProperty | DictProperty | None'
-        obj: object
+        _owner_ref: 'ReferenceType[object] | None'
+        _obj: object
         copy_on_change: bool
         _init_complete: bool
+
+    @builtins.property
+    def obj(self) -> object:
+        if self._owner_ref is not None:
+            return self._owner_ref()
+        return self._obj
+
+    @obj.setter
+    def obj(self, value: object) -> None:
+        self._owner_ref = None
+        self._obj = value
 
     def _build_observable(self, item):
         if isinstance(item, list):
@@ -237,7 +262,10 @@ class Observable:
         if p is not None:
             p._emit_change(old=old)
             return
-        self.property._on_change(self.obj, old, self, **kwargs)
+        obj = self.obj
+        if self._owner_ref is not None and obj is None:
+            raise ReferenceError('The observable property owner no longer exists')
+        self.property._on_change(obj, old, self, **kwargs)
 
 class ObservableList(list, Observable):
     """A :class:`list` subclass that tracks changes to its contents
@@ -249,7 +277,8 @@ class ObservableList(list, Observable):
         self._init_complete = False
         super().__init__()
         self.property = kwargs.get('property')
-        self.obj = kwargs.get('obj')
+        self._owner_ref = kwargs.get('_owner_ref')
+        self._obj = kwargs.get('obj') if self._owner_ref is None else None
         self.parent_observable = kwargs.get('parent')
         if self.property is not None:
             self.copy_on_change = self.property.copy_on_change
@@ -304,7 +333,8 @@ class ObservableDict(dict, Observable):
         self._init_complete = False
         super().__init__()
         self.property = kwargs.get('property')
-        self.obj = kwargs.get('obj')
+        self._owner_ref = kwargs.get('_owner_ref')
+        self._obj = kwargs.get('obj') if self._owner_ref is None else None
         self.parent_observable = kwargs.get('parent')
         if self.property is not None:
             self.copy_on_change = self.property.copy_on_change

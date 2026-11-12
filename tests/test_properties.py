@@ -1,4 +1,89 @@
 
+import gc
+import weakref
+
+import pytest
+
+
+@pytest.mark.parametrize(
+    ('property_type', 'default', 'replacement'),
+    [
+        ('list', [1, {'nested': [2]}], [3]),
+        ('dict', {'nested': [2]}, {'changed': 3}),
+    ],
+)
+def test_container_defaults_initialized_before_first_access(
+    listener, property_type, default, replacement
+):
+    from pydispatch import DictProperty, Dispatcher, ListProperty
+    from pydispatch.properties import ObservableDict, ObservableList
+
+    cls = ListProperty if property_type == 'list' else DictProperty
+    observable_cls = ObservableList if property_type == 'list' else ObservableDict
+
+    class Sender(Dispatcher):
+        data = cls(default)
+
+    first = Sender()
+    second = Sender()
+    first.bind(data=listener.on_prop)
+    first.data = replacement
+
+    old = listener.property_event_kwargs[0]['old']
+    assert isinstance(old, observable_cls)
+    assert old == default
+    assert old.obj is first
+    assert isinstance(second.data, observable_cls)
+    assert second.data == default
+    assert second.data is not old
+
+
+@pytest.mark.parametrize('operation', ['none', 'read', 'assign'])
+def test_container_properties_do_not_keep_owner_alive(operation):
+    from pydispatch import DictProperty, Dispatcher, ListProperty
+
+    class Sender(Dispatcher):
+        items = ListProperty([{'nested': [1]}])
+        values = DictProperty({'nested': [1]})
+
+    sender = Sender()
+    sender_ref = weakref.ref(sender)
+    key = id(sender)
+    if operation == 'assign':
+        sender.items = [{'nested': [2]}]
+        sender.values = {'nested': [2]}
+    if operation != 'none':
+        items = sender.items
+        values = sender.values
+        assert items.obj is sender
+        assert values.obj is sender
+
+    del sender
+    gc.collect()
+
+    assert sender_ref() is None
+    assert key not in Sender.items._Property__storage
+    assert key not in Sender.values._Property__storage
+    if operation != 'none':
+        assert items.obj is None
+        assert values.obj is None
+        with pytest.raises(ReferenceError, match='owner no longer exists'):
+            items.append(2)
+        with pytest.raises(ReferenceError, match='owner no longer exists'):
+            values['nested'].append(2)
+
+
+def test_standalone_observables_preserve_explicit_owner():
+    from pydispatch.properties import ObservableDict, ObservableList
+
+    owner = object()
+    replacement = object()
+    for observable in (ObservableList(obj=owner), ObservableDict(obj=owner)):
+        assert observable.obj is owner
+        observable.obj = replacement
+        assert observable.obj is replacement
+
+
 def test_properties(listener):
     from pydispatch import Dispatcher, Property
     class A(Dispatcher):

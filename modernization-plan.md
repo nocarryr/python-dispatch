@@ -227,7 +227,10 @@ required at runtime, so the signature alone does not guarantee substitutability.
 The callback keyword renames, ``isfunction`` keyword rename, and async positional
 argument order change are documented for 0.3.0. Continue addressing the remaining
 diagnostics incrementally before making the check blocking or expanding it to the
-plugin.
+plugin. Property initialization now stores per-instance observable defaults via
+a shared helper, and property-owned observables hold their owners weakly to
+allow collection. These changes fix both `_add_instance` override diagnostics;
+the core mypy baseline is now 5.
 
 1. Select and configure a static type checker and linter in the root
    development tooling. Recommended: mypy for type checking and Ruff for
