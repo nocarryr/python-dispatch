@@ -3,6 +3,11 @@
 
 .. automodule:: pydispatch.utils
 
+Function checks
+---------------
+
+.. autofunction:: pydispatch.utils.isfunction
+
 WeakMethodContainer class
 -------------------------
 

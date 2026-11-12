@@ -14,10 +14,18 @@ def get_method_vars(m):
     obj = m.__self__
     return f, obj
 
-def isfunction(m):
-    return isinstance(m, types.FunctionType)
+def isfunction(obj: object) -> bool:
+    """Return whether *obj* is a Python function.
 
-def iscoroutinefunction(obj):
+    .. important::
+        Callers using the old ``m`` keyword must use ``obj`` instead.
+
+    .. versionchanged:: 0.3.0
+        Renamed the ``m`` parameter to ``obj``.
+    """
+    return isinstance(obj, types.FunctionType)
+
+def iscoroutinefunction(obj: object) -> bool:
     return inspect.iscoroutinefunction(obj)
 
 class WeakMethodContainer(weakref.WeakValueDictionary):
@@ -30,28 +38,40 @@ class WeakMethodContainer(weakref.WeakValueDictionary):
     Functions are stored using the string "function" and the id of the function
     as the key (a two-tuple).
     """
-    def add_method(self, m, **kwargs):
+    def add_method(self, callback, **kwargs):
         """Add an instance method or function
 
         Args:
-            m: The instance method or function to store
+            callback: The instance method or function to store
+
+        .. important::
+            Callers using the old ``m`` keyword must use ``callback`` instead.
+
+        .. versionchanged:: 0.3.0
+            Renamed the ``m`` parameter to ``callback``.
         """
-        if isfunction(m):
-            self['function', id(m)] = m
+        if isfunction(callback):
+            self['function', id(callback)] = callback
         else:
-            f, obj = get_method_vars(m)
+            f, obj = get_method_vars(callback)
             wrkey = (f, id(obj))
             self[wrkey] = obj
-    def del_method(self, m):
+    def del_method(self, callback):
         """Remove an instance method or function if it exists
 
         Args:
-            m: The instance method or function to remove
+            callback: The instance method or function to remove
+
+        .. important::
+            Callers using the old ``m`` keyword must use ``callback`` instead.
+
+        .. versionchanged:: 0.3.0
+            Renamed the ``m`` parameter to ``callback``.
         """
-        if isfunction(m):
-            wrkey = ('function', id(m))
+        if isfunction(callback):
+            wrkey = ('function', id(callback))
         else:
-            f, obj = get_method_vars(m)
+            f, obj = get_method_vars(callback)
             wrkey = (f, id(obj))
         if wrkey in self:
             del self[wrkey]

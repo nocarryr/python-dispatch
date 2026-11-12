@@ -220,9 +220,14 @@ name-mangled storage rather than exposing mangled names to type checkers. Async
 waiter annotations (#148) and a narrow ignore for an unstubbed private helper
 bring the current baseline to 8. Emission-lock state annotations also clarify
 the values observed by Pylance without suppressing the remaining mypy errors;
-they exposed an async-release lock-state check that is fixed and regression-tested.
-Continue addressing the remaining diagnostics incrementally before making the
-check blocking or expanding it to the plugin.
+they exposed an async-release lock-state check that was fixed and regression-tested
+in #149. The async weak-method container now shares the base callback parameter
+and accepts extra keyword arguments, reducing the baseline to 7. Its loop remains
+required at runtime, so the signature alone does not guarantee substitutability.
+The callback keyword renames, ``isfunction`` keyword rename, and async positional
+argument order change are documented for 0.3.0. Continue addressing the remaining
+diagnostics incrementally before making the check blocking or expanding it to the
+plugin.
 
 1. Select and configure a static type checker and linter in the root
    development tooling. Recommended: mypy for type checking and Ruff for

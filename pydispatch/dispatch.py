@@ -77,7 +77,7 @@ class Event:
             loop = kwargs.get('__aio_loop__')
             if loop is None:
                 raise RuntimeError('Coroutine function given without event loop')
-            self.aio_listeners.add_method(loop, callback)
+            self.aio_listeners.add_method(callback, loop)
         else:
             self.listeners.add_method(callback)
     def remove_listener(self, obj):

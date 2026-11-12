@@ -225,15 +225,24 @@ class AioWeakMethodContainer(WeakMethodContainer):
         self._pending_removals = []
         self._iterating = set()
 
-        self.event_loop_map = {}
-    def add_method(self, loop, callback):
+        self.event_loop_map: dict[tuple[object, int], asyncio.AbstractEventLoop] = {}
+    def add_method(self, callback, loop: asyncio.AbstractEventLoop | None = None, **kwargs):
         """Add a coroutine function
 
         Args:
-            loop: The :class:`event loop <asyncio.BaseEventLoop>` instance
-                on which to schedule callbacks
             callback: The :term:`coroutine function` to add
+            loop: The :class:`event loop <asyncio.BaseEventLoop>` instance
+                on which to schedule callbacks. This argument is required.
+
+        .. important::
+            The positional arguments are now ``callback, loop``, rather than
+            ``loop, callback``. Calls using both keywords are unchanged.
+
+        .. versionchanged:: 0.3.0
+            Reordered the arguments and accepted extra keyword arguments.
         """
+        if loop is None:
+            raise TypeError('An event loop is required')
         if isfunction(callback):
             wrkey = ('function', id(callback))
             self[wrkey] = callback
