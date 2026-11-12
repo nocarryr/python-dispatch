@@ -4,6 +4,20 @@ from functools import partial
 import time
 import pytest
 
+
+@pytest.mark.asyncio
+async def test_release_async_on_unlocked_emission_lock(sender):
+    sender.register_event('on_test')
+    lock = sender.emission_lock('on_test')
+
+    await lock.release_async()
+    await lock.acquire_async()
+    await lock.release_async()
+    await lock.release_async()
+
+    assert not lock.aio_locks[id(asyncio.get_running_loop())].locked()
+
+
 @pytest.mark.asyncio
 async def test_aio_event_lock(listener, sender):
     loop = asyncio.get_event_loop()

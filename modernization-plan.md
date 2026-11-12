@@ -217,8 +217,10 @@ test dependency group and runs on the core package as a non-blocking CI step
 reported 32 errors; the initial fixes and dispatcher and property typing
 reduced it to 9 (#147), including narrow ignores for existing accesses to private
 name-mangled storage rather than exposing mangled names to type checkers. Async
-waiter annotations and a narrow ignore for an unstubbed private helper bring
-the current baseline to 8.
+waiter annotations (#148) and a narrow ignore for an unstubbed private helper
+bring the current baseline to 8. Emission-lock state annotations also clarify
+the values observed by Pylance without suppressing the remaining mypy errors;
+they exposed an async-release lock-state check that is fixed and regression-tested.
 Continue addressing the remaining diagnostics incrementally before making the
 check blocking or expanding it to the plugin.
 

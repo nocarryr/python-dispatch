@@ -1,3 +1,6 @@
 from typing import TypeAlias
 
-EventWaitResult: TypeAlias = tuple[list[object] | tuple[object, ...], dict[str, object]]
+EventArgs: TypeAlias = tuple[object, ...]
+EventKwargs: TypeAlias = dict[str, object]
+EventArguments: TypeAlias = tuple[EventArgs, EventKwargs]
+EventWaitResult: TypeAlias = tuple[list[object] | EventArgs, EventKwargs]
