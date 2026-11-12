@@ -18,7 +18,7 @@ else:
             pass
 
 
-from pydispatch.types import EventWaitResult
+from pydispatch.types import EventArgs, EventKwargs, EventWaitResult
 from pydispatch.utils import (
     WeakMethodContainer,
     get_method_vars,
@@ -96,8 +96,8 @@ class AioEventWaiter:
     def __init__(self, loop: asyncio.AbstractEventLoop) -> None:
         self.loop = loop
         self.aio_event = asyncio.Event()
-        self.args: list[object] | tuple[object, ...] = []
-        self.kwargs: dict[str, object] = {}
+        self.args: list[object] | EventArgs = []
+        self.kwargs: EventKwargs = {}
     def trigger(self, *args: object, **kwargs: object) -> None:
         """Called on event emission and notifies the :meth:`wait` method
 

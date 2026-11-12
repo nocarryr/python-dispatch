@@ -182,6 +182,28 @@ def test_emission_lock(listener, sender):
     assert listener.received_event_data[0]['args'] == ('inner', )
 
 
+def test_emission_lock_stores_last_event_arguments(sender):
+    sender.register_event('on_test')
+    event = sender.get_dispatcher_event('on_test')
+    lock = event.emission_lock
+    received = []
+
+    def callback(*args, **kwargs):
+        received.append((args, kwargs))
+
+    sender.bind(on_test=callback)
+    assert lock.last_event is None
+
+    with lock:
+        sender.emit('on_test', 'first', count=1)
+        sender.emit('on_test', 'last', count=2)
+        assert lock.last_event == (('last',), {'count': 2})
+        assert received == []
+
+    assert lock.last_event is None
+    assert received == [(('last',), {'count': 2})]
+
+
 def test_bind_and_emit_unregistered():
     from pydispatch import Dispatcher, DoesNotExistError
 

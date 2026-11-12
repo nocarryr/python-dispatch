@@ -6,6 +6,8 @@ from _weakref import _remove_dead_weakref  # type: ignore[attr-defined]
 from collections.abc import Callable
 from weakref import ref
 
+from pydispatch.types import EventArguments
+
 
 def get_method_vars(m):
     f = m.__func__
@@ -152,13 +154,14 @@ class EmissionHoldLock:
     """
     def __init__(self, event_instance):
         self.event_instance = event_instance
-        self.last_event = None
+        self.last_event: EventArguments | None = None
         self.held = False
     @property
-    def aio_locks(self):
+    def aio_locks(self) -> dict[int, asyncio.Lock]:
         d = getattr(self, '_aio_locks', None)
         if d is None:
-            d = self._aio_locks = {}
+            self._aio_locks: dict[int, asyncio.Lock] = {}
+            d = self._aio_locks
         return d
 
     def acquire(self):
@@ -181,8 +184,9 @@ class EmissionHoldLock:
         if not lock.locked():
             await lock.acquire()
     async def release_async(self):
+        """Release the current loop's lock if held and release the emission hold."""
         lock = await self._build_aio_lock()
-        if lock.locked:
+        if lock.locked():
             lock.release()
         self.release()
 
@@ -198,7 +202,7 @@ class EmissionHoldLock:
     async def __aexit__(self, *args):
         await self.release_async()
 
-    async def _build_aio_lock(self):
+    async def _build_aio_lock(self) -> asyncio.Lock:
         loop = asyncio.get_event_loop()
         key = id(loop)
         lock = self.aio_locks.get(key)
