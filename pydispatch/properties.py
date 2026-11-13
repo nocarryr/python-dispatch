@@ -284,7 +284,10 @@ class Observable(ABC):
         obj = self.obj
         if self._owner_ref is not None and obj is None:
             raise ReferenceError('The observable property owner no longer exists')
-        self.property._on_change(obj, old, self, **kwargs)
+        property_instance = self.property
+        if property_instance is None:
+            raise AttributeError("'NoneType' object has no attribute '_on_change'")
+        property_instance._on_change(obj, old, self, **kwargs)
 
 class ObservableList(list, Observable):
     """A :class:`list` subclass that tracks changes to its contents

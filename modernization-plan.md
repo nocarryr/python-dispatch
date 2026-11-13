@@ -235,7 +235,10 @@ signature now reflects its iterable input and identity-preserving return; a
 narrow ignore accounts for mypy's comparison against overloaded `list.__add__`.
 The observable copy contract and dictionary update signature now match their
 concrete implementations; dictionary updates accept standard inputs and notify
-about partial changes on failure. The core baseline is 2.
+about partial changes on failure (#152). Explicit checks now preserve the
+existing errors for missing weak-dictionary callbacks and ownerless observable
+properties. The core mypy check passes with the documented narrow ignores; the
+plugin still needs a typing baseline and fixes.
 
 1. Select and configure a static type checker and linter in the root
    development tooling. Recommended: mypy for type checking and Ruff for

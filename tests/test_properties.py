@@ -84,6 +84,19 @@ def test_standalone_observables_preserve_explicit_owner():
         assert observable.obj is replacement
 
 
+@pytest.mark.parametrize('kind', ['list', 'dict'])
+def test_standalone_observable_without_property_raises_on_mutation(kind):
+    from pydispatch.properties import ObservableDict, ObservableList
+
+    observable = ObservableList() if kind == 'list' else ObservableDict()
+    with pytest.raises(AttributeError, match="'NoneType' object has no attribute '_on_change'"):
+        if kind == 'list':
+            observable.append(1)
+        else:
+            observable['key'] = 1
+    assert observable == ([1] if kind == 'list' else {'key': 1})
+
+
 @pytest.mark.parametrize('kind', ['list', 'tuple', 'iterator'])
 def test_observable_list_iadd_preserves_identity_and_emits(listener, kind):
     from pydispatch import Dispatcher, ListProperty
