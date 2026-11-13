@@ -151,7 +151,10 @@ class InformativeWVDict(weakref.WeakValueDictionary):
         self.data = InformativeDict()
         self.data.del_callback = self._data_del_callback
     def _data_del_callback(self, key):
-        self.del_callback(key)
+        callback = self.del_callback
+        if callback is None:
+            raise TypeError("'NoneType' object is not callable")
+        callback(key)
 
 class EmissionHoldLock:
     """Context manager used for :meth:`pydispatch.dispatch.Dispatcher.emission_lock`
