@@ -242,6 +242,10 @@ with the documented narrow ignores and is blocking in CI. The plugin uses
 development-only Docutils stubs, and missing required `propcls` options now
 produce a clear directive error. This passing baseline checks untyped function
 bodies but does not mean every public API is fully annotated.
+`Dispatcher` now has explicit return and straightforward argument annotations;
+its dynamic callback keyword arguments remain for the generic event work.
+Mypy and Ruff scopes and the minimum Python target are configured in
+`pyproject.toml`, so their checks can be run without path or option arguments.
 
 1. Select and configure a static type checker and linter in the root
    development tooling. Recommended: mypy for type checking and Ruff for

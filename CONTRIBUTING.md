@@ -99,7 +99,7 @@ Install the workspace test dependencies and run the lint check with
 
 ```bash
 uv sync --group test
-uv run ruff check pydispatch sphinx-plugin/pydispatch_sphinx
+uv run ruff check
 ```
 
 CI runs the same Ruff check on Python 3.13.
@@ -108,7 +108,7 @@ To check the core package and Sphinx plugin with mypy, including untyped
 function bodies and targeting the minimum supported Python version:
 
 ```bash
-uv run --frozen mypy --python-version 3.11 --check-untyped-defs pydispatch sphinx-plugin/pydispatch_sphinx
+uv run mypy
 ```
 
 CI runs this check on Python 3.13 and requires it to pass.
