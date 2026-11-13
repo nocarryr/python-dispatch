@@ -1,9 +1,5 @@
 import typing as tp
-
-try:
-    from importlib.metadata import version as _get_version
-except ImportError:
-    from importlib_metadata import version as _get_version
+from importlib.metadata import version as _get_version
 
 __version__ = _get_version('python-dispatch-sphinx')
 

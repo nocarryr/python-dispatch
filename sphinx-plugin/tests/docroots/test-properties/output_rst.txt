@@ -1,6 +1,6 @@
 .. _module-the_module:
 
-**class the_module.TheClass(*args, **kwargs)**
+**class the_module.TheClass(*args: object, **kwargs: object)**
 
    Docstring for TheClass
 
@@ -25,7 +25,7 @@
 
       ``baz`` is a ``pydispatch.ListProperty`` object.
 
-**class the_module.TheOtherClass(*args, **kwargs)**
+**class the_module.TheOtherClass(*args: object, **kwargs: object)**
 
    Docstring for TheOtherClass
 

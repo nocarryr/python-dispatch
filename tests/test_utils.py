@@ -102,7 +102,19 @@ def test_informative_weak_dict_without_callback_still_raises_on_deletion():
     value = WeakValue()
     values['key'] = value
 
-    with pytest.raises(TypeError):
+    with pytest.raises(TypeError, match="'NoneType' object is not callable"):
         del values['key']
 
     assert 'key' not in values
+
+
+def test_informative_weak_dict_uses_reassigned_callback():
+    deleted = []
+    values = InformativeWVDict()
+    value = WeakValue()
+    values['key'] = value
+    values.del_callback = deleted.append
+
+    del values['key']
+
+    assert deleted == ['key']

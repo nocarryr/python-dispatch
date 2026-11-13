@@ -235,7 +235,17 @@ signature now reflects its iterable input and identity-preserving return; a
 narrow ignore accounts for mypy's comparison against overloaded `list.__add__`.
 The observable copy contract and dictionary update signature now match their
 concrete implementations; dictionary updates accept standard inputs and notify
-about partial changes on failure. The core baseline is 2.
+about partial changes on failure (#152). Explicit checks now preserve the
+existing errors for missing weak-dictionary callbacks and ownerless observable
+properties. The mypy check passes for both the core package and Sphinx plugin
+with the documented narrow ignores and is blocking in CI. The plugin uses
+development-only Docutils stubs, and missing required `propcls` options now
+produce a clear directive error. This passing baseline checks untyped function
+bodies but does not mean every public API is fully annotated.
+`Dispatcher` now has explicit return and straightforward argument annotations;
+its dynamic callback keyword arguments remain for the generic event work.
+Mypy and Ruff scopes and the minimum Python target are configured in
+`pyproject.toml`, so their checks can be run without path or option arguments.
 
 1. Select and configure a static type checker and linter in the root
    development tooling. Recommended: mypy for type checking and Ruff for
