@@ -7,6 +7,13 @@ import pytest
 from conftest import PYDISPATCH_RTD, reset_intersphinx
 
 
+def test_property_documenter_does_not_shadow_sphinx_directive_bridge():
+    from pydispatch_sphinx.documenters import DispatcherPropertyDocumenter
+
+    assert 'directive' not in DispatcherPropertyDocumenter.__dict__
+    assert DispatcherPropertyDocumenter.objtype == 'dispatcherproperty'
+
+
 @pytest.mark.sphinx('rst', testroot='properties')
 def test_properties_rst(app, rootdir):
     app.builder.build_all()

@@ -97,7 +97,6 @@ class DispatcherEventMethodDocumenter(MethodDocumenter):
 
 class DispatcherPropertyDocumenter(AttributeDocumenter):
     objtype = 'dispatcherproperty'
-    directive = 'dispatcherproperty'
     member_order = 60
     priority = _PropertyDocumenter.priority + 1
     option_spec = dict(AttributeDocumenter.option_spec)
