@@ -35,13 +35,24 @@ equality checking. In most cases, this will be handled automatically.
 """
 
 import builtins
-from collections.abc import Iterable
-from typing import TYPE_CHECKING
+from abc import ABC, abstractmethod
+from collections.abc import Iterable, Iterator
+from typing import TYPE_CHECKING, Self
 from weakref import ReferenceType, ref
 
 from pydispatch.utils import InformativeWVDict
 
 __all__ = ['DictProperty', 'ListProperty', 'Property']
+
+
+def _iter_update_items(other) -> Iterator[tuple[object, object]]:
+    if hasattr(other, 'keys'):
+        for key in other.keys():  # noqa: SIM118 - mapping need not be iterable
+            yield key, other[key]
+    else:
+        for pair in other:
+            yield from dict([pair]).items()
+
 
 class Property:
     """Defined on the class level to create an observable attribute
@@ -194,7 +205,7 @@ class DictProperty(Property):
             self._Property__storage[id(obj)] = value  # type: ignore[attr-defined]
         return value
 
-class Observable:
+class Observable(ABC):
     """Mixin used by :class:`ObservableList` and :class:`ObservableDict`
     to emit changes and build other observables
 
@@ -230,6 +241,11 @@ class Observable:
         self._owner_ref = None
         self._obj = value
 
+    @abstractmethod
+    def copy(self) -> list[object] | dict[object, object]:
+        """Return a shallow copy of the concrete container."""
+        raise NotImplementedError
+
     def _build_observable(self, item):
         if isinstance(item, list):
             item = ObservableList(item, parent=self)
@@ -244,16 +260,19 @@ class Observable:
             return None
         return self._deepcopy()
     def _deepcopy(self):
-        o = self.copy()
-        item_iter: Iterable[tuple[object, object]]
         if isinstance(self, list):
-            item_iter = enumerate(self)
-        elif isinstance(self, dict):
-            item_iter = self.items()
-        for key, item in item_iter:
-            if isinstance(item, Observable):
-                o[key] = item._deepcopy()
-        return o
+            result = self.copy()
+            for index, item in enumerate(self):
+                if isinstance(item, Observable):
+                    result[index] = item._deepcopy()
+            return result
+        if isinstance(self, dict):
+            dict_result = self.copy()
+            for key, item in self.items():
+                if isinstance(item, Observable):
+                    dict_result[key] = item._deepcopy()
+            return dict_result
+        raise TypeError('Observable must be a list or dict')
     def _emit_change(self, **kwargs):
         if not self._init_complete:
             return
@@ -300,7 +319,8 @@ class ObservableList(list, Observable):
         old = self._get_copy_or_none()
         super().clear()
         self._emit_change(old=old)
-    def __iadd__(self, other):
+    def __iadd__(self, other: Iterable[object]) -> Self:  # type: ignore[misc]
+        # Mypy cannot compare this signature against list.__add__'s overloads.
         other = self._build_observable(other)
         self.extend(other)
         return self
@@ -352,19 +372,42 @@ class ObservableDict(dict, Observable):
         old = self._get_copy_or_none()
         super().__delitem__(key)
         self._emit_change(old=old)
-    def update(self, other):
+    def update(self, *args: object, **kwargs: object) -> None:
+        """Update from a mapping, iterable of pairs, and/or keyword arguments.
+
+        A successful update emits one change notification. If an input raises
+        after changing entries, the partial changes emit one notification before
+        the error propagates. The ``old`` value is a copy only when
+        ``copy_on_change`` is enabled.
+
+        .. versionchanged:: 0.3.0
+            Accept the same input forms as :meth:`dict.update`. The ``other``
+            keyword is now treated as a dictionary key, not an input mapping.
+        """
+        if len(args) > 1:
+            raise TypeError(f'update expected at most 1 argument, got {len(args)}')
         old = self._get_copy_or_none()
         init = self._init_complete
         self._init_complete = False
-        keys = set(other.keys()) - set(self.keys())
-        for key, val in other.items():
-            if key not in keys and self[key] == val:
-                continue
-            self[key] = val
-            keys.add(key)
-        if init:
-            self._init_complete = True
-        self._emit_change(keys=list(keys), old=old)
+        keys = set()
+        completed = False
+        try:
+            if args:
+                for key, val in _iter_update_items(args[0]):
+                    if key in self and self[key] == val:
+                        continue
+                    self[key] = val
+                    keys.add(key)
+            for key, val in kwargs.items():
+                if key in self and self[key] == val:
+                    continue
+                self[key] = val
+                keys.add(key)
+            completed = True
+        finally:
+            self._init_complete = init
+            if completed or keys:
+                self._emit_change(keys=list(keys), old=old)
     def clear(self):
         old = self._get_copy_or_none()
         super().clear()

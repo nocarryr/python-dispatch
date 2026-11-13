@@ -41,3 +41,5 @@ ObservableDict class
 
 .. autoclass:: pydispatch.properties.ObservableDict
     :show-inheritance:
+
+.. automethod:: pydispatch.properties.ObservableDict.update

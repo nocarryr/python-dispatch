@@ -84,6 +84,33 @@ def test_standalone_observables_preserve_explicit_owner():
         assert observable.obj is replacement
 
 
+@pytest.mark.parametrize('kind', ['list', 'tuple', 'iterator'])
+def test_observable_list_iadd_preserves_identity_and_emits(listener, kind):
+    from pydispatch import Dispatcher, ListProperty
+    from pydispatch.properties import ObservableList
+
+    class Sender(Dispatcher):
+        data = ListProperty(copy_on_change=True)
+
+    class CustomList(ObservableList):
+        pass
+
+    sender = Sender()
+    sender.bind(data=listener.on_prop)
+    values = CustomList([1], obj=sender, property=Sender.data)
+    original = values
+    extra = {'list': [2, 3], 'tuple': (2, 3), 'iterator': iter([2, 3])}[kind]
+
+    values += extra
+
+    assert values is original
+    assert isinstance(values, CustomList)
+    assert values == [1, 2, 3]
+    assert len(listener.property_events) == 1
+    assert listener.property_events[0] is values
+    assert listener.property_event_kwargs[0]['old'] == [1]
+
+
 def test_properties(listener):
     from pydispatch import Dispatcher, Property
     class A(Dispatcher):
