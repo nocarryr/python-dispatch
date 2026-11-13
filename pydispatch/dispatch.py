@@ -1,5 +1,6 @@
 import types
-from typing import TYPE_CHECKING, ClassVar
+from asyncio import AbstractEventLoop
+from typing import TYPE_CHECKING, ClassVar, Literal, Self
 
 from pydispatch.aioutils import AioEventWaiters, AioWeakMethodContainer
 from pydispatch.properties import Property
@@ -127,7 +128,7 @@ class Dispatcher:
         _PROPERTIES_: ClassVar[dict[str, Property]]
         _EVENTS_: ClassVar[set[str]]
 
-    def __init_subclass__(cls, *args, **kwargs):
+    def __init_subclass__(cls, *args: object, **kwargs: object) -> None:
         super().__init_subclass__()
         props: dict[str, Property] = getattr(cls, '_PROPERTIES_', {}).copy()
         events: set[str] = getattr(cls, '_EVENTS_', set()).copy()
@@ -139,15 +140,15 @@ class Dispatcher:
         cls._PROPERTIES_ = props
         cls._EVENTS_ = events
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args: object, **kwargs: object) -> Self:
         obj = super().__new__(cls)
         obj.__init_events()
         return obj
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: object, **kwargs: object) -> None:
         # Everything is handled by __new__
         # This is only here to prevent exceptions being raised
         pass
-    def __init_events(self):
+    def __init_events(self) -> None:
         if hasattr(self, '_Dispatcher__events'):
             return
         self.__events = {}
@@ -157,7 +158,7 @@ class Dispatcher:
         for name, prop in self._PROPERTIES_.items():
             self.__property_events[name] = Event(name)
             prop._add_instance(self)
-    def register_event(self, *names):
+    def register_event(self, *names: str) -> None:
         """Registers new events after instance creation
 
         Args:
@@ -177,7 +178,7 @@ class Dispatcher:
             elif name in self.__property_events:
                 raise PropertyExistsError(name)
             self.__events[name] = Event(name)
-    def bind(self, **kwargs):
+    def bind(self, **kwargs) -> None:
         """Subscribes to events or to :class:`~pydispatch.properties.Property` updates
 
         Keyword arguments are used with the Event or Property names as keys
@@ -255,7 +256,7 @@ class Dispatcher:
                 except KeyError:
                     raise DoesNotExistError(name)
             e.add_listener(cb, __aio_loop__=aio_loop)
-    def unbind(self, *args):
+    def unbind(self, *args: object) -> None:
         """Unsubscribes from events or :class:`~pydispatch.properties.Property` updates
 
         Multiple arguments can be given. Each of which can be either the method
@@ -272,7 +273,7 @@ class Dispatcher:
                 prop.remove_listener(arg)
             for e in events:
                 e.remove_listener(arg)
-    def bind_async(self, loop, **kwargs):
+    def bind_async(self, loop: AbstractEventLoop, **kwargs) -> None:
         """Subscribes to events with async callbacks
 
         Functionality is matches the :meth:`bind` method, except the provided
@@ -292,7 +293,7 @@ class Dispatcher:
         """
         kwargs['__aio_loop__'] = loop
         self.bind(**kwargs)
-    def emit(self, name, *args, **kwargs):
+    def emit(self, name: str, *args: object, **kwargs: object) -> Literal[False] | None:
         """Dispatches an event to any subscribed listeners
 
         Note:
@@ -319,7 +320,7 @@ class Dispatcher:
             except KeyError:
                 raise DoesNotExistError(name)
         return e(*args, **kwargs)
-    def get_dispatcher_event(self, name):
+    def get_dispatcher_event(self, name: str) -> Event:
         """Retrieves an Event object by name
 
         Args:
@@ -345,7 +346,7 @@ class Dispatcher:
             except KeyError:
                 raise DoesNotExistError(name)
         return e
-    def emission_lock(self, name):
+    def emission_lock(self, name: str) -> EmissionHoldLock:
         """Holds emission of events and dispatches the last event on release
 
         The context manager returned will store the last event data called by
