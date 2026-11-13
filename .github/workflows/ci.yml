@@ -4,7 +4,6 @@ on:
   push:
     branches: [ master ]
   pull_request:
-    branches: [ master ]
 
 permissions: {}
 
@@ -35,9 +34,9 @@ jobs:
     - name: Lint Python packages
       if: ${{ matrix.python-version == '3.13' }}
       run: uv run --frozen ruff check pydispatch sphinx-plugin/pydispatch_sphinx
-    - name: Type-check core package
+    - name: Type-check Python packages
       if: ${{ matrix.python-version == '3.13' }}
-      run: uv run --frozen mypy --python-version 3.11 --check-untyped-defs pydispatch
+      run: uv run --frozen mypy --python-version 3.11 --check-untyped-defs pydispatch sphinx-plugin/pydispatch_sphinx
     - name: Test python-dispatch
       run: |
         uv run pytest --cov --cov-config=.coveragerc tests pydispatch doc README.md

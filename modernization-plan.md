@@ -237,8 +237,11 @@ The observable copy contract and dictionary update signature now match their
 concrete implementations; dictionary updates accept standard inputs and notify
 about partial changes on failure (#152). Explicit checks now preserve the
 existing errors for missing weak-dictionary callbacks and ownerless observable
-properties. The core mypy check passes with the documented narrow ignores and
-is blocking in CI; the plugin still needs a typing baseline and fixes.
+properties. The mypy check passes for both the core package and Sphinx plugin
+with the documented narrow ignores and is blocking in CI. The plugin uses
+development-only Docutils stubs, and missing required `propcls` options now
+produce a clear directive error. This passing baseline checks untyped function
+bodies but does not mean every public API is fully annotated.
 
 1. Select and configure a static type checker and linter in the root
    development tooling. Recommended: mypy for type checking and Ruff for

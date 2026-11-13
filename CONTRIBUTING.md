@@ -104,15 +104,14 @@ uv run ruff check pydispatch sphinx-plugin/pydispatch_sphinx
 
 CI runs the same Ruff check on Python 3.13.
 
-To check the core package with mypy, including untyped function bodies and
-targeting the minimum supported Python version:
+To check the core package and Sphinx plugin with mypy, including untyped
+function bodies and targeting the minimum supported Python version:
 
 ```bash
-uv run --frozen mypy --python-version 3.11 --check-untyped-defs pydispatch
+uv run --frozen mypy --python-version 3.11 --check-untyped-defs pydispatch sphinx-plugin/pydispatch_sphinx
 ```
 
-CI runs this check on Python 3.13 and requires it to pass. It currently covers
-the core package; type-checking the Sphinx plugin is a separate work item.
+CI runs this check on Python 3.13 and requires it to pass.
 
 To run the entire test suite:
 ```bash
