@@ -22,6 +22,8 @@ Directives
     .. rst:directive:option:: propcls: The Property class defined
         :type: str
 
+        This option is required.
+
     .. rst:directive:option:: type: Expected type of the Property
         :type: type
 

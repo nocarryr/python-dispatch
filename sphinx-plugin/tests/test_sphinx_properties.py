@@ -3,7 +3,6 @@ import re
 from html import unescape
 
 import pytest
-
 from conftest import PYDISPATCH_RTD, reset_intersphinx
 
 
@@ -12,6 +11,34 @@ def test_property_documenter_does_not_shadow_sphinx_directive_bridge():
 
     assert 'directive' not in DispatcherPropertyDocumenter.__dict__
     assert DispatcherPropertyDocumenter.objtype == 'dispatcherproperty'
+
+
+def test_property_directive_requires_property_class():
+    from docutils.parsers.rst import DirectiveError
+    from pydispatch_sphinx.directives import DispatcherPropertyDirective
+
+    directive = DispatcherPropertyDirective.__new__(DispatcherPropertyDirective)
+    directive.options = {}
+    with pytest.raises(DirectiveError) as excinfo:
+        directive.get_signature_prefix('example')
+    assert 'propcls' in excinfo.value.msg
+
+
+def test_missing_property_class_is_reported_by_sphinx(tmp_path):
+    from io import StringIO
+
+    from sphinx.testing.util import SphinxTestApp
+
+    (tmp_path / 'conf.py').write_text("extensions = ['pydispatch_sphinx']\n")
+    (tmp_path / 'index.rst').write_text('.. py:dispatcherproperty:: example\n')
+    warnings = StringIO()
+    app = SphinxTestApp(srcdir=tmp_path, warning=warnings, warningiserror=True)
+    try:
+        app.build()
+        assert app.statuscode == 1
+        assert 'requires the :propcls: option' in warnings.getvalue()
+    finally:
+        app.cleanup()
 
 
 @pytest.mark.sphinx('rst', testroot='properties')

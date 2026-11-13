@@ -27,6 +27,8 @@ class DispatcherPropertyDirective(PyAttribute):
 
     def get_signature_prefix(self, sig: str) -> list[nodes.Node]:
         propcls = self.options.get('propcls')
+        if propcls is None:
+            raise self.error('The dispatcherproperty directive requires the :propcls: option.')
         return [
             addnodes.desc_type(propcls, '',
                 type_to_xref(propcls, self.env, suppress_prefix=True),
