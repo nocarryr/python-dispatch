@@ -111,8 +111,8 @@ targeting the minimum supported Python version:
 uv run --frozen mypy --python-version 3.11 --check-untyped-defs pydispatch
 ```
 
-This check currently reports existing errors and runs in CI as a non-blocking
-step while typing improvements are made incrementally.
+CI runs this check on Python 3.13 and requires it to pass. It currently covers
+the core package; type-checking the Sphinx plugin is a separate work item.
 
 To run the entire test suite:
 ```bash

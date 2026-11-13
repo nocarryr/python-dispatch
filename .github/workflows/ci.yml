@@ -35,9 +35,8 @@ jobs:
     - name: Lint Python packages
       if: ${{ matrix.python-version == '3.13' }}
       run: uv run --frozen ruff check pydispatch sphinx-plugin/pydispatch_sphinx
-    - name: Type-check core package (non-blocking)
+    - name: Type-check core package
       if: ${{ matrix.python-version == '3.13' }}
-      continue-on-error: true
       run: uv run --frozen mypy --python-version 3.11 --check-untyped-defs pydispatch
     - name: Test python-dispatch
       run: |
