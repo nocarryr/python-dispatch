@@ -230,7 +230,12 @@ diagnostics incrementally before making the check blocking or expanding it to th
 plugin. Property initialization now stores per-instance observable defaults via
 a shared helper, and property-owned observables hold their owners weakly to
 allow collection. These changes fix both `_add_instance` override diagnostics;
-the core mypy baseline is now 5.
+the core mypy baseline was 5 (#151). The observable list in-place addition
+signature now reflects its iterable input and identity-preserving return; a
+narrow ignore accounts for mypy's comparison against overloaded `list.__add__`.
+The observable copy contract and dictionary update signature now match their
+concrete implementations; dictionary updates accept standard inputs and notify
+about partial changes on failure. The core baseline is 2.
 
 1. Select and configure a static type checker and linter in the root
    development tooling. Recommended: mypy for type checking and Ruff for
