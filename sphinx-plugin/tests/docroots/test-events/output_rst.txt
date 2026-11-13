@@ -1,6 +1,6 @@
 .. _module-events_module:
 
-**class events_module.TheClass(*args, **kwargs)**
+**class events_module.TheClass(*args: object, **kwargs: object)**
 
    Docstring for TheClass
 
@@ -30,7 +30,7 @@
 
       ``on_baz`` is a ``pydispatch.Event`` object.
 
-**class events_module.TheSubClass(*args, **kwargs)**
+**class events_module.TheSubClass(*args: object, **kwargs: object)**
 
    Docstring for TheSubClass
 
@@ -53,7 +53,8 @@
 
       Documentation for a_normal_method
 
-**class events_module.TheOverridingSubClass(*args, **kwargs)**
+**class events_module.TheOverridingSubClass(*args: object, **kwargs:
+object)**
 
    Docstring for TheOverridingSubClass
 
