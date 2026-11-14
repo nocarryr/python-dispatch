@@ -286,9 +286,6 @@ class Dispatcher:
             loop: The :class:`EventLoop <asyncio.BaseEventLoop>` to use when
                 events are dispatched
 
-        Availability:
-            Python>=3.5
-
         .. versionadded:: 0.1.0
         """
         kwargs['__aio_loop__'] = loop
