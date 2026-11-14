@@ -1,9 +1,9 @@
 # Modernization Plan for `python-dispatch`
 
 This plan expands the original modernization outline into implementation-ready
-work. The workspace migration (#138), Markdown parser replacement (#139),
-workspace cleanup (#142), and Sphinx upgrade (#143) are merged. The next work
-establishes a lint baseline before the separate typing pass.
+work. The workspace migration, documentation upgrade, and phase 4 typing and
+lint baseline are merged. Generic event and property work is deferred; the next
+active phase is support metadata and documentation alignment.
 
 ## Goals and compatibility constraints
 
@@ -14,9 +14,10 @@ establishes a lint baseline before the separate typing pass.
 - Upgrade the documentation toolchain and plugin to a deliberately supported
   modern Sphinx range; verify both the declared minimum and the locked current
   release.
-- Add useful opt-in static typing for events and properties. Do not claim that
-  dynamic `Dispatcher.bind("name")`/`emit("name")` calls become statically
-  checked against a per-event signature unless the API is separately redesigned.
+- Consider useful opt-in static typing for events and properties as future
+  work. Do not claim that dynamic `Dispatcher.bind` keyword arguments or
+  `Dispatcher.emit("name", ...)` calls are checked against per-event signatures
+  unless the API is separately redesigned.
 - Make the declared Python floor, classifiers, CI matrix, and contributor/user
   documentation consistent. The project currently declares Python `>=3.11`.
 
@@ -69,6 +70,9 @@ establishes a lint baseline before the separate typing pass.
   plugin tests on that version.
 
 ## Work sequence
+
+Phases 5 and 6 are deferred future work, not prerequisites for phase 7.
+Continue with phase 7 without merging the generic-event prototype.
 
 ### 0. Establish a reproducible baseline
 
@@ -266,9 +270,26 @@ Mypy and Ruff scopes and the minimum Python target are configured in
 **Exit criteria:** the selected checks pass for both packages, existing runtime
 tests pass unchanged, and no new runtime dependency is introduced.
 
-### 5. Add opt-in generic callback signatures to `Event`
+### 5. Add opt-in generic callback signatures to `Event` — future work
 
-Keep this as a separate change from the baseline annotation pass.
+**Status: Deferred.** `Dispatcher` is the primary public API, and its
+string-named events and keyword-based bindings are dynamic. A generic `Event`
+can check calls made directly on a typed event, but does not connect a name
+passed to `Dispatcher.emit` or `Dispatcher.bind` to that signature. Annotating
+an event on a dispatcher subclass does not by itself create a typed event
+handle or establish that mapping. A useful typed dispatcher-facing API needs
+separate design and compatibility review before resuming this phase.
+
+**Reference prototype:** The `modernize/generic-event` branch contains an
+unmerged experiment using a defaulted `ParamSpec`, a shared callback alias,
+Sphinx generic-annotation detection, and a `py.typed` marker. Its conditional
+`typing-extensions` dependency applies below Python 3.13. It checks direct
+event calls, not the dynamic dispatcher interface; it is a reference for future
+design, not an implementation assumed to exist on `master`.
+
+When revisiting, consider whether an opt-in typed event handle connected to the
+existing registry is appropriate, without changing the existing string-based
+API. Keep that design separate from the baseline annotation pass.
 
 1. Parameterize `Event` with `ParamSpec` and type its synchronous callback
    storage, registration, and invocation so an explicitly typed `Event` can
@@ -292,7 +313,15 @@ Keep this as a separate change from the baseline annotation pass.
 existing untyped code remains accepted; static checks detect the intended
 mismatches; runtime event behavior is unchanged.
 
-### 6. Add generic property value types
+### 6. Add generic property value types — future work
+
+**Status: Deferred.** Generic descriptors could improve direct property
+read/write types, but property change subscriptions also flow through the
+dynamic `Dispatcher` interface. Descriptor types alone would not give
+`bind` a static mapping from a property name to its callback signature.
+Revisit property generics alongside the event/dispatcher API design so the
+scope and value of static guarantees are clear, while retaining the existing
+runtime behavior.
 
 1. Parameterize `Property` by its value type and give its descriptor methods
    overloads for class access and instance access so a declared property value
@@ -330,8 +359,8 @@ runtime value validation or notifications.
 
 ## Agent handoff boundaries
 
-Use the sequence above as dependency order. A task agent should own one phase
-at a time and report changed files, commands run, failures, and any decisions
-that need maintainer input. Do not have separate agents edit the lockfile or
-the same Sphinx snapshots concurrently. Keep the `m2r2` fix independently
-reviewable and land it before assigning the Sphinx-upgrade phase.
+Use the sequence above as dependency order, except that deferred phases 5 and 6
+do not block phase 7. A task agent should own one phase at a time and report
+changed files, commands run, failures, and any decisions that need maintainer
+input. Do not have separate agents edit the lockfile or the same Sphinx
+snapshots concurrently.
