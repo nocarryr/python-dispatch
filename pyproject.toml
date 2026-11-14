@@ -62,8 +62,8 @@ include = ["pydispatch/**/*.py", "sphinx-plugin/pydispatch_sphinx/**/*.py"]
 
 [tool.ruff.lint.per-file-ignores]
 # The package intentionally re-exports its public API through star imports;
-# preserve the existing version fallback and legacy compatibility warning.
-"pydispatch/__init__.py" = ["E722", "F403", "UP036"]
+# preserve the existing version fallback.
+"pydispatch/__init__.py" = ["E722", "F403"]
 # Sphinx expects option_spec dictionaries to be shared class attributes.
 "sphinx-plugin/pydispatch_sphinx/documenters.py" = ["RUF012"]
 

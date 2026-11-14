@@ -61,7 +61,8 @@ for the core package and Sphinx plugin without enforcing a formatting rewrite.
   if the method/attribute names are common.
   - Since `Dispatcher` is meant to be subclassed by users of this project,
     it needs to stay out of a developer's way as much as possible.
-- Ensure compatibility across all conceivable platforms and Python versions. (currently 2.7, 3.4, 3.5, 3.6, 3.7)
+- Preserve compatibility with Python 3.11 and newer and avoid platform-specific
+  assumptions. CI tests Python 3.11, 3.12, 3.13, and 3.14.
 
 ## Local Development
 
@@ -72,24 +73,12 @@ git clone https://github.com/<gh-user-name>/python-dispatch.git
 cd python-dispatch
 ```
 
-It's recommended to use a virtual environment for development and testing.
-See https://virtualenv.pypa.io/en/latest/ or https://docs.python.org/3.7/library/venv.html for details.
+Use [uv](https://docs.astral.sh/uv/) to create a virtual environment and
+install the editable workspace, including the Sphinx plugin and development
+dependencies:
 
-Create a new environment at the root of your working tree and activate it:
 ```bash
-python -m venv venv
-source venv/bin/activate
-```
-
-Install the project in 'editable' mode:
-```bash
-pip install -e .
-```
-
-Currently, the only dependency for testing is [pytest](https://pypi.org/project/pytest/),
-but to make tests run faster, it's a good idea to install [pytest-xdist](https://pypi.org/project/pytest-xdist/):
-```bash
-pip install pytest pytest-xdist
+uv sync
 ```
 
 ### Running Tests
@@ -113,23 +102,20 @@ uv run mypy
 
 CI runs this check on Python 3.13 and requires it to pass.
 
-To run the entire test suite:
+Run the core and plugin suites separately; each has its own `conftest.py`:
+
 ```bash
-py.test -n auto
-# -n auto will use all available CPU cores
+uv run pytest tests pydispatch doc README.md
+uv run pytest sphinx-plugin/tests
 ```
 
-For other invocation methods, see the [pytest docs](https://pytest.org/en/latest/)
+To build the documentation with warnings treated as errors:
 
-There is a test in the suite that will take an *extremely* long time: `tests/test_subclass_init.py`. To avoid having to wait for it every time, you can make
-a change to it, make sure to **revert it** before committing.
-
-`tests/test_subclass_init.py` line 83:
-```python
-for i in range(40000):          # <--- change this to something like 4000
-    before_init = time.time()
+```bash
+uv run sphinx-build -b html -W --keep-going doc/source /tmp/python-dispatch-docs
 ```
 
+For other invocation methods, see the [pytest docs](https://pytest.org/en/latest/).
 ## License
 
 By contributing, you agree that your contributions will be licensed under

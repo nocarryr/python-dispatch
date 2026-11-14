@@ -345,6 +345,15 @@ runtime value validation or notifications.
 
 ### 7. Align support metadata and documentation; final integration
 
+**Progress:** Both packages require Python 3.11+ and classify 3.11–3.14,
+matching the core and plugin CI and distribution test matrices. The support
+documentation and obsolete pre-3.6 warning have been updated. On Python 3.13,
+the core and plugin suites, mypy, Ruff, and strict HTML build pass. Both
+packages' wheels and source distributions pass their core and plugin test
+suites in isolated environments on Python 3.11, 3.12, 3.13, and 3.14.
+The existing pytest-asyncio configuration warning and the Python 3.14
+Sphinx RST builder `codecs.open` deprecation warning remain.
+
 1. Update `README.md`, `CONTRIBUTING.md`, `pydispatch/__init__.py`, and stale
    Python-version docstrings to say Python 3.11+ and reflect the tested
    versions. Remove obsolete compatibility warnings only when the project

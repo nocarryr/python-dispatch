@@ -7,6 +7,9 @@ Installation
 
     pip install python-dispatch-sphinx
 
+The extension requires Python 3.11 or newer. CI tests it on Python 3.11,
+3.12, 3.13, and 3.14.
+
 Dependencies
 ------------
 

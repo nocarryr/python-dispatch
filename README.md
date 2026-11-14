@@ -18,20 +18,9 @@ pip install python-dispatch
 ```
 
 ### Python Requirements
-After version `0.1` of this project, only Python 3.6 and above will be supported.
-If using an older Python version, the older releases should still be available
-on PyPI and the correct package should be chosen automatically by `pip`.
-If not, either upgrade `pip` and `setuptools`:
-
-```bash
-pip install -U pip setuptools
-```
-
-Or specify the version manually:
-
-```bash
-pip install python-dispatch<0.2
-```
+The current release requires Python 3.11 or newer. CI tests Python 3.11,
+3.12, 3.13, and 3.14. Earlier releases remain available on PyPI for older
+Python versions; check their metadata for compatibility.
 
 ## Links
 
