@@ -1,0 +1,46 @@
+import asyncio
+from typing import ParamSpec, assert_type
+
+from pydispatch import Event
+from pydispatch.types import EventCallback, EventWaitResult
+
+P = ParamSpec("P")
+
+def forward(event: Event[P], *args: P.args, **kwargs: P.kwargs) -> None:
+    event(*args, **kwargs)
+
+def create_event(callback: EventCallback[P]) -> Event[P]:
+    result: Event[P] = Event("example")
+    result.add_listener(callback)
+    return result
+
+def listener(value: int, label: str) -> bool:
+    return True
+
+async def async_listener(value: int, label: str) -> None:
+    pass
+
+class Receiver:
+    def listener(self, value: int, label: str) -> None:
+        pass
+
+event: Event[[int, str]] = Event("example")
+receiver = Receiver()
+event.add_listener(listener)
+event.add_listener(receiver.listener)
+event.add_listener(async_listener, __aio_loop__=asyncio.get_event_loop())
+event(1, "value")
+forward(event, 1, "value")
+
+untyped = Event("untyped")
+untyped.add_listener(listener)
+untyped("anything", unrelated=True)
+
+async def wait() -> None:
+    assert_type(await event, EventWaitResult)
+
+def keyword_listener(value: int, *, label: str) -> None:
+    pass
+
+keyword_event = create_event(keyword_listener)
+keyword_event(1, label="value")

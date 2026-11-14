@@ -29,7 +29,7 @@ class TheSubClass(TheClass):
     """
     _events_ = ['on_spam', 'on_eggs']
 
-    on_spam: Event
+    on_spam: Event[[int]]
     """Documentation for on_spam event"""
 
     def on_eggs(self, scrambled: bool, **kwargs):

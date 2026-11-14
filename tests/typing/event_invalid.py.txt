@@ -1,0 +1,28 @@
+from pydispatch import Event
+from pydispatch.types import EventCallback, P
+
+def wrong_callback(value: str, label: int) -> None:
+    pass
+
+async def wrong_async_callback(value: str, label: int) -> None:
+    pass
+
+event: Event[[int, str]] = Event("example")
+event.add_listener(wrong_callback)
+event.add_listener(wrong_async_callback)
+event("wrong", "value")
+event(1, 2)
+event(1)
+event(1, "value", extra=True)
+
+def create_event(callback: EventCallback[P]) -> Event[P]:
+    result: Event[P] = Event("example")
+    result.add_listener(callback)
+    return result
+
+def keyword_listener(value: int, *, label: str) -> None:
+    pass
+
+keyword_event = create_event(keyword_listener)
+keyword_event(1, label=2)
+keyword_event(1, "wrong")

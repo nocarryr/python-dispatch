@@ -3,8 +3,30 @@ import re
 from html import unescape
 
 import pytest
-
 from conftest import PYDISPATCH_RTD, reset_intersphinx
+
+
+def test_generic_event_documenter_recognizes_dispatcher_subclasses():
+    from types import SimpleNamespace
+
+    from pydispatch_sphinx.documenters import DispatcherEventAttributeDocumenter
+    from sphinx.ext.autodoc import INSTANCEATTR
+
+    from pydispatch import Dispatcher, Event
+
+    class Sender(Dispatcher):
+        on_foo: Event[[int]]
+
+    class Other:
+        on_foo: Event[[int]]
+
+    documenter = DispatcherEventAttributeDocumenter
+    assert documenter.can_document_member(
+        INSTANCEATTR, 'on_foo', True, SimpleNamespace(object=Sender),
+    )
+    assert not documenter.can_document_member(
+        INSTANCEATTR, 'on_foo', True, SimpleNamespace(object=Other),
+    )
 
 
 @pytest.mark.sphinx('rst', testroot='events')

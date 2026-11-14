@@ -24,6 +24,9 @@ classifiers = [
     "Topic :: Software Development :: Libraries",
     "Topic :: Software Development :: Libraries :: Python Modules"
 ]
+dependencies = [
+    "typing-extensions>=4.12; python_version < '3.13'",
+]
 [project.urls]
 Documentation = "https://python-dispatch.readthedocs.io/"
 Source = "https://github.com/nocarryr/python-dispatch"

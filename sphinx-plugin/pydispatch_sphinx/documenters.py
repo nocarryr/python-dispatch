@@ -57,7 +57,7 @@ class DispatcherEventAttributeDocumenter(AttributeDocumenter):
                 return False
             anno = get_type_hints(parent.object)
             obj_anno = anno.get(membername)
-            if obj_anno is Event:
+            if obj_anno is Event or tp.get_origin(obj_anno) is Event:
                 # logger.info(f'"{member!s}", {member.__class__=}, {membername=}')
                 return True
         return False

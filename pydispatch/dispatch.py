@@ -1,9 +1,11 @@
 import types
 from asyncio import AbstractEventLoop
-from typing import TYPE_CHECKING, ClassVar, Literal, Self
+from collections.abc import Generator
+from typing import TYPE_CHECKING, ClassVar, Generic, Literal, Self
 
 from pydispatch.aioutils import AioEventWaiters, AioWeakMethodContainer
 from pydispatch.properties import Property
+from pydispatch.types import EventCallback, EventWaitResult, P
 from pydispatch.utils import (
     EmissionHoldLock,
     WeakMethodContainer,
@@ -61,7 +63,7 @@ class PropertyExistsError(ExistsError):
     """
 
 
-class Event:
+class Event(Generic[P]):
     """Holds references to event names and subscribed listeners
 
     This is used internally by :class:`Dispatcher`.
@@ -73,7 +75,7 @@ class Event:
         self.aio_listeners = AioWeakMethodContainer()
         self.aio_waiters = AioEventWaiters()
         self.emission_lock = EmissionHoldLock(self)
-    def add_listener(self, callback, **kwargs):
+    def add_listener(self, callback: EventCallback[P], **kwargs) -> None:
         if iscoroutinefunction(callback):
             loop = kwargs.get('__aio_loop__')
             if loop is None:
@@ -88,21 +90,22 @@ class Event:
         else:
             self.listeners.del_instance(obj)
             self.aio_listeners.del_instance(obj)
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Literal[False] | None:
         """Dispatches the event to listeners
 
         Called by :meth:`~Dispatcher.emit`
         """
         if self.emission_lock.held:
             self.emission_lock.last_event = (args, kwargs)
-            return
+            return None
         self.aio_waiters(*args, **kwargs)
         self.aio_listeners(*args, **kwargs)
         for m in self.listeners.iter_methods():
             r = m(*args, **kwargs)
             if r is False:
                 return r
-    def __await__(self):
+        return None
+    def __await__(self) -> Generator[object, None, EventWaitResult]:
         return self.aio_waiters.__await__()
     def __repr__(self):
         return f'<{self.__class__}: {self}>'
@@ -151,10 +154,10 @@ class Dispatcher:
     def __init_events(self) -> None:
         if hasattr(self, '_Dispatcher__events'):
             return
-        self.__events = {}
+        self.__events: dict[str, Event[...]] = {}
         for name in self._EVENTS_:
             self.__events[name] = Event(name)
-        self.__property_events = {}
+        self.__property_events: dict[str, Event[...]] = {}
         for name, prop in self._PROPERTIES_.items():
             self.__property_events[name] = Event(name)
             prop._add_instance(self)
